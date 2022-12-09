@@ -19,11 +19,6 @@ local icons = {
   },
 }
 
-local EntryState = {
-  Open = 1,
-  Close = 2,
-}
-
 ---@class Entry
 ---@field name string
 ---@field path string
@@ -33,10 +28,15 @@ local EntryState = {
 ---@field state integer
 local Entry = {}
 
+Entry.State = {
+  Open = 1,
+  Close = 2,
+}
+
 function Entry.new(fpath, parent)
   local self = setmetatable({}, { __index = Entry })
 
-  fpath = string.gsub(fpath, "/+$", "")
+  fpath = path.clean(fpath)
   local lstat = vim.loop.fs_lstat(fpath)
   local is_dir = lstat.type == "directory"
   local name = path.basename(fpath)
@@ -46,7 +46,7 @@ function Entry.new(fpath, parent)
   self.is_dir = is_dir
   self.entries = {}
   self.parent = parent
-  self.state = EntryState.Close
+  self.state = State.Close
 
   return self
 end
@@ -86,13 +86,25 @@ function Entry:readdir()
   self.entries = entries
 end
 
+function Entry:get_name()
+  if self.is_dir then
+    return self.name, "SFMFolderName"
+  end
+
+  return self.name, "SFMFileName"
+end
+
 function Entry:get_icon()
   if self.is_dir then
-    return icons.folder.default
+    if self.state == State.Open then
+      return icons.folder.open, "SFMFolderIcon"
+    end
+
+    return icons.folder.default, "SFMFolderIcon"
   end
 
   if not has_devicons then
-    return icons.file.default
+    return icons.file.default, "SFMDefaultFileIcon"
   end
 
   return devicons.get_icon(self.name, path.basename(self.path), { default = true })
@@ -100,10 +112,10 @@ end
 
 function Entry:get_indicator()
   if self.is_dir then
-    return icons.indicator.folder_closed
+    return icons.indicator.folder_closed, "SFMIndicator"
   end
 
-  return icons.indicator.file
+  return icons.indicator.file, "SFMIndicator"
 end
 
 return Entry

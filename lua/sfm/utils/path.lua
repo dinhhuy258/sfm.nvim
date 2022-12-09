@@ -2,6 +2,16 @@ local M = {}
 
 local path_separator = package.config:sub(1, 1)
 
+function M.clean(path)
+  -- remove double path seps
+  path = path:gsub(path_separator .. path_separator, path_separator)
+
+  -- remove trailing path sep
+  path = M.remove_trailing(path)
+
+  return path
+end
+
 function M.join(paths)
   return table.concat(vim.tbl_map(M.remove_trailing, paths), path_separator)
 end

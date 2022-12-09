@@ -45,6 +45,9 @@ end
 local function get_links()
   return {
     SFMFolderName = "Directory",
+    SFMFolderIcon = "Directory",
+    SFMDefaultFileIcon = "Normal",
+    SFMFileName = "Normal",
   }
 end
 
