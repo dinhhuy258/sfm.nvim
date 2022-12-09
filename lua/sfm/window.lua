@@ -1,12 +1,15 @@
 ---@class Window
 ---@field win integer
 ---@field buf integer
+---@field ns_id integer
 local Window = {}
 
 function Window.new()
   local self = setmetatable({}, { __index = Window })
 
   self.win = nil
+  self.buf = nil
+  self.ns_id = vim.api.nvim_create_namespace "SFMHighlights"
 
   return self
 end
@@ -44,11 +47,29 @@ end
 function Window:render(line_infos)
   vim.api.nvim_buf_set_option(self.buf, "modifiable", true)
   local lines = {}
+  local highlights = {}
   for _, line_info in ipairs(line_infos) do
     table.insert(lines, line_info.line)
+
+    for _, highlight in ipairs(line_info.highlights) do
+      table.insert(highlights, highlight)
+    end
   end
 
   vim.api.nvim_buf_set_lines(self.buf, 0, -1, 1, lines)
+
+  -- add highlights
+  vim.api.nvim_buf_clear_namespace(self.buf, self.ns_id, 0, -1)
+  for _, highlight in ipairs(highlights) do
+    vim.api.nvim_buf_add_highlight(
+      self.buf,
+      self.ns_id,
+      highlight.hl_group,
+      highlight.line,
+      highlight.col_start,
+      highlight.col_end
+    )
+  end
 
   vim.api.nvim_buf_set_option(self.buf, "modifiable", false)
 end

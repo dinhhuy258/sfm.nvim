@@ -1,3 +1,24 @@
+local has_devicons, devicons = pcall(require, "nvim-web-devicons")
+local path = require "sfm.utils.path"
+
+local icons = {
+  file = {
+    default = "",
+    symlink = "",
+  },
+  folder = {
+    default = "",
+    open = "",
+    symlink = "",
+    symlink_open = "",
+  },
+  indicator = {
+    folder_closed = "",
+    folder_open = "",
+    file = " ",
+  },
+}
+
 local EntryState = {
   Open = 1,
   Close = 2,
@@ -12,16 +33,16 @@ local EntryState = {
 ---@field state integer
 local Entry = {}
 
-function Entry.new(path, parent)
+function Entry.new(fpath, parent)
   local self = setmetatable({}, { __index = Entry })
 
-  path = string.gsub(path, "/+$", "")
-  local lstat = vim.loop.fs_lstat(path)
+  fpath = string.gsub(fpath, "/+$", "")
+  local lstat = vim.loop.fs_lstat(fpath)
   local is_dir = lstat.type == "directory"
-  local name = vim.fn.fnamemodify(path, ":t")
+  local name = path.basename(fpath)
 
   self.name = name
-  self.path = path
+  self.path = fpath
   self.is_dir = is_dir
   self.entries = {}
   self.parent = parent
@@ -44,7 +65,7 @@ function Entry:readdir()
     end
 
     for name in iterator do
-      local absolute_path = self.path .. "/" .. name
+      local absolute_path = path.join { self.path, name }
 
       table.insert(entries, Entry.new(absolute_path, self))
     end
@@ -63,6 +84,26 @@ function Entry:readdir()
   end
 
   self.entries = entries
+end
+
+function Entry:get_icon()
+  if self.is_dir then
+    return icons.folder.default
+  end
+
+  if not has_devicons then
+    return icons.file.default
+  end
+
+  return devicons.get_icon(self.name, path.basename(self.path), { default = true })
+end
+
+function Entry:get_indicator()
+  if self.is_dir then
+    return icons.indicator.folder_closed
+  end
+
+  return icons.indicator.file
 end
 
 return Entry

@@ -1,10 +1,11 @@
+local colors = require "sfm.colors"
 local M = {}
 
 local explorer = require "sfm.explorer"
 local sfm_explorer = explorer.new()
 
 local function config_commands()
-  vim.api.nvim_create_user_command("SFMToggle", function ()
+  vim.api.nvim_create_user_command("SFMToggle", function()
     sfm_explorer:toggle()
   end, {
     bang = true,
@@ -13,6 +14,7 @@ local function config_commands()
 end
 
 function M.setup(cfg)
+  colors.setup()
   config_commands()
 end
 
