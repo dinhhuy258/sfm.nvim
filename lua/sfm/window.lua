@@ -35,6 +35,14 @@ function Window:open()
   -- focus on explorer window
   vim.api.nvim_win_set_buf(win, buf)
 
+  local options = {
+    noremap = true,
+    silent = true,
+    expr = false,
+  }
+
+  vim.api.nvim_buf_set_keymap(buf, "n", "<CR>", "<CMD>lua require('sfm.actions').edit()<CR>", options)
+
   self.win = win
   self.buf = buf
 end

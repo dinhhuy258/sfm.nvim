@@ -1,5 +1,6 @@
 local has_devicons, devicons = pcall(require, "nvim-web-devicons")
 local path = require "sfm.utils.path"
+local log = require "sfm.utils.log"
 
 local icons = {
   file = {
@@ -46,9 +47,25 @@ function Entry.new(fpath, parent)
   self.is_dir = is_dir
   self.entries = {}
   self.parent = parent
-  self.state = State.Close
+  self.state = Entry.State.Close
 
   return self
+end
+
+function Entry:close()
+  if not self.is_dir then
+    log.error(self.name .. " is not a directory")
+
+    return
+  end
+  if self.state == Entry.State.Close then
+    log.error("Directory " .. self.name .. " was already closed")
+
+    return
+  end
+
+  self.state = Entry.State.Close
+  self.entries = {}
 end
 
 function Entry:readdir()
@@ -83,6 +100,7 @@ function Entry:readdir()
     end)
   end
 
+  self.state = Entry.State.Open
   self.entries = entries
 end
 
@@ -96,7 +114,7 @@ end
 
 function Entry:get_icon()
   if self.is_dir then
-    if self.state == State.Open then
+    if self.state == Entry.State.Open then
       return icons.folder.open, "SFMFolderIcon"
     end
 

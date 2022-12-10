@@ -21,13 +21,16 @@ function Explorer.new()
   return self
 end
 
-local function get_line_infos(current_entry, depth)
+function Explorer:get_line_infos(current_entry, depth)
   local line_infos = {}
   local indent = string.rep("  ", depth)
 
   local line = ""
   local col_start = 0
   for i, e in ipairs(current_entry.entries) do
+    table.insert(self.ctx.entries, e)
+    local linenr = #self.ctx.entries - 1 -- 0-indexed
+
     local name, name_hl_group = e.get_name(e)
     local indicator, indicator_hl_group = e.get_indicator(e)
     local icon, icon_hl_group = e.get_icon(e)
@@ -41,7 +44,7 @@ local function get_line_infos(current_entry, depth)
       hl_group = indicator_hl_group,
       col_start = col_start,
       col_end = #line,
-      line = i - 1, -- 0-indexed
+      line = linenr,
     })
 
     line = line .. " "
@@ -52,7 +55,7 @@ local function get_line_infos(current_entry, depth)
       hl_group = icon_hl_group,
       col_start = col_start,
       col_end = #line,
-      line = i - 1, -- 0-indexed
+      line = linenr,
     })
 
     line = line .. " "
@@ -62,7 +65,7 @@ local function get_line_infos(current_entry, depth)
       hl_group = name_hl_group,
       col_start = col_start,
       col_end = #line,
-      line = i - 1, -- 0-indexed
+      line = linenr,
     })
 
     table.insert(line_infos, {
@@ -70,12 +73,11 @@ local function get_line_infos(current_entry, depth)
       highlights = highlights,
     })
 
-    if current_entry.is_dir and current_entry.state == entry.State.Open then
-      for _, child_entry in ipairs(current_entry.entries) do
-        local child_line_infos = get_line_infos(child_entry, depth + 1)
-        for _, line_info in ipairs(child_line_infos) do
-          table.insert(line_infos, line_info)
-        end
+    if e.is_dir and e.state == entry.State.Open then
+      local child_line_infos = self.get_line_infos(self, e, depth + 1)
+
+      for _, line_info in ipairs(child_line_infos) do
+        table.insert(line_infos, line_info)
       end
     end
   end
@@ -84,7 +86,13 @@ local function get_line_infos(current_entry, depth)
 end
 
 function Explorer:line_infos()
-  return get_line_infos(self.root, 0)
+  self.ctx.entries = {}
+
+  return self.get_line_infos(self, self.root, 0)
+end
+
+function Explorer:render()
+  self.win:render(self.line_infos(self))
 end
 
 function Explorer:toggle()
@@ -98,7 +106,8 @@ function Explorer:toggle()
   self.root:readdir()
   -- open explorer window
   self.win:open()
-  self.win:render(self.line_infos(self))
+  -- render
+  self.render(self)
 end
 
 return Explorer

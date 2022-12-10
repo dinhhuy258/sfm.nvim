@@ -12,9 +12,9 @@ function Context.new(dir)
 end
 
 function Context:current()
-  local file = self.entries[vim.fn.line "."]
-  if file then
-    return file
+  local entry = self.entries[vim.fn.line "."]
+  if entry then
+    return entry
   end
 
   return nil

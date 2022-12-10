@@ -1,4 +1,5 @@
 local colors = require "sfm.colors"
+local actions = require "sfm.actions"
 local M = {}
 
 local explorer = require "sfm.explorer"
@@ -15,6 +16,8 @@ end
 
 function M.setup(cfg)
   colors.setup()
+  actions.setup(sfm_explorer)
+
   config_commands()
 end
 
