@@ -20,4 +20,14 @@ function Context:current()
   return nil
 end
 
+function Context:get_index(entry)
+  for index, e in ipairs(self.entries) do
+    if entry.path == e.path then
+      return index
+    end
+  end
+
+  return 0
+end
+
 return Context

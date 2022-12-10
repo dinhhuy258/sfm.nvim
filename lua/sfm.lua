@@ -1,5 +1,7 @@
 local colors = require "sfm.colors"
 local actions = require "sfm.actions"
+require "sfm.utils.table"
+
 local M = {}
 
 local explorer = require "sfm.explorer"

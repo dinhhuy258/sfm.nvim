@@ -2,8 +2,9 @@ local M = {}
 
 M.explorer = nil
 
+--- edit file or toggle directory
 function M.edit()
-  local entry = M.explorer.ctx.current(M.explorer.ctx)
+  local entry = M.explorer.ctx:current()
   if not entry.is_dir then
     vim.cmd "wincmd l"
     vim.cmd("keepalt edit " .. entry.path)
@@ -13,17 +14,49 @@ function M.edit()
 
   if entry.state == entry.State.Open then
     -- close directory
-    entry.close(entry)
+    entry:close()
     -- re-render
-    M.explorer.render(M.explorer)
+    M.explorer:render()
 
     return
   end
 
   -- open directory
-  entry.readdir(entry)
+  entry:readdir()
   -- re-render
-  M.explorer.render(M.explorer)
+  M.explorer:render()
+end
+
+--- navigate to the first sibling of current file/directory
+function M.first_sibling()
+  local entry = M.explorer.ctx:current()
+  if entry.parent == nil then
+    return
+  end
+
+  local first_entry = table.first(entry.parent.entries)
+  local index = M.explorer.ctx:get_index(first_entry)
+  if index == 0 then
+    return
+  end
+
+  M.explorer:move_cursor(index, 0)
+end
+
+--- navigate to the last sibling of current file/directory
+function M.last_sibling()
+  local entry = M.explorer.ctx:current()
+  if entry.parent == nil then
+    return
+  end
+
+  local last_entry = table.last(entry.parent.entries)
+  local index = M.explorer.ctx:get_index(last_entry)
+  if index == 0 then
+    return
+  end
+
+  M.explorer:move_cursor(index, 0)
 end
 
 function M.setup(explorer)

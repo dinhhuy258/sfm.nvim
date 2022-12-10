@@ -27,7 +27,7 @@ function Explorer:get_line_infos(current_entry, depth)
 
   local line = ""
   local col_start = 0
-  for i, e in ipairs(current_entry.entries) do
+  for _, e in ipairs(current_entry.entries) do
     table.insert(self.ctx.entries, e)
     local linenr = #self.ctx.entries - 1 -- 0-indexed
 
@@ -74,11 +74,7 @@ function Explorer:get_line_infos(current_entry, depth)
     })
 
     if e.is_dir and e.state == entry.State.Open then
-      local child_line_infos = self.get_line_infos(self, e, depth + 1)
-
-      for _, line_info in ipairs(child_line_infos) do
-        table.insert(line_infos, line_info)
-      end
+      table.extend(line_infos, self:get_line_infos(e, depth + 1))
     end
   end
 
@@ -88,11 +84,15 @@ end
 function Explorer:line_infos()
   self.ctx.entries = {}
 
-  return self.get_line_infos(self, self.root, 0)
+  return self:get_line_infos(self.root, 0)
 end
 
 function Explorer:render()
-  self.win:render(self.line_infos(self))
+  self.win:render(self:line_infos())
+end
+
+function Explorer:move_cursor(row, col)
+  self.win:move_cursor(row, col)
 end
 
 function Explorer:toggle()
@@ -107,7 +107,7 @@ function Explorer:toggle()
   -- open explorer window
   self.win:open()
   -- render
-  self.render(self)
+  self:render()
 end
 
 return Explorer

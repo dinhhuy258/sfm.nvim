@@ -18,6 +18,14 @@ function Window:is_open()
   return self.win ~= nil
 end
 
+function Window:move_cursor(row, col)
+  if not self:is_open() then
+    return
+  end
+
+  vim.api.nvim_win_set_cursor(self.win, { row, col })
+end
+
 function Window:open()
   vim.api.nvim_command "topleft vnew"
   local win = vim.api.nvim_get_current_win()
@@ -42,6 +50,8 @@ function Window:open()
   }
 
   vim.api.nvim_buf_set_keymap(buf, "n", "<CR>", "<CMD>lua require('sfm.actions').edit()<CR>", options)
+  vim.api.nvim_buf_set_keymap(buf, "n", "J", "<CMD>lua require('sfm.actions').last_sibling()<CR>", options)
+  vim.api.nvim_buf_set_keymap(buf, "n", "K", "<CMD>lua require('sfm.actions').first_sibling()<CR>", options)
 
   self.win = win
   self.buf = buf
