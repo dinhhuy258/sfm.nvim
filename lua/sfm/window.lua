@@ -52,6 +52,7 @@ function Window:open()
   vim.api.nvim_buf_set_keymap(buf, "n", "<CR>", "<CMD>lua require('sfm.actions').edit()<CR>", options)
   vim.api.nvim_buf_set_keymap(buf, "n", "J", "<CMD>lua require('sfm.actions').last_sibling()<CR>", options)
   vim.api.nvim_buf_set_keymap(buf, "n", "K", "<CMD>lua require('sfm.actions').first_sibling()<CR>", options)
+  vim.api.nvim_buf_set_keymap(buf, "n", "n", "<CMD>lua require('sfm.actions').create()<CR>", options)
 
   self.win = win
   self.buf = buf

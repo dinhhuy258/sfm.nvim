@@ -32,4 +32,26 @@ function M.remove_trailing(path)
   return p
 end
 
+function M.has_trailing(path)
+  return path:match(path_separator .. "$")
+end
+
+function M.add_trailing(path)
+  if path:sub(-1) == path_separator then
+    return path
+  end
+
+  return path .. path_separator
+end
+
+function M.exists(path)
+  return vim.loop.fs_access(path, "r")
+end
+
+function M.isdir(path)
+  local lstat = vim.loop.fs_lstat(path)
+
+  return lstat.type == "directory"
+end
+
 return M

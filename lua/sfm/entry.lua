@@ -11,7 +11,7 @@ local icons = {
     default = "",
     open = "",
     symlink = "",
-    symlink_open = "",
+    symlink_open = "",
   },
   indicator = {
     folder_closed = "",
@@ -38,8 +38,7 @@ function Entry.new(fpath, parent)
   local self = setmetatable({}, { __index = Entry })
 
   fpath = path.clean(fpath)
-  local lstat = vim.loop.fs_lstat(fpath)
-  local is_dir = lstat.type == "directory"
+  local is_dir = path.isdir(fpath)
   local name = path.basename(fpath)
 
   self.name = name
