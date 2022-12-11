@@ -27,11 +27,12 @@ local icons = {
 ---@field is_dir boolean
 ---@field parent Entry
 ---@field depth integer
+---@field is_root boolean
 ---@field entries Entry[]
 ---@field ctx Context
 local Entry = {}
 
-function Entry.new(fpath, parent, ctx)
+function Entry.new(fpath, parent, ctx, is_root)
   local self = setmetatable({}, { __index = Entry })
 
   fpath = path.clean(fpath)
@@ -49,6 +50,7 @@ function Entry.new(fpath, parent, ctx)
     self.depth = self.parent.depth + 1
   end
   self.ctx = ctx
+  self.is_root = is_root
 
   return self
 end
@@ -126,7 +128,7 @@ function Entry:scandir()
 
   local paths = fs.scandir(self.path)
   for _, fpath in ipairs(paths) do
-    table.insert(entries, Entry.new(fpath, self, self.ctx))
+    table.insert(entries, Entry.new(fpath, self, self.ctx, false))
   end
 
   -- TODO: allow users to custom entry's order

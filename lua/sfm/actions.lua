@@ -69,18 +69,17 @@ end
 --- add a file; leaving a trailing `/` will add a directory
 function M.create()
   local entry = M.ctx:current()
-  local dest = entry
   if not entry.is_dir or not M.ctx:is_open(entry) then
-    dest = entry.parent
+    entry = entry.parent
   end
 
-  local name = input.prompt("Create file " .. path.add_trailing(dest.path))
+  local name = input.prompt("Create file " .. path.add_trailing(entry.path))
   input.clear_prompt()
   if name == "" or name == "/" then
     return
   end
 
-  local fpath = path.join { dest.path, name }
+  local fpath = path.join { entry.path, name }
 
   local ok = true
   if path.has_trailing(name) then
@@ -99,6 +98,27 @@ function M.create()
 
     log.info(fpath .. " was created")
   end
+end
+
+--- close current opened directory or parent
+function M.close_entry()
+  local entry = M.ctx:current()
+  if not entry.is_dir or not M.ctx:is_open(entry) then
+    entry = entry.parent
+  end
+
+  if entry.is_root then
+    M.first_sibling()
+
+    return
+  end
+
+  -- close directory
+  M.ctx:remove_open(entry)
+  -- re-render
+  M.explorer:render()
+  -- re-focus entry
+  focus_file(entry.path)
 end
 
 function M.setup(explorer)

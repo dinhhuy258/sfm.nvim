@@ -16,7 +16,7 @@ function Explorer.new()
   self.win = window.new()
   self.ctx = context.new()
   -- root has no parent
-  self.root = entry.new(cwd, nil, self.ctx)
+  self.root = entry.new(cwd, nil, self.ctx, true)
 
   return self
 end
