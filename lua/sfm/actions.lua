@@ -8,6 +8,17 @@ local M = {}
 M.explorer = nil
 M.ctx = nil
 
+--- focus the given path
+---@param fpath string
+local function focus_file(fpath)
+  local index = M.ctx:get_index(fpath)
+  if index == 0 then
+    return
+  end
+
+  M.explorer:move_cursor(index, 0)
+end
+
 --- edit file or toggle directory
 function M.edit()
   local entry = M.ctx:current()
@@ -41,12 +52,7 @@ function M.first_sibling()
   end
 
   local first_entry = table.first(entry.parent.entries)
-  local index = M.ctx:get_index(first_entry)
-  if index == 0 then
-    return
-  end
-
-  M.explorer:move_cursor(index, 0)
+  focus_file(first_entry.path)
 end
 
 --- navigate to the last sibling of current file/directory
@@ -57,12 +63,7 @@ function M.last_sibling()
   end
 
   local last_entry = table.last(entry.parent.entries)
-  local index = M.ctx:get_index(last_entry)
-  if index == 0 then
-    return
-  end
-
-  M.explorer:move_cursor(index, 0)
+  focus_file(last_entry.path)
 end
 
 --- add a file; leaving a trailing `/` will add a directory
@@ -82,16 +83,20 @@ function M.create()
   local fpath = path.join { dest.path, name }
 
   local ok = true
-  if path.has_trailing(fpath) then
+  if path.has_trailing(name) then
     -- create directory
-    fpath = path.remove_trailing(fpath)
-    ok = fs.create_dir(path)
+    ok = fs.create_dir(fpath)
   else
     -- create file
     ok = fs.create_file(fpath)
   end
 
   if ok then
+    -- refresh the explorer
+    M.explorer:refresh()
+    -- focus file
+    focus_file(fpath)
+
     log.info(fpath .. " was created")
   end
 end

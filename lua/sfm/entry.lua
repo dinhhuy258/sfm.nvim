@@ -26,8 +26,8 @@ local icons = {
 ---@field path string
 ---@field is_dir boolean
 ---@field parent Entry
+---@field depth integer
 ---@field entries Entry[]
----@field state integer
 ---@field ctx Context
 local Entry = {}
 
@@ -43,6 +43,11 @@ function Entry.new(fpath, parent, ctx)
   self.is_dir = is_dir
   self.entries = {}
   self.parent = parent
+  if parent == nil then
+    self.depth = 0
+  else
+    self.depth = self.parent.depth + 1
+  end
   self.ctx = ctx
 
   return self
@@ -62,6 +67,54 @@ function Entry:close()
   end
 
   self.entries = {}
+end
+
+function Entry:render(linenr)
+  local indent = string.rep("  ", self.depth - 1)
+
+  local line = ""
+  local col_start = 0
+  local name, name_hl_group = self:get_name()
+  local indicator, indicator_hl_group = self:get_indicator()
+  local icon, icon_hl_group = self:get_icon()
+
+  line = indent
+  col_start = #line
+  line = line .. indicator
+
+  local highlights = {}
+  table.insert(highlights, {
+    hl_group = indicator_hl_group,
+    col_start = col_start,
+    col_end = #line,
+    line = linenr,
+  })
+
+  line = line .. " "
+  col_start = #line
+  line = line .. icon
+
+  table.insert(highlights, {
+    hl_group = icon_hl_group,
+    col_start = col_start,
+    col_end = #line,
+    line = linenr,
+  })
+
+  line = line .. " "
+  col_start = #line
+  line = line .. name
+  table.insert(highlights, {
+    hl_group = name_hl_group,
+    col_start = col_start,
+    col_end = #line,
+    line = linenr,
+  })
+
+  return {
+    line = line,
+    highlights = highlights,
+  }
 end
 
 function Entry:scandir()

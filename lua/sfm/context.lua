@@ -1,12 +1,10 @@
 ---@class Context
----@field root string
 ---@field entries Entry[]
 ---@field open {}
 local Context = {}
 
-function Context.new(root)
+function Context.new()
   local self = setmetatable({}, { __index = Context })
-  self.root = root
   self.entries = nil
   self.open = {}
 
@@ -20,6 +18,29 @@ function Context:current()
   end
 
   return nil
+end
+
+function Context:render(root)
+  self.entries = {}
+
+  local function render_entry(current_entry)
+    for _, e in ipairs(current_entry.entries) do
+      table.insert(self.entries, e)
+
+      if self:is_open(e) then
+        render_entry(e)
+      end
+    end
+  end
+
+  render_entry(root)
+
+  local lines = {}
+  for linenr, e in ipairs(self.entries) do
+    table.insert(lines, e:render(linenr - 1)) -- 0-indexed
+  end
+
+  return lines
 end
 
 function Context:set_open(entry)
@@ -44,9 +65,9 @@ function Context:is_open(entry)
   return table.contains_key(self.open, entry.path)
 end
 
-function Context:get_index(entry)
+function Context:get_index(fpath)
   for index, e in ipairs(self.entries) do
-    if entry.path == e.path then
+    if fpath == e.path then
       return index
     end
   end
