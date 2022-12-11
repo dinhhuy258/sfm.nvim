@@ -25,6 +25,7 @@ local icons = {
 ---@field name string
 ---@field path string
 ---@field is_dir boolean
+---@field is_symlink boolean
 ---@field parent Entry
 ---@field depth integer
 ---@field is_root boolean
@@ -36,12 +37,12 @@ function Entry.new(fpath, parent, ctx, is_root)
   local self = setmetatable({}, { __index = Entry })
 
   fpath = path.clean(fpath)
-  local is_dir = path.isdir(fpath)
   local name = path.basename(fpath)
 
   self.name = name
   self.path = fpath
-  self.is_dir = is_dir
+  self.is_dir = path.isdir(fpath)
+  self.is_symlink = path.islink(fpath)
   self.entries = {}
   self.parent = parent
   if parent == nil then
@@ -76,9 +77,9 @@ function Entry:render(linenr)
 
   local line = ""
   local col_start = 0
-  local name, name_hl_group = self:get_name()
-  local indicator, indicator_hl_group = self:get_indicator()
-  local icon, icon_hl_group = self:get_icon()
+  local name, name_hl_group = self:_get_name()
+  local indicator, indicator_hl_group = self:_get_indicator()
+  local icon, icon_hl_group = self:_get_icon()
 
   line = indent
   col_start = #line
@@ -147,7 +148,7 @@ function Entry:scandir()
   self.entries = entries
 end
 
-function Entry:get_name()
+function Entry:_get_name()
   if self.is_dir then
     return self.name, "SFMFolderName"
   end
@@ -155,7 +156,19 @@ function Entry:get_name()
   return self.name, "SFMFileName"
 end
 
-function Entry:get_icon()
+function Entry:_get_icon()
+  if self.is_symlink then
+    if self.is_dir then
+      if self.ctx:is_open() then
+        return icons.folder.symlink_open, "SFMFolderIcon"
+      end
+
+      return icons.folder.symlink, "SFMFolderIcon"
+    end
+
+    return icons.file.symlink, "SFMDefaultFileIcon"
+  end
+
   if self.is_dir then
     if self.ctx:is_open(self) then
       return icons.folder.open, "SFMFolderIcon"
@@ -168,10 +181,10 @@ function Entry:get_icon()
     return icons.file.default, "SFMDefaultFileIcon"
   end
 
-  return devicons.get_icon(self.name, path.basename(self.path), { default = true })
+  return devicons.get_icon(self.name, nil, { default = true })
 end
 
-function Entry:get_indicator()
+function Entry:_get_indicator()
   if self.is_dir then
     if self.ctx:is_open(self) then
       return icons.indicator.folder_open, "SFMIndicator"

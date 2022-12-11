@@ -73,31 +73,32 @@ function M.create()
     entry = entry.parent
   end
 
-  local name = input.prompt("Create file " .. path.add_trailing(entry.path))
-  input.clear_prompt()
-  if name == "" or name == "/" then
-    return
-  end
+  input.prompt("Create file " .. path.add_trailing(entry.path), nil, "file", function(name)
+    input.clear_prompt()
+    if name == nil or name == "" or name == "/" then
+      return
+    end
 
-  local fpath = path.join { entry.path, name }
+    local fpath = path.join { entry.path, name }
 
-  local ok = true
-  if path.has_trailing(name) then
-    -- create directory
-    ok = fs.create_dir(fpath)
-  else
-    -- create file
-    ok = fs.create_file(fpath)
-  end
+    local ok = true
+    if path.has_trailing(name) then
+      -- create directory
+      ok = fs.create_dir(fpath)
+    else
+      -- create file
+      ok = fs.create_file(fpath)
+    end
 
-  if ok then
-    -- refresh the explorer
-    M.explorer:refresh()
-    -- focus file
-    focus_file(fpath)
+    if ok then
+      -- refresh the explorer
+      M.explorer:refresh()
+      -- focus file
+      focus_file(fpath)
 
-    log.info(fpath .. " was created")
-  end
+      log.info(fpath .. " was created")
+    end
+  end)
 end
 
 --- close current opened directory or parent
@@ -119,6 +120,34 @@ function M.close_entry()
   M.explorer:render()
   -- re-focus entry
   focus_file(entry.path)
+end
+
+--- delete a file/directory
+function M.delete()
+  local entry = M.ctx:current()
+  input.select("Remove " .. entry.name .. " (y/n)?", function()
+    -- on yes
+    input.clear_prompt()
+    if entry.is_dir and not entry.is_symlink then
+      local ok = fs.rmdir(entry.path)
+
+      if not ok then
+        log.error("Could not delete " .. entry.path)
+      end
+    else
+      local ok = fs.rm(entry.path)
+
+      if not ok then
+        log.error("Could not delete " .. entry.path)
+      end
+    end
+
+    -- refresh the explorer
+    M.explorer:refresh()
+  end, function()
+    -- on no
+    input.clear_prompt()
+  end)
 end
 
 function M.setup(explorer)

@@ -21,18 +21,18 @@ function Explorer.new()
   return self
 end
 
-function Explorer:refresh_entry(current_entry)
+function Explorer:_refresh_entry(current_entry)
   current_entry:scandir()
 
   for _, e in ipairs(current_entry.entries) do
     if self.ctx:is_open(e) then
-      self:refresh_entry(e)
+      self:_refresh_entry(e)
     end
   end
 end
 
 function Explorer:refresh()
-  self:refresh_entry(self.root)
+  self:_refresh_entry(self.root)
   self:render()
 end
 
