@@ -2,13 +2,15 @@ local input = require "sfm.utils.input"
 local path = require "sfm.utils.path"
 local fs = require "sfm.utils.fs"
 local log = require "sfm.utils.log"
+
 local M = {}
 
 M.explorer = nil
+M.ctx = nil
 
 --- edit file or toggle directory
 function M.edit()
-  local entry = M.explorer.ctx:current()
+  local entry = M.ctx:current()
   if not entry.is_dir then
     vim.cmd "wincmd l"
     vim.cmd("keepalt edit " .. entry.path)
@@ -16,9 +18,9 @@ function M.edit()
     return
   end
 
-  if entry.state == entry.State.Open then
+  if M.ctx:is_open(entry) then
     -- close directory
-    entry:close()
+    M.ctx:remove_open(entry)
     -- re-render
     M.explorer:render()
 
@@ -26,20 +28,20 @@ function M.edit()
   end
 
   -- open directory
-  entry:readdir()
+  M.ctx:set_open(entry)
   -- re-render
   M.explorer:render()
 end
 
 --- navigate to the first sibling of current file/directory
 function M.first_sibling()
-  local entry = M.explorer.ctx:current()
+  local entry = M.ctx:current()
   if entry.parent == nil then
     return
   end
 
   local first_entry = table.first(entry.parent.entries)
-  local index = M.explorer.ctx:get_index(first_entry)
+  local index = M.ctx:get_index(first_entry)
   if index == 0 then
     return
   end
@@ -49,13 +51,13 @@ end
 
 --- navigate to the last sibling of current file/directory
 function M.last_sibling()
-  local entry = M.explorer.ctx:current()
+  local entry = M.ctx:current()
   if entry.parent == nil then
     return
   end
 
   local last_entry = table.last(entry.parent.entries)
-  local index = M.explorer.ctx:get_index(last_entry)
+  local index = M.ctx:get_index(last_entry)
   if index == 0 then
     return
   end
@@ -65,9 +67,9 @@ end
 
 --- add a file; leaving a trailing `/` will add a directory
 function M.create()
-  local entry = M.explorer.ctx:current()
+  local entry = M.ctx:current()
   local dest = entry
-  if not entry.is_dir or entry.state == entry.State.Close then
+  if not entry.is_dir or not M.ctx:is_open(entry) then
     dest = entry.parent
   end
 
@@ -96,6 +98,7 @@ end
 
 function M.setup(explorer)
   M.explorer = explorer
+  M.ctx = explorer.ctx
 end
 
 return M

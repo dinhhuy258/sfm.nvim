@@ -13,3 +13,11 @@ end
 function table.last(items)
   return items[#items]
 end
+
+function table.remove_key(items, key)
+  items[key] = nil
+end
+
+function table.contains_key(items, key)
+  return items[key] and true or false
+end

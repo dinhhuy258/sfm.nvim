@@ -1,5 +1,6 @@
 local has_devicons, devicons = pcall(require, "nvim-web-devicons")
 local path = require "sfm.utils.path"
+local fs = require "sfm.utils.fs"
 local log = require "sfm.utils.log"
 
 local icons = {
@@ -27,14 +28,10 @@ local icons = {
 ---@field parent Entry
 ---@field entries Entry[]
 ---@field state integer
+---@field ctx Context
 local Entry = {}
 
-Entry.State = {
-  Open = 1,
-  Close = 2,
-}
-
-function Entry.new(fpath, parent)
+function Entry.new(fpath, parent, ctx)
   local self = setmetatable({}, { __index = Entry })
 
   fpath = path.clean(fpath)
@@ -46,7 +43,7 @@ function Entry.new(fpath, parent)
   self.is_dir = is_dir
   self.entries = {}
   self.parent = parent
-  self.state = Entry.State.Close
+  self.ctx = ctx
 
   return self
 end
@@ -57,49 +54,41 @@ function Entry:close()
 
     return
   end
-  if self.state == Entry.State.Close then
+
+  if not self.ctx:is_open(self) then
     log.error("Directory " .. self.name .. " was already closed")
 
     return
   end
 
-  self.state = Entry.State.Close
   self.entries = {}
 end
 
-function Entry:readdir()
+function Entry:scandir()
   if not self.is_dir then
     return
   end
 
   local entries = {}
 
-  local handle = vim.loop.fs_scandir(self.path)
-  if type(handle) == "userdata" then
-    local function iterator()
-      return vim.loop.fs_scandir_next(handle)
-    end
-
-    for name in iterator do
-      local absolute_path = path.join { self.path, name }
-
-      table.insert(entries, Entry.new(absolute_path, self))
-    end
-
-    table.sort(entries, function(a, b)
-      if a.is_dir and b.is_dir then
-        return string.lower(a.name) < string.lower(b.name)
-      elseif a.is_dir then
-        return true
-      elseif b.is_dir then
-        return false
-      end
-
-      return string.lower(a.name) < string.lower(b.name)
-    end)
+  local paths = fs.scandir(self.path)
+  for _, fpath in ipairs(paths) do
+    table.insert(entries, Entry.new(fpath, self, self.ctx))
   end
 
-  self.state = Entry.State.Open
+  -- TODO: allow users to custom entry's order
+  table.sort(entries, function(a, b)
+    if a.is_dir and b.is_dir then
+      return string.lower(a.name) < string.lower(b.name)
+    elseif a.is_dir then
+      return true
+    elseif b.is_dir then
+      return false
+    end
+
+    return string.lower(a.name) < string.lower(b.name)
+  end)
+
   self.entries = entries
 end
 
@@ -113,7 +102,7 @@ end
 
 function Entry:get_icon()
   if self.is_dir then
-    if self.state == Entry.State.Open then
+    if self.ctx:is_open(self) then
       return icons.folder.open, "SFMFolderIcon"
     end
 
@@ -129,6 +118,10 @@ end
 
 function Entry:get_indicator()
   if self.is_dir then
+    if self.ctx:is_open(self) then
+      return icons.indicator.folder_open, "SFMIndicator"
+    end
+
     return icons.indicator.folder_closed, "SFMIndicator"
   end
 

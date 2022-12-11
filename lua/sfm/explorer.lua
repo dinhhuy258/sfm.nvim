@@ -16,10 +16,12 @@ function Explorer.new()
   self.win = window.new()
   self.ctx = context.new(cwd)
   -- root has no parent
-  self.root = entry.new(cwd, nil)
+  self.root = entry.new(cwd, nil, self.ctx)
 
   return self
 end
+
+function Explorer.refresh() end
 
 function Explorer:get_line_infos(current_entry, depth)
   local line_infos = {}
@@ -73,7 +75,7 @@ function Explorer:get_line_infos(current_entry, depth)
       highlights = highlights,
     })
 
-    if e.is_dir and e.state == entry.State.Open then
+    if e.is_dir and self.ctx:is_open(e) then
       table.extend(line_infos, self:get_line_infos(e, depth + 1))
     end
   end
@@ -103,7 +105,8 @@ function Explorer:toggle()
   end
 
   -- load dir
-  self.root:readdir()
+  self.ctx:set_open(self.root)
+  self.root:scandir()
   -- open explorer window
   self.win:open()
   -- render
