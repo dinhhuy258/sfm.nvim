@@ -37,7 +37,7 @@ function Window:open()
   vim.api.nvim_buf_set_option(buf, "filetype", "sfm.nvim")
   vim.api.nvim_buf_set_option(buf, "buflisted", false)
 
-  --TODO: Move to configuration
+  --TODO: move to configuration
   vim.api.nvim_win_set_width(win, 40)
 
   -- focus on explorer window
@@ -65,22 +65,9 @@ function Window:close()
   self.win = nil
 end
 
-function Window:render(line_infos)
-  vim.api.nvim_buf_set_option(self.buf, "modifiable", true)
-  local lines = {}
-  local highlights = {}
-  for _, line_info in ipairs(line_infos) do
-    table.insert(lines, line_info.line)
-
-    for _, highlight in ipairs(line_info.highlights) do
-      table.insert(highlights, highlight)
-    end
-  end
-
-  vim.api.nvim_buf_set_lines(self.buf, 0, -1, 1, lines)
-
-  -- add highlights
+function Window:_add_highlights(highlights)
   vim.api.nvim_buf_clear_namespace(self.buf, self.ns_id, 0, -1)
+
   for _, highlight in ipairs(highlights) do
     vim.api.nvim_buf_add_highlight(
       self.buf,
@@ -91,8 +78,28 @@ function Window:render(line_infos)
       highlight.col_end
     )
   end
+end
 
+function Window:_set_lines(lines)
+  vim.api.nvim_buf_set_option(self.buf, "modifiable", true)
+  vim.api.nvim_buf_set_lines(self.buf, 0, -1, 1, lines)
   vim.api.nvim_buf_set_option(self.buf, "modifiable", false)
+end
+
+function Window:render(lines)
+  local _lines = {}
+  local highlights = {}
+
+  for _, line in ipairs(lines) do
+    table.insert(_lines, line.line)
+
+    for _, highlight in ipairs(line.highlights) do
+      table.insert(highlights, highlight)
+    end
+  end
+
+  self:_set_lines(_lines)
+  self:_add_highlights(highlights)
 end
 
 return Window

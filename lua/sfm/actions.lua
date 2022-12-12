@@ -40,8 +40,8 @@ function M.edit()
 
   -- open directory
   M.ctx:set_open(entry)
-  -- re-render
-  M.explorer:render()
+  -- refresh the explorer
+  M.explorer:refresh()
 end
 
 --- navigate to the first sibling of current file/directory

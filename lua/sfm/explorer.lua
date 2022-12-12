@@ -14,9 +14,12 @@ function Explorer.new()
   local cwd = vim.fn.getcwd()
 
   self.win = window.new()
-  self.ctx = context.new()
   -- root has no parent
-  self.root = entry.new(cwd, nil, self.ctx, true)
+  self.root = entry.new(cwd, nil, true)
+  self.ctx = context.new(self.root)
+
+  -- load root dir
+  self.ctx:set_open(self.root)
 
   return self
 end
@@ -26,6 +29,7 @@ function Explorer:_refresh_entry(current_entry)
 
   for _, e in ipairs(current_entry.entries) do
     if self.ctx:is_open(e) then
+      e:set_open()
       self:_refresh_entry(e)
     end
   end
@@ -33,11 +37,12 @@ end
 
 function Explorer:refresh()
   self:_refresh_entry(self.root)
+  self.ctx:refresh_entries()
   self:render()
 end
 
 function Explorer:render()
-  self.win:render(self.ctx:render(self.root))
+  self.win:render(self.ctx:lines())
 end
 
 function Explorer:move_cursor(row, col)
@@ -51,8 +56,6 @@ function Explorer:toggle()
     return
   end
 
-  -- load dir
-  self.ctx:set_open(self.root)
   -- open explorer window
   self.win:open()
   -- refresh and render the explorer tree

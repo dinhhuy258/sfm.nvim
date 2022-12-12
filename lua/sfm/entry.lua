@@ -1,7 +1,6 @@
 local has_devicons, devicons = pcall(require, "nvim-web-devicons")
 local path = require "sfm.utils.path"
 local fs = require "sfm.utils.fs"
-local log = require "sfm.utils.log"
 
 local icons = {
   file = {
@@ -29,11 +28,11 @@ local icons = {
 ---@field parent Entry
 ---@field depth integer
 ---@field is_root boolean
+---@field is_open boolean
 ---@field entries Entry[]
----@field ctx Context
 local Entry = {}
 
-function Entry.new(fpath, parent, ctx, is_root)
+function Entry.new(fpath, parent, is_root)
   local self = setmetatable({}, { __index = Entry })
 
   fpath = path.clean(fpath)
@@ -45,36 +44,22 @@ function Entry.new(fpath, parent, ctx, is_root)
   self.is_symlink = path.islink(fpath)
   self.entries = {}
   self.parent = parent
+  self.is_root = is_root
+  self.is_open = false
+
   if parent == nil then
     self.depth = 0
   else
     self.depth = self.parent.depth + 1
   end
-  self.ctx = ctx
-  self.is_root = is_root
 
   return self
 end
 
-function Entry:close()
-  if not self.is_dir then
-    log.error(self.name .. " is not a directory")
-
-    return
-  end
-
-  if not self.ctx:is_open(self) then
-    log.error("Directory " .. self.name .. " was already closed")
-
-    return
-  end
-
-  self.entries = {}
-end
-
-function Entry:render(linenr)
+function Entry:line(linenr)
   local indent = string.rep("  ", self.depth - 1)
 
+  local highlights = {}
   local line = ""
   local col_start = 0
   local name, name_hl_group = self:_get_name()
@@ -84,8 +69,6 @@ function Entry:render(linenr)
   line = indent
   col_start = #line
   line = line .. indicator
-
-  local highlights = {}
   table.insert(highlights, {
     hl_group = indicator_hl_group,
     col_start = col_start,
@@ -96,7 +79,6 @@ function Entry:render(linenr)
   line = line .. " "
   col_start = #line
   line = line .. icon
-
   table.insert(highlights, {
     hl_group = icon_hl_group,
     col_start = col_start,
@@ -120,6 +102,14 @@ function Entry:render(linenr)
   }
 end
 
+function Entry:set_open()
+  self.is_open = true
+end
+
+function Entry:remove_open()
+  self.is_open = false
+end
+
 function Entry:scandir()
   if not self.is_dir then
     return
@@ -129,7 +119,7 @@ function Entry:scandir()
 
   local paths = fs.scandir(self.path)
   for _, fpath in ipairs(paths) do
-    table.insert(entries, Entry.new(fpath, self, self.ctx, false))
+    table.insert(entries, Entry.new(fpath, self, false))
   end
 
   -- TODO: allow users to custom entry's order
@@ -159,7 +149,7 @@ end
 function Entry:_get_icon()
   if self.is_symlink then
     if self.is_dir then
-      if self.ctx:is_open() then
+      if self.is_open then
         return icons.folder.symlink_open, "SFMFolderIcon"
       end
 
@@ -170,7 +160,7 @@ function Entry:_get_icon()
   end
 
   if self.is_dir then
-    if self.ctx:is_open(self) then
+    if self.is_open then
       return icons.folder.open, "SFMFolderIcon"
     end
 
@@ -186,7 +176,7 @@ end
 
 function Entry:_get_indicator()
   if self.is_dir then
-    if self.ctx:is_open(self) then
+    if self.is_open then
       return icons.indicator.folder_open, "SFMIndicator"
     end
 

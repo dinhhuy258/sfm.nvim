@@ -1,10 +1,12 @@
 ---@class Context
+---@field root Entry
 ---@field entries Entry[]
 ---@field open {}
 local Context = {}
 
-function Context.new()
+function Context.new(root)
   local self = setmetatable({}, { __index = Context })
+  self.root = root
   self.entries = nil
   self.open = {}
 
@@ -20,24 +22,26 @@ function Context:current()
   return nil
 end
 
-function Context:render(root)
+function Context:refresh_entries()
   self.entries = {}
 
-  local function render_entry(current_entry)
+  local function _refresh_entry(current_entry)
     for _, e in ipairs(current_entry.entries) do
       table.insert(self.entries, e)
 
       if self:is_open(e) then
-        render_entry(e)
+        _refresh_entry(e)
       end
     end
   end
 
-  render_entry(root)
+  _refresh_entry(self.root)
+end
 
+function Context:lines()
   local lines = {}
   for linenr, e in ipairs(self.entries) do
-    table.insert(lines, e:render(linenr - 1)) -- 0-indexed
+    table.insert(lines, e:line(linenr - 1)) -- 0-indexed
   end
 
   return lines
@@ -50,6 +54,8 @@ function Context:set_open(entry)
 
   entry:scandir()
   self.open[entry.path] = true
+  entry:set_open()
+  self:refresh_entries()
 end
 
 function Context:remove_open(entry)
@@ -57,8 +63,9 @@ function Context:remove_open(entry)
     return
   end
 
-  entry:close()
   table.remove_key(self.open, entry.path)
+  entry:remove_open()
+  self:refresh_entries()
 end
 
 function Context:is_open(entry)
