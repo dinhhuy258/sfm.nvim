@@ -5,7 +5,6 @@ local entry = require "sfm.entry"
 ---@class Explorer
 ---@field win Window
 ---@field ctx Context
----@field root Entry
 local Explorer = {}
 
 function Explorer.new()
@@ -15,11 +14,10 @@ function Explorer.new()
 
   self.win = window.new()
   -- root has no parent
-  self.root = entry.new(cwd, nil, true)
-  self.ctx = context.new(self.root)
+  self.ctx = context.new(entry.new(cwd, nil, true))
 
   -- load root dir
-  self.ctx:set_open(self.root)
+  self.ctx:set_open(self.ctx.root)
 
   return self
 end
@@ -36,7 +34,7 @@ function Explorer:_refresh_entry(current_entry)
 end
 
 function Explorer:refresh()
-  self:_refresh_entry(self.root)
+  self:_refresh_entry(self.ctx.root)
   self.ctx:refresh_entries()
   self:render()
 end
