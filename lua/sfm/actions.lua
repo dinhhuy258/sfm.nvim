@@ -66,6 +66,22 @@ function M.last_sibling()
   focus_file(last_entry.path)
 end
 
+--- move cursor to the parent directory
+function M.parent_entry()
+  local entry = M.ctx:current()
+  local parent = entry.parent
+  if parent == nil then
+    return
+  end
+
+  focus_file(parent.path)
+end
+
+--- refresh the explorer
+function M.refresh()
+  M.explorer:refresh()
+end
+
 --- add a file; leaving a trailing `/` will add a directory
 function M.create()
   local entry = M.ctx:current()
