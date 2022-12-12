@@ -4,6 +4,46 @@
 ---@field ns_id integer
 local Window = {}
 
+local BUFFER_OPTIONS = {
+  swapfile = false,
+  buftype = "nofile",
+  modifiable = false,
+  filetype = "sfm.nvim",
+  bufhidden = "wipe",
+  buflisted = false,
+}
+
+local WIN_OPTIONS = {
+  relativenumber = false,
+  number = false,
+  list = false,
+  foldenable = false,
+  winfixwidth = true,
+  winfixheight = true,
+  spell = false,
+  signcolumn = "yes",
+  foldmethod = "manual",
+  foldcolumn = "0",
+  cursorcolumn = false,
+  cursorline = true,
+  cursorlineopt = "both",
+  colorcolumn = "0",
+  wrap = false,
+  winhl = table.concat({
+    -- TODO: Rename prefix NvimTree -> SFM
+    "EndOfBuffer:NvimTreeEndOfBuffer",
+    "Normal:NvimTreeNormal",
+    "CursorLine:NvimTreeCursorLine",
+    "CursorLineNr:NvimTreeCursorLineNr",
+    "LineNr:NvimTreeLineNr",
+    "WinSeparator:NvimTreeWinSeparator",
+    "StatusLine:NvimTreeStatusLine",
+    "StatusLineNC:NvimTreeStatuslineNC",
+    "SignColumn:NvimTreeSignColumn",
+    "NormalNC:NvimTreeNormalNC",
+  }, ","),
+}
+
 function Window.new()
   local self = setmetatable({}, { __index = Window })
 
@@ -15,15 +55,15 @@ function Window.new()
 end
 
 function Window:is_open()
-  return self.win ~= nil
+  return self.win ~= nil and vim.api.nvim_win_is_valid(self.win)
 end
 
-function Window:move_cursor(row, col)
-  if not self:is_open() then
-    return
+function Window:close()
+  if self:is_open() then
+    vim.api.nvim_win_close(self.win, 1)
   end
 
-  vim.api.nvim_win_set_cursor(self.win, { row, col })
+  self.win = nil
 end
 
 function Window:open()
@@ -31,11 +71,13 @@ function Window:open()
   local win = vim.api.nvim_get_current_win()
   local buf = vim.api.nvim_get_current_buf()
 
-  vim.api.nvim_buf_set_option(buf, "buftype", "nofile")
-  vim.api.nvim_buf_set_option(buf, "swapfile", false)
-  vim.api.nvim_buf_set_option(buf, "bufhidden", "wipe")
-  vim.api.nvim_buf_set_option(buf, "filetype", "sfm.nvim")
-  vim.api.nvim_buf_set_option(buf, "buflisted", false)
+  for option, value in pairs(BUFFER_OPTIONS) do
+    vim.api.nvim_buf_set_option(buf, option, value)
+  end
+
+  for option, value in pairs(WIN_OPTIONS) do
+    vim.api.nvim_win_set_option(win, option, value)
+  end
 
   --TODO: move to configuration
   vim.api.nvim_win_set_width(win, 40)
@@ -60,9 +102,12 @@ function Window:open()
   self.buf = buf
 end
 
-function Window:close()
-  vim.api.nvim_win_close(self.win, 1)
-  self.win = nil
+function Window:move_cursor(row, col)
+  if not self:is_open() then
+    return
+  end
+
+  vim.api.nvim_win_set_cursor(self.win, { row, col })
 end
 
 function Window:_add_highlights(highlights)
