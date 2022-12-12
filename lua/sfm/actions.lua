@@ -85,7 +85,7 @@ end
 --- add a file; leaving a trailing `/` will add a directory
 function M.create()
   local entry = M.ctx:current()
-  if not entry.is_dir or not M.ctx:is_open(entry) then
+  if (not entry.is_dir or not M.ctx:is_open(entry)) and not entry.is_root then
     entry = entry.parent
   end
 

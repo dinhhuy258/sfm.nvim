@@ -35,6 +35,7 @@ function Context:refresh_entries()
     end
   end
 
+  table.insert(self.entries, self.root)
   _refresh_entry(self.root)
 end
 

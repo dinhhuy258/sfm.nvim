@@ -57,6 +57,26 @@ function Entry.new(fpath, parent, is_root)
 end
 
 function Entry:line(linenr)
+  if self.is_root then
+    local root_name = path.join {
+      path.remove_trailing(vim.fn.fnamemodify(self.path, ":~")),
+      "..",
+    }
+
+    local highlights = {}
+    table.insert(highlights, {
+      hl_group = "SFMRootFolder",
+      col_start = 0,
+      col_end = string.len(root_name),
+      line = linenr,
+    })
+
+    return {
+      line = root_name,
+      highlights = highlights,
+    }
+  end
+
   local indent = string.rep("  ", self.depth - 1)
 
   local highlights = {}
