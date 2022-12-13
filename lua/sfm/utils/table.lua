@@ -21,3 +21,7 @@ end
 function table.contains_key(items, key)
   return items[key] and true or false
 end
+
+function table.is_empty(items)
+  return next(items) == nil
+end

@@ -197,6 +197,48 @@ function M.delete()
   end)
 end
 
+--- delete selections files/directories
+function M.delete_selections()
+  if table.is_empty(M.ctx.selections) then
+    log.warn "Nothing selected"
+
+    return
+  end
+
+  input.select("Do you want to delete selected files/directories (y/n)?", function()
+    -- on yes
+    input.clear()
+    local success_count = 0
+    local fail_count = 0
+    for fpath, _ in pairs(M.ctx.selections) do
+      if path.isdir(fpath) and not path.islink(fpath) then
+        if fs.rmdir(fpath) then
+          success_count = success_count + 1
+        else
+          fail_count = fail_count + 1
+        end
+      else
+        if fs.rm(fpath) then
+          success_count = success_count + 1
+        else
+          fail_count = fail_count + 1
+        end
+      end
+    end
+
+    log.info(string.format("Files/directories were deleted. Success: %d, fail: %d", success_count, fail_count))
+
+    -- clear selections
+    M.ctx:clear_selections()
+
+    -- refresh the explorer
+    M.explorer:refresh()
+  end, function()
+    -- on no
+    input.clear()
+  end)
+end
+
 function M.rename()
   local entry = M.ctx:current()
   local from_path = entry.path
