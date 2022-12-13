@@ -3,6 +3,9 @@ local path = require "sfm.utils.path"
 local fs = require "sfm.utils.fs"
 local log = require "sfm.utils.log"
 
+---@class M
+---@field explorer Explorer
+---@field ctx Context
 local M = {}
 
 M.explorer = nil

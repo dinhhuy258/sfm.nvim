@@ -31,7 +31,6 @@ local function get_hl_groups()
   local colors = get_colors()
 
   return {
-    SFMIndicator = { fg = "#8094b4" },
     SFMSelection = { fg = colors.blue },
     SFMSymlink = { gui = "bold", fg = colors.cyan },
     SFMFolderIcon = { fg = "#8094b4" },
@@ -40,6 +39,8 @@ local function get_hl_groups()
     SFMSpecialFile = { gui = "bold,underline", fg = colors.yellow },
     SFMImageFile = { gui = "bold", fg = colors.purple },
     SFMOpenedFile = { gui = "bold", fg = colors.green },
+    SFMFileIndicator = { fg = "#8094b4" },
+    SFMFolderIndicator = { fg = "#8094b4" },
   }
 end
 

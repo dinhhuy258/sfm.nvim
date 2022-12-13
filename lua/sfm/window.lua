@@ -44,6 +44,8 @@ local WIN_OPTIONS = {
   }, ","),
 }
 
+--- Window constructor
+---@return Window
 function Window.new()
   local self = setmetatable({}, { __index = Window })
 
@@ -54,10 +56,13 @@ function Window.new()
   return self
 end
 
+--- check if the window is open or not
+---@return boolean
 function Window:is_open()
   return self.win ~= nil and vim.api.nvim_win_is_valid(self.win)
 end
 
+--- close the window
 function Window:close()
   if self:is_open() then
     vim.api.nvim_win_close(self.win, 1)
@@ -66,6 +71,7 @@ function Window:close()
   self.win = nil
 end
 
+--- open the window
 function Window:open()
   vim.api.nvim_command "topleft vnew"
   local win = vim.api.nvim_get_current_win()
@@ -107,6 +113,9 @@ function Window:open()
   self.buf = buf
 end
 
+--- move the cursor to (row, col)
+---@param row integer
+---@param col integer
 function Window:move_cursor(row, col)
   if not self:is_open() then
     return
@@ -115,6 +124,8 @@ function Window:move_cursor(row, col)
   vim.api.nvim_win_set_cursor(self.win, { row, col })
 end
 
+--- add the highlights
+---@param highlights table
 function Window:_add_highlights(highlights)
   vim.api.nvim_buf_clear_namespace(self.buf, self.ns_id, 0, -1)
 
@@ -130,12 +141,16 @@ function Window:_add_highlights(highlights)
   end
 end
 
+--- replace the buffer with lines
+---@param lines table
 function Window:_set_lines(lines)
   vim.api.nvim_buf_set_option(self.buf, "modifiable", true)
   vim.api.nvim_buf_set_lines(self.buf, 0, -1, 1, lines)
   vim.api.nvim_buf_set_option(self.buf, "modifiable", false)
 end
 
+--- render the given lines to window
+---@param lines table
 function Window:render(lines)
   local _lines = {}
   local highlights = {}

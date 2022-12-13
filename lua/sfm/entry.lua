@@ -1,25 +1,5 @@
-local has_devicons, devicons = pcall(require, "nvim-web-devicons")
 local path = require "sfm.utils.path"
 local fs = require "sfm.utils.fs"
-
-local icons = {
-  file = {
-    default = "",
-    symlink = "",
-  },
-  folder = {
-    default = "",
-    open = "",
-    symlink = "",
-    symlink_open = "",
-  },
-  indicator = {
-    folder_closed = "",
-    folder_open = "",
-    file = " ",
-  },
-  selected = "",
-}
 
 ---@class Entry
 ---@field name string
@@ -29,8 +9,6 @@ local icons = {
 ---@field parent Entry
 ---@field depth integer
 ---@field is_root boolean
----@field is_open boolean
----@field is_selected boolean
 ---@field entries Entry[]
 local Entry = {}
 
@@ -59,100 +37,6 @@ function Entry.new(fpath, parent, is_root)
   return self
 end
 
-function Entry:line(linenr)
-  if self.is_root then
-    local root_name = path.join {
-      path.remove_trailing(vim.fn.fnamemodify(self.path, ":~")),
-      "..",
-    }
-
-    local highlights = {}
-    table.insert(highlights, {
-      hl_group = "SFMRootFolder",
-      col_start = 0,
-      col_end = string.len(root_name),
-      line = linenr,
-    })
-
-    return {
-      line = root_name,
-      highlights = highlights,
-    }
-  end
-
-  local indent = string.rep("  ", self.depth - 1)
-
-  local highlights = {}
-  local line = ""
-  local col_start = 0
-  local name, name_hl_group = self:_get_name()
-  local indicator, indicator_hl_group = self:_get_indicator()
-  local icon, icon_hl_group = self:_get_icon()
-
-  line = indent
-  col_start = #line
-  line = line .. indicator
-  table.insert(highlights, {
-    hl_group = indicator_hl_group,
-    col_start = col_start,
-    col_end = #line,
-    line = linenr,
-  })
-
-  line = line .. " "
-  col_start = #line
-  line = line .. icon
-  table.insert(highlights, {
-    hl_group = icon_hl_group,
-    col_start = col_start,
-    col_end = #line,
-    line = linenr,
-  })
-
-  if self.is_selected then
-    line = line .. " "
-    col_start = #line
-    line = line .. icons.selected
-    table.insert(highlights, {
-      hl_group = "SFMSelection",
-      col_start = col_start,
-      col_end = #line,
-      line = linenr,
-    })
-  end
-
-  line = line .. " "
-  col_start = #line
-  line = line .. name
-  table.insert(highlights, {
-    hl_group = name_hl_group,
-    col_start = col_start,
-    col_end = #line,
-    line = linenr,
-  })
-
-  return {
-    line = line,
-    highlights = highlights,
-  }
-end
-
-function Entry:set_open()
-  self.is_open = true
-end
-
-function Entry:remove_open()
-  self.is_open = false
-end
-
-function Entry:set_selection()
-  self.is_selected = true
-end
-
-function Entry:remove_selection()
-  self.is_selected = false
-end
-
 function Entry:scandir()
   if not self.is_dir then
     return
@@ -179,54 +63,6 @@ function Entry:scandir()
   end)
 
   self.entries = entries
-end
-
-function Entry:_get_name()
-  if self.is_dir then
-    return self.name, "SFMFolderName"
-  end
-
-  return self.name, "SFMFileName"
-end
-
-function Entry:_get_icon()
-  if self.is_symlink then
-    if self.is_dir then
-      if self.is_open then
-        return icons.folder.symlink_open, "SFMFolderIcon"
-      end
-
-      return icons.folder.symlink, "SFMFolderIcon"
-    end
-
-    return icons.file.symlink, "SFMDefaultFileIcon"
-  end
-
-  if self.is_dir then
-    if self.is_open then
-      return icons.folder.open, "SFMFolderIcon"
-    end
-
-    return icons.folder.default, "SFMFolderIcon"
-  end
-
-  if not has_devicons then
-    return icons.file.default, "SFMDefaultFileIcon"
-  end
-
-  return devicons.get_icon(self.name, nil, { default = true })
-end
-
-function Entry:_get_indicator()
-  if self.is_dir then
-    if self.is_open then
-      return icons.indicator.folder_open, "SFMIndicator"
-    end
-
-    return icons.indicator.folder_closed, "SFMIndicator"
-  end
-
-  return icons.indicator.file, "SFMIndicator"
 end
 
 return Entry
