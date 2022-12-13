@@ -16,6 +16,10 @@ function M.join(paths)
   return table.concat(vim.tbl_map(M.remove_trailing, paths), path_separator)
 end
 
+function M.dirname(path)
+  return string.match(path, "^(.-)[\\/]?([^\\/]*)$")
+end
+
 function M.basename(path)
   path = M.remove_trailing(path)
   local i = path:match("^.*()" .. path_separator)

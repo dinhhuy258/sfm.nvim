@@ -1,6 +1,7 @@
 local window = require "sfm.window"
 local context = require "sfm.context"
 local entry = require "sfm.entry"
+local actions = require "sfm.actions"
 
 ---@class Explorer
 ---@field win Window
@@ -54,10 +55,14 @@ function Explorer:toggle()
     return
   end
 
+  -- get current file path
+  local fpath = vim.api.nvim_buf_get_name(0)
   -- open explorer window
   self.win:open()
   -- refresh and render the explorer tree
   self:refresh()
+  -- focus the current file
+  actions.focus_file(fpath)
 end
 
 return Explorer
