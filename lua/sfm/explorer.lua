@@ -31,6 +31,11 @@ function Explorer:_refresh_entry(current_entry)
       e:set_open()
       self:_refresh_entry(e)
     end
+
+    if self.ctx:is_selected(e) then
+      e:set_selection()
+      self:_refresh_entry(e)
+    end
   end
 end
 

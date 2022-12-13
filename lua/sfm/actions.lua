@@ -231,6 +231,26 @@ function M.rename()
   end)
 end
 
+function M.toggle_selection()
+  local entry = M.ctx:current()
+  if entry.is_root then
+    return
+  end
+
+  if M.ctx:is_selected(entry) then
+    M.ctx:remove_selection(entry)
+  else
+    M.ctx:set_selection(entry)
+  end
+
+  M.explorer:render()
+end
+
+function M.clear_selections()
+  M.ctx:clear_selections()
+  M.explorer:render()
+end
+
 function M.setup(explorer)
   M.explorer = explorer
   M.ctx = explorer.ctx

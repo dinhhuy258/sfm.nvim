@@ -18,6 +18,7 @@ local icons = {
     folder_open = "",
     file = " ",
   },
+  selected = "",
 }
 
 ---@class Entry
@@ -29,6 +30,7 @@ local icons = {
 ---@field depth integer
 ---@field is_root boolean
 ---@field is_open boolean
+---@field is_selected boolean
 ---@field entries Entry[]
 local Entry = {}
 
@@ -46,6 +48,7 @@ function Entry.new(fpath, parent, is_root)
   self.parent = parent
   self.is_root = is_root
   self.is_open = false
+  self.is_selected = false
 
   if parent == nil then
     self.depth = 0
@@ -106,6 +109,18 @@ function Entry:line(linenr)
     line = linenr,
   })
 
+  if self.is_selected then
+    line = line .. " "
+    col_start = #line
+    line = line .. icons.selected
+    table.insert(highlights, {
+      hl_group = "SFMSelection",
+      col_start = col_start,
+      col_end = #line,
+      line = linenr,
+    })
+  end
+
   line = line .. " "
   col_start = #line
   line = line .. name
@@ -128,6 +143,14 @@ end
 
 function Entry:remove_open()
   self.is_open = false
+end
+
+function Entry:set_selection()
+  self.is_selected = true
+end
+
+function Entry:remove_selection()
+  self.is_selected = false
 end
 
 function Entry:scandir()

@@ -2,6 +2,7 @@
 ---@field root Entry
 ---@field entries Entry[]
 ---@field open {}
+---@field selections {}
 local Context = {}
 
 function Context.new(root)
@@ -9,6 +10,7 @@ function Context.new(root)
   self.root = root
   self.entries = nil
   self.open = {}
+  self.selections = {}
 
   return self
 end
@@ -71,6 +73,37 @@ end
 
 function Context:is_open(entry)
   return table.contains_key(self.open, entry.path)
+end
+
+function Context:set_selection(entry)
+  if self:is_selected(entry) then
+    return
+  end
+
+  entry:set_selection()
+  self.selections[entry.path] = true
+end
+
+function Context:remove_selection(entry)
+  if not self:is_selected(entry) then
+    return
+  end
+
+  entry:remove_selection()
+  table.remove_key(self.selections, entry.path)
+end
+
+function Context:is_selected(entry)
+  return table.contains_key(self.selections, entry.path)
+end
+
+function Context:clear_selections()
+  for selection, _ in pairs(self.selections) do
+    local e = self.entries[self:get_index(selection)]
+    e:remove_selection()
+  end
+
+  self.selections = {}
 end
 
 function Context:get_index(fpath)
