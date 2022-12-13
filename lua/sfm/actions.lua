@@ -110,12 +110,18 @@ function M.create()
   end
 
   input.prompt("Create file " .. path.add_trailing(entry.path), nil, "file", function(name)
-    input.clear_prompt()
-    if name == nil or name == "" or name == "/" then
+    input.clear()
+    if name == nil or name == "" then
       return
     end
 
     local fpath = path.join { entry.path, name }
+
+    if path.exists(fpath) then
+      log.warn(fpath .. " already exists")
+
+      return
+    end
 
     local ok = true
     if path.has_trailing(name) then
@@ -133,6 +139,8 @@ function M.create()
       M.focus_file(fpath)
 
       log.info(fpath .. " was created")
+    else
+      log.error("Couldn't create " .. fpath)
     end
   end)
 end
@@ -163,7 +171,7 @@ function M.delete()
   local entry = M.ctx:current()
   input.select("Remove " .. entry.name .. " (y/n)?", function()
     -- on yes
-    input.clear_prompt()
+    input.clear()
     if entry.is_dir and not entry.is_symlink then
       local ok = fs.rmdir(entry.path)
 
@@ -182,7 +190,44 @@ function M.delete()
     M.explorer:refresh()
   end, function()
     -- on no
-    input.clear_prompt()
+    input.clear()
+  end)
+end
+
+function M.rename()
+  local entry = M.ctx:current()
+  local from_path = entry.path
+
+  if entry.is_root then
+    return
+  end
+
+  local parent = entry.parent
+
+  input.prompt("Rename to " .. path.add_trailing(parent.path), path.basename(from_path), "dir", function(name)
+    input.clear()
+    if name == nil or name == "" then
+      return
+    end
+
+    local to_path = path.join { parent.path, name }
+
+    if path.exists(to_path) then
+      log.warn(to_path .. " already exists")
+
+      return
+    end
+
+    if fs.rename(from_path, to_path) then
+      -- refresh the explorer
+      M.explorer:refresh()
+      -- focus file
+      M.focus_file(to_path)
+
+      log.info(string.format("Rename %s ➜ %s", path.basename(from_path), path.basename(to_path)))
+    else
+      log.error(string.format("Couldn't rename %s ➜ %s", path.basename(from_path), path.basename(to_path)))
+    end
   end)
 end
 

@@ -99,6 +99,7 @@ function Window:open()
   vim.api.nvim_buf_set_keymap(buf, "n", "R", "<CMD>lua require('sfm.actions').refresh()<CR>", options)
   vim.api.nvim_buf_set_keymap(buf, "n", "n", "<CMD>lua require('sfm.actions').create()<CR>", options)
   vim.api.nvim_buf_set_keymap(buf, "n", "d", "<CMD>lua require('sfm.actions').delete()<CR>", options)
+  vim.api.nvim_buf_set_keymap(buf, "n", "r", "<CMD>lua require('sfm.actions').rename()<CR>", options)
 
   self.win = win
   self.buf = buf

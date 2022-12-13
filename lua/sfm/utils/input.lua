@@ -16,7 +16,7 @@ function M.select(msg, on_yes, on_no)
   end
 end
 
-function M.clear_prompt()
+function M.clear()
   vim.api.nvim_command "normal! :"
 end
 
