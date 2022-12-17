@@ -31,16 +31,12 @@ local function get_hl_groups()
   local colors = get_colors()
 
   return {
+    SFMRootFolder = { fg = colors.purple },
+    SFMFolderIcon = { fg = colors.blue },
     SFMSelection = { fg = colors.blue },
     SFMSymlink = { gui = "bold", fg = colors.cyan },
-    SFMFolderIcon = { fg = "#8094b4" },
-    SFMRootFolder = { fg = colors.purple },
-    SFMExecFile = { gui = "bold", fg = colors.green },
-    SFMSpecialFile = { gui = "bold,underline", fg = colors.yellow },
-    SFMImageFile = { gui = "bold", fg = colors.purple },
-    SFMOpenedFile = { gui = "bold", fg = colors.green },
-    SFMFileIndicator = { fg = "#8094b4" },
-    SFMFolderIndicator = { fg = "#8094b4" },
+    SFMFileIndicator = { fg = "#3b4261" },
+    SFMFolderIndicator = { fg = "#3b4261" },
   }
 end
 
@@ -51,16 +47,17 @@ local function get_links()
     SFMDefaultFileIcon = "Normal",
     SFMFileName = "Normal",
 
-    SFMEndOfBuffer = "NvimTreeEndOfBuffer",
-    SFMNormal = "NvimTreeNormal",
-    SFMCursorLine = "NvimTreeCursorLine",
-    SFMCursorLineNr = "NvimTreeCursorLineNr",
-    SFMLineNr = "NvimTreeLineNr",
-    SFMWinSeparator = "NvimTreeWinSeparator",
-    SFMStatusLine = "NvimTreeStatusLine",
-    SFMStatuslineNC = "NvimTreeStatuslineNC",
-    SFMSignColumn = "NvimTreeSignColumn",
-    SFMNormalNC = "NvimTreeNormalNC",
+    -- win option
+    SFMNormal = "Normal",
+    SFMNormalNC = "NormalNC",
+    SFMEndOfBuffer = "EndOfBuffer",
+    SFMCursorLine = "CursorLine",
+    SFMCursorLineNr = "CursorLineNr",
+    SFMLineNr = "LineNr",
+    SFMWinSeparator = "WinSeparator",
+    SFMStatusLine = "StatusLine",
+    SFMStatuslineNC = "StatuslineNC",
+    SFMSignColumn = "SignColumn",
   }
 end
 
