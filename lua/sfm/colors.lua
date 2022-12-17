@@ -50,6 +50,17 @@ local function get_links()
     SFMFolderIcon = "Directory",
     SFMDefaultFileIcon = "Normal",
     SFMFileName = "Normal",
+
+    SFMEndOfBuffer = "NvimTreeEndOfBuffer",
+    SFMNormal = "NvimTreeNormal",
+    SFMCursorLine = "NvimTreeCursorLine",
+    SFMCursorLineNr = "NvimTreeCursorLineNr",
+    SFMLineNr = "NvimTreeLineNr",
+    SFMWinSeparator = "NvimTreeWinSeparator",
+    SFMStatusLine = "NvimTreeStatusLine",
+    SFMStatuslineNC = "NvimTreeStatuslineNC",
+    SFMSignColumn = "NvimTreeSignColumn",
+    SFMNormalNC = "NvimTreeNormalNC",
   }
 end
 

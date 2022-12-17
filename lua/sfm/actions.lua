@@ -378,6 +378,11 @@ function M.clear_selections()
   M.explorer:render()
 end
 
+--- close the explorer
+function M.close()
+  M.explorer:close()
+end
+
 --- setup actions
 ---@param explorer Explorer
 function M.setup(explorer)

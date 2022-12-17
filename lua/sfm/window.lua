@@ -30,17 +30,16 @@ local WIN_OPTIONS = {
   colorcolumn = "0",
   wrap = false,
   winhl = table.concat({
-    -- TODO: Rename prefix NvimTree -> SFM
-    "EndOfBuffer:NvimTreeEndOfBuffer",
-    "Normal:NvimTreeNormal",
-    "CursorLine:NvimTreeCursorLine",
-    "CursorLineNr:NvimTreeCursorLineNr",
-    "LineNr:NvimTreeLineNr",
-    "WinSeparator:NvimTreeWinSeparator",
-    "StatusLine:NvimTreeStatusLine",
-    "StatusLineNC:NvimTreeStatuslineNC",
-    "SignColumn:NvimTreeSignColumn",
-    "NormalNC:NvimTreeNormalNC",
+    "EndOfBuffer:SFMEndOfBuffer",
+    "Normal:SFMNormal",
+    "CursorLine:SFMCursorLine",
+    "CursorLineNr:SFMCursorLineNr",
+    "LineNr:SFMLineNr",
+    "WinSeparator:SFMWinSeparator",
+    "StatusLine:SFMStatusLine",
+    "StatusLineNC:SFMStatuslineNC",
+    "SignColumn:SFMSignColumn",
+    "NormalNC:SFMNormalNC",
   }, ","),
 }
 
@@ -86,7 +85,7 @@ function Window:open()
   end
 
   --TODO: move to configuration
-  vim.api.nvim_win_set_width(win, 40)
+  vim.api.nvim_win_set_width(win, 30)
 
   -- focus on explorer window
   vim.api.nvim_win_set_buf(win, buf)
@@ -109,6 +108,7 @@ function Window:open()
   vim.api.nvim_buf_set_keymap(buf, "n", "p", "<CMD>lua require('sfm.actions').copy_selections()<CR>", options)
   vim.api.nvim_buf_set_keymap(buf, "n", "x", "<CMD>lua require('sfm.actions').move_selections()<CR>", options)
   vim.api.nvim_buf_set_keymap(buf, "n", "r", "<CMD>lua require('sfm.actions').rename()<CR>", options)
+  vim.api.nvim_buf_set_keymap(buf, "n", "q", "<CMD>lua require('sfm.actions').close()<CR>", options)
   vim.api.nvim_buf_set_keymap(buf, "n", "<SPACE>", "<CMD>lua require('sfm.actions').toggle_selection()<CR>", options)
   vim.api.nvim_buf_set_keymap(buf, "n", "<C-SPACE>", "<CMD>lua require('sfm.actions').clear_selections()<CR>", options)
 

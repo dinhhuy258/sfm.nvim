@@ -76,4 +76,11 @@ function Explorer:toggle()
   actions.focus_file(fpath)
 end
 
+--- close the explorer
+function Explorer:close()
+  if self.win:is_open() then
+    self.win:close()
+  end
+end
+
 return Explorer
