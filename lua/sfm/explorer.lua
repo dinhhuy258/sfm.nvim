@@ -1,3 +1,4 @@
+local config = require "sfm.config"
 local window = require "sfm.window"
 local context = require "sfm.context"
 local renderer = require "sfm.renderer"
@@ -11,15 +12,17 @@ local actions = require "sfm.actions"
 local Explorer = {}
 
 --- Explorer constructor
+---@param opts table
 ---@return Explorer
-function Explorer.new()
+function Explorer.new(opts)
   local self = setmetatable({}, { __index = Explorer })
 
   local cwd = vim.fn.getcwd()
 
-  self.win = window.new()
+  local cfg = config.new(opts)
+  self.win = window.new(cfg)
   self.ctx = context.new(entry.new(cwd, nil, true))
-  self.renderer = renderer.new(self.ctx, self.win)
+  self.renderer = renderer.new(cfg, self.ctx, self.win)
 
   -- load root dir
   self.ctx:set_open(self.ctx.root)

@@ -1,4 +1,5 @@
 ---@class Window
+---@field cfg Config
 ---@field win integer
 ---@field buf integer
 ---@field ns_id integer
@@ -8,7 +9,7 @@ local BUFFER_OPTIONS = {
   swapfile = false,
   buftype = "nofile",
   modifiable = false,
-  filetype = "sfm.nvim",
+  filetype = "sfm",
   bufhidden = "wipe",
   buflisted = false,
 }
@@ -44,10 +45,12 @@ local WIN_OPTIONS = {
 }
 
 --- Window constructor
+---@param cfg Config
 ---@return Window
-function Window.new()
+function Window.new(cfg)
   local self = setmetatable({}, { __index = Window })
 
+  self.cfg = cfg
   self.win = nil
   self.buf = nil
   self.ns_id = vim.api.nvim_create_namespace "SFMHighlights"
@@ -84,8 +87,7 @@ function Window:open()
     vim.api.nvim_win_set_option(win, option, value)
   end
 
-  --TODO: move to configuration
-  vim.api.nvim_win_set_width(win, 30)
+  vim.api.nvim_win_set_width(win, self.cfg.opts.view.width)
 
   -- focus on explorer window
   vim.api.nvim_win_set_buf(win, buf)
@@ -96,21 +98,27 @@ function Window:open()
     expr = false,
   }
 
-  vim.api.nvim_buf_set_keymap(buf, "n", "<CR>", "<CMD>lua require('sfm.actions').edit()<CR>", options)
-  vim.api.nvim_buf_set_keymap(buf, "n", "<S-TAB>", "<CMD>lua require('sfm.actions').close_entry()<CR>", options)
-  vim.api.nvim_buf_set_keymap(buf, "n", "J", "<CMD>lua require('sfm.actions').last_sibling()<CR>", options)
-  vim.api.nvim_buf_set_keymap(buf, "n", "K", "<CMD>lua require('sfm.actions').first_sibling()<CR>", options)
-  vim.api.nvim_buf_set_keymap(buf, "n", "P", "<CMD>lua require('sfm.actions').parent_entry()<CR>", options)
-  vim.api.nvim_buf_set_keymap(buf, "n", "R", "<CMD>lua require('sfm.actions').refresh()<CR>", options)
-  vim.api.nvim_buf_set_keymap(buf, "n", "n", "<CMD>lua require('sfm.actions').create()<CR>", options)
-  vim.api.nvim_buf_set_keymap(buf, "n", "d", "<CMD>lua require('sfm.actions').delete()<CR>", options)
-  vim.api.nvim_buf_set_keymap(buf, "n", "D", "<CMD>lua require('sfm.actions').delete_selections()<CR>", options)
-  vim.api.nvim_buf_set_keymap(buf, "n", "p", "<CMD>lua require('sfm.actions').copy_selections()<CR>", options)
-  vim.api.nvim_buf_set_keymap(buf, "n", "x", "<CMD>lua require('sfm.actions').move_selections()<CR>", options)
-  vim.api.nvim_buf_set_keymap(buf, "n", "r", "<CMD>lua require('sfm.actions').rename()<CR>", options)
-  vim.api.nvim_buf_set_keymap(buf, "n", "q", "<CMD>lua require('sfm.actions').close()<CR>", options)
-  vim.api.nvim_buf_set_keymap(buf, "n", "<SPACE>", "<CMD>lua require('sfm.actions').toggle_selection()<CR>", options)
-  vim.api.nvim_buf_set_keymap(buf, "n", "<C-SPACE>", "<CMD>lua require('sfm.actions').clear_selections()<CR>", options)
+  for _, map in pairs(self.cfg.opts.view.mappings.list) do
+    if type(map.key) == "table" then
+      for _, key in pairs(map.key) do
+        vim.api.nvim_buf_set_keymap(
+          buf,
+          "n",
+          key,
+          "<CMD>lua require('sfm.actions')." .. map.action .. "()<CR>",
+          options
+        )
+      end
+    else
+      vim.api.nvim_buf_set_keymap(
+        buf,
+        "n",
+        map.key,
+        "<CMD>lua require('sfm.actions')." .. map.action .. "()<CR>",
+        options
+      )
+    end
+  end
 
   self.win = win
   self.buf = buf

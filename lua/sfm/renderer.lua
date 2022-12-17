@@ -1,37 +1,21 @@
 local has_devicons, devicons = pcall(require, "nvim-web-devicons")
 local path = require "sfm.utils.path"
 
-local icons = {
-  file = {
-    default = "",
-    symlink = "",
-  },
-  folder = {
-    default = "",
-    open = "",
-    symlink = "",
-    symlink_open = "",
-  },
-  indicator = {
-    folder_closed = "",
-    folder_open = "",
-    file = " ",
-  },
-  selected = "",
-}
-
 ---@class Renderer
+---@field cfg Config
 ---@field win Window
 ---@field ctx Context
 local Renderer = {}
 
 --- Renderer constructor
+---@param cfg Config
 ---@param ctx Context
 ---@param win Window
 ---@return Renderer
-function Renderer.new(ctx, win)
+function Renderer.new(cfg, ctx, win)
   local self = setmetatable({}, { __index = Renderer })
 
+  self.cfg = cfg
   self.ctx = ctx
   self.win = win
 
@@ -63,6 +47,7 @@ function Renderer:_render_entry(entry, linenr)
     }
   end
 
+  local icons = self.cfg.opts.renderer.icons
   local indent = string.rep("  ", entry.depth - 1)
 
   local is_entry_open = self.ctx:is_open(entry)
