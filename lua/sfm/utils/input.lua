@@ -6,13 +6,15 @@ function M.prompt(msg, default, completion, on_confirm)
   end)
 end
 
-function M.select(msg, on_yes, on_no)
+function M.confirm(msg, on_yes, on_no, on_cancel)
   vim.notify(msg)
   local choice = vim.fn.nr2char(vim.fn.getchar())
   if choice:match "^y" or choice:match "^Y" then
     on_yes()
-  else
+  elseif choice:match "^n" or choice:match "^N" then
     on_no()
+  else
+    on_cancel()
   end
 end
 

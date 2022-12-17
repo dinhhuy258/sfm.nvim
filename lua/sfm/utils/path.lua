@@ -52,6 +52,12 @@ function M.exists(path)
   return vim.loop.fs_access(path, "r")
 end
 
+function M.isfile(path)
+  local lstat = vim.loop.fs_lstat(path)
+
+  return lstat.type == "file"
+end
+
 function M.isdir(path)
   local lstat = vim.loop.fs_lstat(path)
 

@@ -25,3 +25,12 @@ end
 function table.is_empty(items)
   return next(items) == nil
 end
+
+function table.count(items)
+  local count = 0
+  for _ in pairs(items) do
+    count = count + 1
+  end
+
+  return count
+end

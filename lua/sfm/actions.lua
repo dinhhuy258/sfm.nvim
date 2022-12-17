@@ -141,9 +141,9 @@ function M.create()
       -- focus file
       M.focus_file(fpath)
 
-      log.info(fpath .. " was created")
+      log.info(fpath .. " created")
     else
-      log.error("Couldn't create " .. fpath)
+      log.error("Creation of file " .. fpath .. " failed due to an error.")
     end
   end)
 end
@@ -172,21 +172,14 @@ end
 --- delete a file/directory
 function M.delete()
   local entry = M.ctx:current()
-  input.select("Remove " .. entry.name .. " (y/n)?", function()
+  input.confirm("Are you sure you want to delete file " .. entry.name .. "? (y/n)", function()
     -- on yes
     input.clear()
-    if entry.is_dir and not entry.is_symlink then
-      local ok = fs.rmdir(entry.path)
 
-      if not ok then
-        log.error("Could not delete " .. entry.path)
-      end
+    if fs.remove(entry.path) then
+      log.info(entry.path .. " has been deleted")
     else
-      local ok = fs.rm(entry.path)
-
-      if not ok then
-        log.error("Could not delete " .. entry.path)
-      end
+      log.error("Deletion of file " .. entry.name .. " failed due to an error.")
     end
 
     -- refresh the explorer
@@ -194,39 +187,39 @@ function M.delete()
   end, function()
     -- on no
     input.clear()
+  end, function()
+    -- on cancel
+    input.clear()
   end)
 end
 
---- delete selections files/directories
+--- delete selected files/directories
 function M.delete_selections()
   if table.is_empty(M.ctx.selections) then
-    log.warn "Nothing selected"
+    log.warn "No files selected. Please select at least one file to proceed."
 
     return
   end
 
-  input.select("Do you want to delete selected files/directories (y/n)?", function()
+  input.confirm("Are you sure you want to delete the selected files/directories? (y/n)", function()
     -- on yes
     input.clear()
+
     local success_count = 0
-    local fail_count = 0
+    -- TODO: unify paths
     for fpath, _ in pairs(M.ctx.selections) do
-      if path.isdir(fpath) and not path.islink(fpath) then
-        if fs.rmdir(fpath) then
-          success_count = success_count + 1
-        else
-          fail_count = fail_count + 1
-        end
-      else
-        if fs.rm(fpath) then
-          success_count = success_count + 1
-        else
-          fail_count = fail_count + 1
-        end
+      if fs.remove(fpath) then
+        success_count = success_count + 1
       end
     end
 
-    log.info(string.format("Files/directories were deleted. Success: %d, fail: %d", success_count, fail_count))
+    log.info(
+      string.format(
+        "Deletion process complete. %d files deleted successfully, %d files failed.",
+        success_count,
+        table.count(M.ctx.selections) - success_count
+      )
+    )
 
     -- clear selections
     M.ctx:clear_selections()
@@ -236,9 +229,13 @@ function M.delete_selections()
   end, function()
     -- on no
     input.clear()
+  end, function()
+    -- on cancel
+    input.clear()
   end)
 end
 
+--- rename a current file/directory
 function M.rename()
   local entry = M.ctx:current()
   local from_path = entry.path
@@ -269,13 +266,97 @@ function M.rename()
       -- focus file
       M.focus_file(to_path)
 
-      log.info(string.format("Rename %s ➜ %s", path.basename(from_path), path.basename(to_path)))
+      log.info(string.format("Renaming file %s ➜ %s complete", path.basename(from_path), path.basename(to_path)))
     else
-      log.error(string.format("Couldn't rename %s ➜ %s", path.basename(from_path), path.basename(to_path)))
+      log.error(string.format("Renaming file %s failed due to an error", path.basename(from_path)))
     end
   end)
 end
 
+--- move/copy selected files/directories to a current opened entry or it's parent
+local function _paste(action_fn)
+  if table.is_empty(M.ctx.selections) then
+    log.warn "No files selected. Please select at least one file to proceed."
+
+    return
+  end
+
+  local dest_entry = M.ctx:current()
+  if not dest_entry.is_dir or not M.ctx:is_open(dest_entry) then
+    dest_entry = dest_entry.parent
+  end
+
+  local success_count = 0
+  local continue_processing = true
+
+  for fpath, _ in pairs(M.ctx.selections) do
+    local basename = path.basename(fpath)
+    local dest_path = path.join { dest_entry.path, basename }
+
+    if path.exists(dest_path) then
+      input.confirm(dest_path .. " already exists. Rename it? (y/n)", function()
+        -- on yes
+        input.clear()
+        input.prompt("New name " .. path.add_trailing(dest_entry.path), basename, "file", function(name)
+          input.clear()
+          if name == nil or name == "" then
+            return
+          end
+
+          dest_path = path.join { dest_entry.path, name }
+
+          if path.exists(dest_path) then
+            log.warn(dest_path .. " already exists")
+
+            return
+          end
+
+          if action_fn(fpath, dest_path) then
+            success_count = success_count + 1
+          end
+        end)
+      end, function()
+        -- on no
+        input.clear()
+      end, function()
+        -- on cancel
+        input.clear()
+        continue_processing = false
+      end)
+    else
+      if action_fn(fpath, dest_path) then
+        success_count = success_count + 1
+      end
+    end
+
+    if not continue_processing then
+      break
+    end
+  end
+
+  log.info(
+    string.format(
+      "Copy/move process complete. %d files copied/moved successfully, %d files failed.",
+      success_count,
+      table.count(M.ctx.selections) - success_count
+    )
+  )
+
+  M.ctx:clear_selections()
+  M.explorer:refresh()
+end
+
+--- copy selected files/directories to a current opened entry or it's parent
+function M.copy_selections()
+  _paste(fs.copy)
+end
+
+--- move selected files/directories to a current opened entry or it's parent
+function M.move_selections()
+  _paste(fs.move)
+end
+
+--- toggle a current file/directory to bookmarks list
 function M.toggle_selection()
   local entry = M.ctx:current()
   if entry.is_root then
@@ -291,11 +372,14 @@ function M.toggle_selection()
   M.explorer:render()
 end
 
+--- clear a bookmarks list
 function M.clear_selections()
   M.ctx:clear_selections()
   M.explorer:render()
 end
 
+--- setup actions
+---@param explorer Explorer
 function M.setup(explorer)
   M.explorer = explorer
   M.ctx = explorer.ctx
