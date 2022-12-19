@@ -35,18 +35,9 @@ function M.scandir(fpath)
 end
 
 function M._rmdir(fpath)
-  local handle = vim.loop.fs_scandir(fpath)
-  if type(handle) == "string" then
-    return vim.api.nvim_err_writeln(handle)
-  end
-
-  while true do
-    local name = vim.loop.fs_scandir_next(handle)
-    if not name then
-      break
-    end
-
-    return M.remove(fpath.join { fpath, name })
+  local paths = M.scandir(fpath)
+  for _, p in ipairs(paths) do
+    M.remove(p)
   end
 
   return vim.loop.fs_rmdir(fpath)
