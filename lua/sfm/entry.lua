@@ -37,7 +37,9 @@ function Entry.new(fpath, parent, is_root)
   return self
 end
 
-function Entry:scandir()
+--- scan the current directory
+---@param sort_by function|nil
+function Entry:scandir(sort_by)
   if not self.is_dir then
     return
   end
@@ -49,18 +51,21 @@ function Entry:scandir()
     table.insert(entries, Entry.new(fpath, self, false))
   end
 
-  -- TODO: allow users to custom entry's order
-  table.sort(entries, function(a, b)
-    if a.is_dir and b.is_dir then
-      return string.lower(a.name) < string.lower(b.name)
-    elseif a.is_dir then
-      return true
-    elseif b.is_dir then
-      return false
-    end
+  if sort_by ~= nil then
+    table.sort(entries, sort_by)
+  else
+    table.sort(entries, function(a, b)
+      if a.is_dir and b.is_dir then
+        return string.lower(a.name) < string.lower(b.name)
+      elseif a.is_dir then
+        return true
+      elseif b.is_dir then
+        return false
+      end
 
-    return string.lower(a.name) < string.lower(b.name)
-  end)
+      return string.lower(a.name) < string.lower(b.name)
+    end)
+  end
 
   self.entries = entries
 end

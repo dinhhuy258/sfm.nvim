@@ -1,6 +1,5 @@
 ---@class Context
 ---@field root Entry
----@field entries Entry[]
 ---@field open {}
 ---@field selections {}
 local Context = {}
@@ -18,35 +17,6 @@ function Context.new(root)
   return self
 end
 
---- get the current entry at the current position
----@return Entry
-function Context:current()
-  local entry = self.entries[vim.fn.line "."]
-  if entry then
-    return entry
-  end
-
-  error "failed to get the current entry"
-end
-
---- refresh the render entries
-function Context:refresh_entries()
-  self.entries = {}
-
-  local function _refresh_entry(current_entry)
-    for _, e in ipairs(current_entry.entries) do
-      table.insert(self.entries, e)
-
-      if self:is_open(e) then
-        _refresh_entry(e)
-      end
-    end
-  end
-
-  table.insert(self.entries, self.root)
-  _refresh_entry(self.root)
-end
-
 --- open the given entry
 ---@param entry Entry
 function Context:set_open(entry)
@@ -54,9 +24,7 @@ function Context:set_open(entry)
     return
   end
 
-  entry:scandir()
   self.open[entry.path] = true
-  self:refresh_entries()
 end
 
 --- close the given entry
@@ -67,7 +35,6 @@ function Context:remove_open(entry)
   end
 
   table.remove_key(self.open, entry.path)
-  self:refresh_entries()
 end
 
 --- check if the given entry is open

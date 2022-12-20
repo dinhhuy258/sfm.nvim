@@ -5,6 +5,7 @@ local path = require "sfm.utils.path"
 ---@field cfg Config
 ---@field win Window
 ---@field ctx Context
+---@field entries Entry[]
 local Renderer = {}
 
 --- Renderer constructor
@@ -18,8 +19,38 @@ function Renderer.new(cfg, ctx, win)
   self.cfg = cfg
   self.ctx = ctx
   self.win = win
+  self.entries = {}
 
   return self
+end
+
+--- get the current entry at the current position
+---@return Entry
+function Renderer:current()
+  local entry = self.entries[vim.fn.line "."]
+  if entry then
+    return entry
+  end
+
+  error "failed to get the current entry"
+end
+
+--- refresh the render entries
+function Renderer:refresh_entries()
+  self.entries = {}
+
+  local function _refresh_entry(current_entry)
+    for _, e in ipairs(current_entry.entries) do
+      table.insert(self.entries, e)
+
+      if self.ctx:is_open(e) then
+        _refresh_entry(e)
+      end
+    end
+  end
+
+  table.insert(self.entries, self.ctx.root)
+  _refresh_entry(self.ctx.root)
 end
 
 --- render the given entry with linern
@@ -141,7 +172,7 @@ end
 --- render the explorer
 function Renderer:render()
   local lines = {}
-  for linenr, e in ipairs(self.ctx.entries) do
+  for linenr, e in ipairs(self.entries) do
     table.insert(lines, self:_render_entry(e, linenr - 1)) -- 0-indexed
   end
 

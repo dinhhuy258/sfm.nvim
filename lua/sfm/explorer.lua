@@ -9,6 +9,7 @@ local actions = require "sfm.actions"
 ---@field win Window
 ---@field ctx Context
 ---@field renderer Renderer
+---@field cfg Config
 local Explorer = {}
 
 --- Explorer constructor
@@ -19,13 +20,13 @@ function Explorer.new(opts)
 
   local cwd = vim.fn.getcwd()
 
-  local cfg = config.new(opts)
-  self.win = window.new(cfg)
+  self.cfg = config.new(opts)
+  self.win = window.new(self.cfg)
   self.ctx = context.new(entry.new(cwd, nil, true))
-  self.renderer = renderer.new(cfg, self.ctx, self.win)
+  self.renderer = renderer.new(self.cfg, self.ctx, self.win)
 
   -- load root dir
-  self.ctx:set_open(self.ctx.root)
+  self:open_dir(self.ctx.root)
 
   return self
 end
@@ -33,7 +34,7 @@ end
 --- refresh the current entry
 ---@param current_entry Entry
 function Explorer:_refresh_entry(current_entry)
-  current_entry:scandir()
+  self:open_dir(current_entry)
 
   for _, e in ipairs(current_entry.entries) do
     if self.ctx:is_open(e) then
@@ -45,7 +46,7 @@ end
 --- refresh the explorer
 function Explorer:refresh()
   self:_refresh_entry(self.ctx.root)
-  self.ctx:refresh_entries()
+  self.renderer:refresh_entries()
   self:render()
 end
 
@@ -59,6 +60,35 @@ end
 ---@param col integer
 function Explorer:move_cursor(row, col)
   self.win:move_cursor(row, col)
+end
+
+--- open the given directory
+---@param e Entry
+function Explorer:open_dir(e)
+  if not e.is_dir then
+    return
+  end
+
+  self.ctx:set_open(e)
+  e:scandir(self.cfg.opts.sort_by)
+  self.renderer:refresh_entries()
+end
+
+--- close the given directory
+---@param e Entry
+function Explorer:close_dir(e)
+  if not e.is_dir then
+    return
+  end
+
+  self.ctx:remove_open(e)
+  self.renderer:refresh_entries()
+end
+
+--- get the current entry at the current position
+---@return Entry
+function Explorer:current()
+  return self.renderer:current()
 end
 
 --- toggle the explorer

@@ -28,11 +28,11 @@ local default_mappings = {
     action = "create",
   },
   {
-    key = "d",
+    key = "dd",
     action = "delete",
   },
   {
-    key = "D",
+    key = "ds",
     action = "delete_selections",
   },
   {
