@@ -1,7 +1,7 @@
 ---@class Window
 ---@field cfg Config
----@field win integer
----@field buf integer
+---@field winnr integer
+---@field bufnr integer
 ---@field ns_id integer
 local Window = {}
 
@@ -51,8 +51,8 @@ function Window.new(cfg)
   local self = setmetatable({}, { __index = Window })
 
   self.cfg = cfg
-  self.win = nil
-  self.buf = nil
+  self.winnr = nil
+  self.bufnr = nil
   self.ns_id = vim.api.nvim_create_namespace "SFMHighlights"
 
   return self
@@ -61,36 +61,34 @@ end
 --- check if the window is open or not
 ---@return boolean
 function Window:is_open()
-  return self.win ~= nil and vim.api.nvim_win_is_valid(self.win)
+  return self.winnr ~= nil and vim.api.nvim_win_is_valid(self.winnr)
 end
 
 --- close the window
 function Window:close()
   if self:is_open() then
-    vim.api.nvim_win_close(self.win, 1)
+    vim.api.nvim_win_close(self.winnr, 1)
   end
 
-  self.win = nil
+  self.winnr = nil
 end
 
 --- open the window
 function Window:open()
   vim.api.nvim_command "topleft vnew"
-  local win = vim.api.nvim_get_current_win()
-  local buf = vim.api.nvim_get_current_buf()
-
-  for option, value in pairs(BUFFER_OPTIONS) do
-    vim.api.nvim_buf_set_option(buf, option, value)
-  end
+  self.winnr = vim.api.nvim_get_current_win()
+  self.bufnr = vim.api.nvim_get_current_buf()
+  vim.api.nvim_buf_set_name(self.bufnr, "sfm_" .. vim.api.nvim_get_current_tabpage())
 
   for option, value in pairs(WIN_OPTIONS) do
-    vim.api.nvim_win_set_option(win, option, value)
+    vim.api.nvim_win_set_option(self.winnr, option, value)
   end
 
-  vim.api.nvim_win_set_width(win, self.cfg.opts.view.width)
+  vim.api.nvim_win_set_width(self.winnr, self.cfg.opts.view.width)
 
-  -- focus on explorer window
-  vim.api.nvim_win_set_buf(win, buf)
+  for option, value in pairs(BUFFER_OPTIONS) do
+    vim.api.nvim_buf_set_option(self.bufnr, option, value)
+  end
 
   local options = {
     noremap = true,
@@ -102,7 +100,7 @@ function Window:open()
     if type(map.key) == "table" then
       for _, key in pairs(map.key) do
         vim.api.nvim_buf_set_keymap(
-          buf,
+          self.bufnr,
           "n",
           key,
           "<CMD>lua require('sfm.actions')." .. map.action .. "()<CR>",
@@ -111,7 +109,7 @@ function Window:open()
       end
     else
       vim.api.nvim_buf_set_keymap(
-        buf,
+        self.bufnr,
         "n",
         map.key,
         "<CMD>lua require('sfm.actions')." .. map.action .. "()<CR>",
@@ -120,8 +118,27 @@ function Window:open()
     end
   end
 
-  self.win = win
-  self.buf = buf
+  vim.api.nvim_win_set_buf(self.winnr, self.bufnr)
+end
+
+--- prevent explorer buffer is being overrided
+function Window:prevent_buffer_override()
+  if not self:is_open() then
+    return
+  end
+
+  vim.schedule(function()
+    local curwin = vim.api.nvim_get_current_win()
+    local curbuf = vim.api.nvim_win_get_buf(curwin)
+    local bufname = vim.api.nvim_buf_get_name(curbuf)
+
+    if curwin ~= self.winnr or curbuf == self.bufnr or bufname == "" then
+      return
+    end
+
+    pcall(vim.api.nvim_win_close, curwin, { force = true })
+    pcall(vim.cmd, "edit " .. bufname)
+  end)
 end
 
 --- move the cursor to (row, col)
@@ -132,17 +149,17 @@ function Window:move_cursor(row, col)
     return
   end
 
-  vim.api.nvim_win_set_cursor(self.win, { row, col })
+  vim.api.nvim_win_set_cursor(self.winnr, { row, col })
 end
 
 --- add the highlights
 ---@param highlights table
 function Window:_add_highlights(highlights)
-  vim.api.nvim_buf_clear_namespace(self.buf, self.ns_id, 0, -1)
+  vim.api.nvim_buf_clear_namespace(self.bufnr, self.ns_id, 0, -1)
 
   for _, highlight in ipairs(highlights) do
     vim.api.nvim_buf_add_highlight(
-      self.buf,
+      self.bufnr,
       self.ns_id,
       highlight.hl_group,
       highlight.line,
@@ -155,9 +172,9 @@ end
 --- replace the buffer with lines
 ---@param lines table
 function Window:_set_lines(lines)
-  vim.api.nvim_buf_set_option(self.buf, "modifiable", true)
-  vim.api.nvim_buf_set_lines(self.buf, 0, -1, 1, lines)
-  vim.api.nvim_buf_set_option(self.buf, "modifiable", false)
+  vim.api.nvim_buf_set_option(self.bufnr, "modifiable", true)
+  vim.api.nvim_buf_set_lines(self.bufnr, 0, -1, 1, lines)
+  vim.api.nvim_buf_set_option(self.bufnr, "modifiable", false)
 end
 
 --- render the given lines to window
