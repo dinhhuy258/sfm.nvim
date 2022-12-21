@@ -1,5 +1,9 @@
 local default_mappings = {
   {
+    key = ".",
+    action = "toggle_hidden_filter",
+  },
+  {
     key = "<CR>",
     action = "edit",
   },
@@ -64,7 +68,7 @@ local default_mappings = {
 
 local default_config = {
   show_hidden_files = false,
-  devicons_enable = false,
+  devicons_enable = true,
   sort_by = nil,
   view = {
     width = 30,

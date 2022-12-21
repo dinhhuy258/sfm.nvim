@@ -78,4 +78,12 @@ function M.islink(path)
   return lstat.type == "link"
 end
 
+function M.is_hidden(path)
+  if path == nil or path == "" then
+    return true
+  end
+
+  return string.match(M.basename(path), "^[^.]") == nil
+end
+
 return M

@@ -10,7 +10,6 @@ local Context = {}
 function Context.new(root)
   local self = setmetatable({}, { __index = Context })
   self.root = root
-  self.entries = {}
   self.open = {}
   self.selections = {}
 

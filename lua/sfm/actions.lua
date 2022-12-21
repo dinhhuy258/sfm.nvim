@@ -6,10 +6,12 @@ local log = require "sfm.utils.log"
 ---@class M
 ---@field explorer Explorer
 ---@field ctx Context
+---@field cfg Config
 local M = {}
 
 M.explorer = nil
 M.ctx = nil
+M.cfg = nil
 
 --- focus the given path
 ---@param fpath string
@@ -378,6 +380,17 @@ function M.clear_selections()
   M.explorer:render()
 end
 
+--- toggle visibility of hidden files/folders
+function M.toggle_hidden_filter()
+  local entry = M.explorer:get_current_entry()
+
+  M.cfg.opts.show_hidden_files = not M.cfg.opts.show_hidden_files
+  M.explorer:refresh()
+
+  -- re-focus the current entry
+  M.focus_file(entry.path)
+end
+
 --- close the explorer
 function M.close()
   M.explorer:close()
@@ -388,6 +401,7 @@ end
 function M.setup(explorer)
   M.explorer = explorer
   M.ctx = explorer.ctx
+  M.cfg = explorer.cfg
 end
 
 return M

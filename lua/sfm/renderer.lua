@@ -54,10 +54,12 @@ function Renderer:refresh_entries()
 
   local function _refresh_entry(current_entry)
     for _, e in ipairs(current_entry.entries) do
-      table.insert(self.entries, e)
+      if not e.is_hidden or self.cfg.opts.show_hidden_files then
+        table.insert(self.entries, e)
 
-      if self.ctx:is_open(e) then
-        _refresh_entry(e)
+        if self.ctx:is_open(e) then
+          _refresh_entry(e)
+        end
       end
     end
   end
@@ -127,7 +129,7 @@ function Renderer:_render_entry(entry, linenr)
       icon = icons.folder.default
       icon_hl_group = "SFMFolderIcon"
     end
-  elseif not has_devicons then
+  elseif not has_devicons or not self.cfg.opts.devicons_enable then
     icon = icons.file.default
     icon_hl_group = "SFMDefaultFileIcon"
   else
