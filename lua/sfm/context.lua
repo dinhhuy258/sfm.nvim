@@ -76,17 +76,4 @@ function Context:clear_selections()
   self.selections = {}
 end
 
---- obtain the line of the current path
----@param fpath string
----@return integer
-function Context:get_index(fpath)
-  for index, e in ipairs(self.entries) do
-    if fpath == e.path then
-      return index
-    end
-  end
-
-  return 0
-end
-
 return Context

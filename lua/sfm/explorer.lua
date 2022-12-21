@@ -87,8 +87,15 @@ end
 
 --- get the current entry at the current position
 ---@return Entry
-function Explorer:current()
-  return self.renderer:current()
+function Explorer:get_current_entry()
+  return self.renderer:get_current_entry()
+end
+
+--- get the line number of the current path, return 0 if not found
+---@param fpath string
+---@return integer
+function Explorer:find_line_number_for_path(fpath)
+  return self.renderer:find_line_number_for_path(fpath)
 end
 
 --- toggle the explorer

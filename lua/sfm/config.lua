@@ -85,7 +85,7 @@ local default_config = {
         default = "",
         open = "",
         symlink = "",
-        symlink_open = "",
+        symlink_open = "",
       },
       indicator = {
         folder_closed = "",

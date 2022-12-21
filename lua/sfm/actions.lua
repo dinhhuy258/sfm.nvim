@@ -33,18 +33,18 @@ function M.focus_file(fpath)
     end
   end
 
-  local index = M.ctx:get_index(fpath)
-  if index == 0 then
+  local linenr = M.explorer:find_line_number_for_path(fpath)
+  if linenr == 0 then
     return
   end
 
   M.explorer:render()
-  M.explorer:move_cursor(index, 0)
+  M.explorer:move_cursor(linenr, 0)
 end
 
 --- edit file or toggle directory
 function M.edit()
-  local entry = M.explorer:current()
+  local entry = M.explorer:get_current_entry()
   if not entry.is_dir then
     vim.cmd "wincmd l"
     vim.cmd("keepalt edit " .. entry.path)
@@ -69,7 +69,7 @@ end
 
 --- navigate to the first sibling of current file/directory
 function M.first_sibling()
-  local entry = M.explorer:current()
+  local entry = M.explorer:get_current_entry()
   if entry.parent == nil then
     return
   end
@@ -80,7 +80,7 @@ end
 
 --- navigate to the last sibling of current file/directory
 function M.last_sibling()
-  local entry = M.explorer:current()
+  local entry = M.explorer:get_current_entry()
   if entry.parent == nil then
     return
   end
@@ -91,7 +91,7 @@ end
 
 --- move cursor to the parent directory
 function M.parent_entry()
-  local entry = M.explorer:current()
+  local entry = M.explorer:get_current_entry()
   local parent = entry.parent
   if parent == nil then
     return
@@ -107,7 +107,7 @@ end
 
 --- add a file; leaving a trailing `/` will add a directory
 function M.create()
-  local entry = M.explorer:current()
+  local entry = M.explorer:get_current_entry()
   if (not entry.is_dir or not M.ctx:is_open(entry)) and not entry.is_root then
     entry = entry.parent
   end
@@ -150,7 +150,7 @@ end
 
 --- close current opened directory or parent
 function M.close_entry()
-  local entry = M.explorer:current()
+  local entry = M.explorer:get_current_entry()
   if not entry.is_dir or not M.ctx:is_open(entry) then
     entry = entry.parent
   end
@@ -171,7 +171,7 @@ end
 
 --- delete a file/directory
 function M.delete()
-  local entry = M.explorer:current()
+  local entry = M.explorer:get_current_entry()
   input.confirm("Are you sure you want to delete file " .. entry.name .. "? (y/n)", function()
     -- on yes
     input.clear()
@@ -237,7 +237,7 @@ end
 
 --- rename a current file/directory
 function M.rename()
-  local entry = M.explorer:current()
+  local entry = M.explorer:get_current_entry()
   local from_path = entry.path
 
   if entry.is_root then
@@ -281,7 +281,7 @@ local function _paste(action_fn)
     return
   end
 
-  local dest_entry = M.explorer:current()
+  local dest_entry = M.explorer:get_current_entry()
   if not dest_entry.is_dir or not M.ctx:is_open(dest_entry) then
     dest_entry = dest_entry.parent
   end
@@ -358,7 +358,7 @@ end
 
 --- toggle a current file/directory to bookmarks list
 function M.toggle_selection()
-  local entry = M.explorer:current()
+  local entry = M.explorer:get_current_entry()
   if entry.is_root then
     return
   end

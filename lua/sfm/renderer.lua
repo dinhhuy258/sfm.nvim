@@ -26,13 +26,26 @@ end
 
 --- get the current entry at the current position
 ---@return Entry
-function Renderer:current()
+function Renderer:get_current_entry()
   local entry = self.entries[vim.fn.line "."]
   if entry then
     return entry
   end
 
   error "failed to get the current entry"
+end
+
+--- find the line of the current path, return 0 if not found
+---@param fpath string
+---@return integer
+function Renderer:find_line_number_for_path(fpath)
+  for index, e in ipairs(self.entries) do
+    if fpath == e.path then
+      return index
+    end
+  end
+
+  return 0
 end
 
 --- refresh the render entries

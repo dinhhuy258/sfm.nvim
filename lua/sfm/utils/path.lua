@@ -59,6 +59,14 @@ function M.isfile(path)
 end
 
 function M.isdir(path)
+  if M.islink(path) then
+    local stat = vim.loop.fs_stat(path)
+
+    if stat ~= nil then
+      return stat.type == "directory"
+    end
+  end
+
   local lstat = vim.loop.fs_lstat(path)
 
   return lstat.type == "directory"
