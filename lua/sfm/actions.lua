@@ -76,7 +76,15 @@ function M.first_sibling()
     return
   end
 
-  local first_entry = table.first(entry.parent.entries)
+  local first_entry = nil
+  for _, e in ipairs(entry.parent.entries) do
+    if not e.is_hidden or M.cfg.opts.show_hidden_files then
+      first_entry = e
+
+      break
+    end
+  end
+
   M.focus_file(first_entry.path)
 end
 
@@ -87,7 +95,13 @@ function M.last_sibling()
     return
   end
 
-  local last_entry = table.last(entry.parent.entries)
+  local last_entry = nil
+  for _, e in ipairs(entry.parent.entries) do
+    if not e.is_hidden or M.cfg.opts.show_hidden_files then
+      last_entry = e
+    end
+  end
+
   M.focus_file(last_entry.path)
 end
 

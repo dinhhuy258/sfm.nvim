@@ -6,14 +6,6 @@ function table.extend(dest, src)
   return dest
 end
 
-function table.first(items)
-  return items[1]
-end
-
-function table.last(items)
-  return items[#items]
-end
-
 function table.remove_key(items, key)
   items[key] = nil
 end
