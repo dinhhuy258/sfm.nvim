@@ -98,6 +98,12 @@ function Explorer:find_line_number_for_path(fpath)
   return self.renderer:find_line_number_for_path(fpath)
 end
 
+--- set on open listener
+---@param listener function
+function Explorer:set_on_open_listener(listener)
+  self.win:set_on_open_listener(listener)
+end
+
 --- toggle the explorer
 function Explorer:toggle()
   if self.win:is_open() then

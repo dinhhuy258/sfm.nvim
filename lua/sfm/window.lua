@@ -3,6 +3,7 @@
 ---@field winnr integer
 ---@field bufnr integer
 ---@field ns_id integer
+---@field on_open_listeners table
 local Window = {}
 
 local BUFFER_OPTIONS = {
@@ -54,8 +55,15 @@ function Window.new(cfg)
   self.winnr = nil
   self.bufnr = nil
   self.ns_id = vim.api.nvim_create_namespace "SFMHighlights"
+  self.on_open_listeners = {}
 
   return self
+end
+
+--- set on open listener
+---@param listener function
+function Window:set_on_open_listener(listener)
+  table.insert(self.on_open_listeners, listener)
 end
 
 --- check if the window is open or not
@@ -119,6 +127,10 @@ function Window:open()
   end
 
   vim.api.nvim_win_set_buf(self.winnr, self.bufnr)
+
+  for _, listener in ipairs(self.on_open_listeners) do
+    listener(self.winnr, self.bufnr)
+  end
 end
 
 --- prevent explorer buffer is being overrided
