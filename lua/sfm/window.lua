@@ -1,9 +1,11 @@
+local event = require "sfm.event"
+
 ---@class Window
 ---@field cfg Config
 ---@field winnr integer
 ---@field bufnr integer
 ---@field ns_id integer
----@field on_open_listeners table
+---@field event_manager EventManager
 local Window = {}
 
 local BUFFER_OPTIONS = {
@@ -47,23 +49,18 @@ local WIN_OPTIONS = {
 
 --- Window constructor
 ---@param cfg Config
+---@param event_manager EventManager
 ---@return Window
-function Window.new(cfg)
+function Window.new(cfg, event_manager)
   local self = setmetatable({}, { __index = Window })
 
   self.cfg = cfg
   self.winnr = nil
   self.bufnr = nil
   self.ns_id = vim.api.nvim_create_namespace "SFMHighlights"
-  self.on_open_listeners = {}
+  self.event_manager = event_manager
 
   return self
-end
-
---- set on open listener
----@param listener function
-function Window:set_on_open_listener(listener)
-  table.insert(self.on_open_listeners, listener)
 end
 
 --- check if the window is open or not
@@ -128,9 +125,10 @@ function Window:open()
 
   vim.api.nvim_win_set_buf(self.winnr, self.bufnr)
 
-  for _, listener in ipairs(self.on_open_listeners) do
-    listener(self.winnr, self.bufnr)
-  end
+  self.event_manager:dispatch(event.ExplorerOpen, {
+    winnr = self.winnr,
+    bufnr = self.bufnr,
+  })
 end
 
 --- prevent explorer buffer is being overrided

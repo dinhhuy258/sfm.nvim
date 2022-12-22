@@ -2,6 +2,7 @@ local config = require "sfm.config"
 local window = require "sfm.window"
 local context = require "sfm.context"
 local renderer = require "sfm.renderer"
+local event_manager = require "sfm.event_manager"
 local entry = require "sfm.entry"
 local actions = require "sfm.actions"
 
@@ -10,6 +11,7 @@ local actions = require "sfm.actions"
 ---@field ctx Context
 ---@field renderer Renderer
 ---@field cfg Config
+---@field event_manager EventManager
 local Explorer = {}
 
 --- Explorer constructor
@@ -21,9 +23,12 @@ function Explorer.new(opts)
   local cwd = vim.fn.getcwd()
 
   self.cfg = config.new(opts)
-  self.win = window.new(self.cfg)
+  self.event_manager = event_manager.new()
+  self.win = window.new(self.cfg, self.event_manager)
   self.ctx = context.new(entry.new(cwd, nil, true))
   self.renderer = renderer.new(self.cfg, self.ctx, self.win)
+
+  actions.setup(self, self.ctx, self.cfg)
 
   -- load root dir
   self:open_dir(self.ctx.root)
@@ -32,21 +37,22 @@ function Explorer.new(opts)
 end
 
 --- refresh the current entry
----@param current_entry Entry
-function Explorer:_refresh_entry(current_entry)
-  self:open_dir(current_entry)
+---@param e Entry
+function Explorer:_refresh(e)
+  -- make sure to rescan entries in refresh method
+  e:clear_entries()
+  self:open_dir(e)
 
-  for _, e in ipairs(current_entry.entries) do
-    if self.ctx:is_open(e) then
-      self:_refresh_entry(e)
+  for _, child in ipairs(e.entries) do
+    if self.ctx:is_open(child) then
+      self:_refresh(child)
     end
   end
 end
 
 --- refresh the explorer
 function Explorer:refresh()
-  self:_refresh_entry(self.ctx.root)
-  self.renderer:refresh_entries()
+  self:_refresh(self.ctx.root)
   self:render()
 end
 
@@ -71,7 +77,6 @@ function Explorer:open_dir(e)
 
   self.ctx:set_open(e)
   e:scandir(self.cfg.opts.sort_by)
-  self.renderer:refresh_entries()
 end
 
 --- close the given directory
@@ -82,7 +87,6 @@ function Explorer:close_dir(e)
   end
 
   self.ctx:remove_open(e)
-  self.renderer:refresh_entries()
 end
 
 --- get the current entry at the current position
@@ -98,10 +102,11 @@ function Explorer:find_line_number_for_path(fpath)
   return self.renderer:find_line_number_for_path(fpath)
 end
 
---- set on open listener
----@param listener function
-function Explorer:set_on_open_listener(listener)
-  self.win:set_on_open_listener(listener)
+--- subscribe event
+---@param event_name string
+---@param handler function
+function Explorer:subscribe(event_name, handler)
+  self.event_manager:subscribe(event_name, handler)
 end
 
 --- toggle the explorer

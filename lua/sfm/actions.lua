@@ -17,7 +17,7 @@ M.cfg = nil
 ---@param fpath string
 function M.focus_file(fpath)
   if vim.startswith(fpath, M.ctx.root.path) then
-    local dirs = vim.split(string.sub(path.dirname(fpath), string.len(M.ctx.root.path) + 2), "/")
+    local dirs = path.split(path.dirname(fpath))
     local current = M.ctx.root
 
     for _, dir in ipairs(dirs) do
@@ -35,12 +35,13 @@ function M.focus_file(fpath)
     end
   end
 
+  M.explorer:render()
+
   local linenr = M.explorer:find_line_number_for_path(fpath)
   if linenr == 0 then
     return
   end
 
-  M.explorer:render()
   M.explorer:move_cursor(linenr, 0)
 end
 
@@ -65,8 +66,8 @@ function M.edit()
 
   -- open directory
   M.explorer:open_dir(entry)
-  -- refresh the explorer
-  M.explorer:refresh()
+  -- render the explorer
+  M.explorer:render()
 end
 
 --- navigate to the first sibling of current file/directory
@@ -412,10 +413,12 @@ end
 
 --- setup actions
 ---@param explorer Explorer
-function M.setup(explorer)
+---@param ctx Context
+---@param cfg Config
+function M.setup(explorer, ctx, cfg)
   M.explorer = explorer
-  M.ctx = explorer.ctx
-  M.cfg = explorer.cfg
+  M.ctx = ctx
+  M.cfg = cfg
 end
 
 return M

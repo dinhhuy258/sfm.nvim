@@ -12,7 +12,6 @@ function M.setup(opts)
   colors.setup()
 
   M.sfm_explorer = explorer.new(opts)
-  actions.setup(M.sfm_explorer)
 
   vim.api.nvim_create_user_command("SFMToggle", function()
     M.sfm_explorer:toggle()

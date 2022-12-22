@@ -42,7 +42,7 @@ end
 --- scan the current directory
 ---@param sort_by function|nil
 function Entry:scandir(sort_by)
-  if not self.is_dir then
+  if not self.is_dir or table.count(self.entries) ~= 0 then
     return
   end
 
@@ -70,6 +70,11 @@ function Entry:scandir(sort_by)
   end
 
   self.entries = entries
+end
+
+--- clear all entries
+function Entry:clear_entries()
+  self.entries = {}
 end
 
 return Entry

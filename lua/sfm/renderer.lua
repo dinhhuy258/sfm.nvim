@@ -48,24 +48,24 @@ function Renderer:find_line_number_for_path(fpath)
   return 0
 end
 
---- refresh the render entries
-function Renderer:refresh_entries()
+--- update the rendered entries
+function Renderer:_update_rendered_entries()
   self.entries = {}
 
-  local function _refresh_entry(current_entry)
+  local function _update_rendered_entry(current_entry)
     for _, e in ipairs(current_entry.entries) do
       if not e.is_hidden or self.cfg.opts.show_hidden_files then
         table.insert(self.entries, e)
 
         if self.ctx:is_open(e) then
-          _refresh_entry(e)
+          _update_rendered_entry(e)
         end
       end
     end
   end
 
   table.insert(self.entries, self.ctx.root)
-  _refresh_entry(self.ctx.root)
+  _update_rendered_entry(self.ctx.root)
 end
 
 --- render the given entry with linern
@@ -186,6 +186,7 @@ end
 
 --- render the explorer
 function Renderer:render()
+  self:_update_rendered_entries()
   local lines = {}
   for linenr, e in ipairs(self.entries) do
     table.insert(lines, self:_render_entry(e, linenr - 1)) -- 0-indexed

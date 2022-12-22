@@ -12,6 +12,12 @@ function M.clean(path)
   return path
 end
 
+function M.split(path)
+  return vim.tbl_filter(function(p)
+    return p ~= nil and p ~= ""
+  end, vim.split(path, path_separator))
+end
+
 function M.join(paths)
   return table.concat(vim.tbl_map(M.remove_trailing, paths), path_separator)
 end
