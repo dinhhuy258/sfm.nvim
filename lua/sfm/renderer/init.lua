@@ -1,10 +1,15 @@
-local has_devicons, devicons = pcall(require, "nvim-web-devicons")
+local indent_renderer = require "sfm.renderer.indent_renderer"
+local indicator_renderer = require "sfm.renderer.indicator_renderer"
+local icon_renderer = require "sfm.renderer.icon_renderer"
+local selection_renderer = require "sfm.renderer.selection_renderer"
+local name_renderer = require "sfm.renderer.name_renderer"
 local path = require "sfm.utils.path"
 
 ---@class Renderer
 ---@field cfg Config
 ---@field win Window
 ---@field ctx Context
+---@field renderers table<string, table>
 ---@field entries Entry[]
 local Renderer = {}
 
@@ -20,6 +25,36 @@ function Renderer.new(cfg, ctx, win)
   self.ctx = ctx
   self.win = win
   self.entries = {}
+  self.renderers = {}
+  table.insert(self.renderers, {
+    name = "indent",
+    func = indent_renderer.render_entry,
+    priority = 10,
+  })
+  table.insert(self.renderers, {
+    name = "indicator",
+    func = indicator_renderer.render_entry,
+    priority = 20,
+  })
+  table.insert(self.renderers, {
+    name = "icon",
+    func = icon_renderer.render_entry,
+    priority = 30,
+  })
+  table.insert(self.renderers, {
+    name = "selection",
+    func = selection_renderer.render_entry,
+    priority = 40,
+  })
+  table.insert(self.renderers, {
+    name = "name",
+    func = name_renderer.render_entry,
+    priority = 50,
+  })
+
+  table.sort(self.renderers, function(a, b)
+    return a.priority < b.priority
+  end)
 
   return self
 end
@@ -93,90 +128,29 @@ function Renderer:_render_entry(entry, linenr)
     }
   end
 
-  local icons = self.cfg.opts.renderer.icons
-  local indent = string.rep("  ", entry.depth - 1)
-
-  local is_entry_open = self.ctx:is_open(entry)
   local highlights = {}
   local line = ""
-  local col_start = 0
-  local name = entry.name
-  local name_hl_group = entry.is_dir and "SFMFolderName" or "SFMFileName"
-  local indicator = (entry.is_dir and is_entry_open and icons.indicator.folder_open)
-    or (entry.is_dir and not is_entry_open and icons.indicator.folder_closed)
-    or icons.indicator.file
-  local indicator_hl_group = entry.is_dir and "SFMFolderIndicator" or "SFMFileIndicator"
-  local icon = ""
-  local icon_hl_group = ""
-  if entry.is_symlink then
-    if entry.is_dir then
-      if is_entry_open then
-        icon = icons.folder.symlink_open
-        icon_hl_group = "SFMFolderIcon"
-      else
-        icon = icons.folder.symlink
-        icon_hl_group = "SFMFolderIcon"
+  for _, renderer in pairs(self.renderers) do
+    local render_component = renderer.func(entry, self.ctx, self.cfg)
+    local text = render_component.text
+    if text ~= nil then
+      if line ~= "" then
+        line = line .. " "
       end
-    else
-      icon = icons.file.symlink
-      icon_hl_group = "SFMDefaultFileIcon"
+
+      line = line .. text
+
+      local highlight = render_component.highlight
+      if highlight ~= nil then
+        table.insert(highlights, {
+          hl_group = highlight,
+          col_start = #line - #text,
+          col_end = #line,
+          line = linenr,
+        })
+      end
     end
-  elseif entry.is_dir then
-    if is_entry_open then
-      icon = icons.folder.open
-      icon_hl_group = "SFMFolderIcon"
-    else
-      icon = icons.folder.default
-      icon_hl_group = "SFMFolderIcon"
-    end
-  elseif not has_devicons or not self.cfg.opts.devicons_enable then
-    icon = icons.file.default
-    icon_hl_group = "SFMDefaultFileIcon"
-  else
-    icon, icon_hl_group = devicons.get_icon(entry.name, nil, { default = true })
   end
-
-  line = indent
-  col_start = #line
-  line = line .. indicator
-  table.insert(highlights, {
-    hl_group = indicator_hl_group,
-    col_start = col_start,
-    col_end = #line,
-    line = linenr,
-  })
-
-  line = line .. " "
-  col_start = #line
-  line = line .. icon
-  table.insert(highlights, {
-    hl_group = icon_hl_group,
-    col_start = col_start,
-    col_end = #line,
-    line = linenr,
-  })
-
-  if self.ctx:is_selected(entry) then
-    line = line .. " "
-    col_start = #line
-    line = line .. icons.selected
-    table.insert(highlights, {
-      hl_group = "SFMSelection",
-      col_start = col_start,
-      col_end = #line,
-      line = linenr,
-    })
-  end
-
-  line = line .. " "
-  col_start = #line
-  line = line .. name
-  table.insert(highlights, {
-    hl_group = name_hl_group,
-    col_start = col_start,
-    col_end = #line,
-    line = linenr,
-  })
 
   return {
     line = line,
