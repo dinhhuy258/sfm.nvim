@@ -134,4 +134,18 @@ function Explorer:close()
   end
 end
 
+--- remove the renderer by name
+---@param name string
+function Explorer:remove_renderer(name)
+  self.renderer:remove_renderer(name)
+end
+
+--- register a renderer
+---@param name string
+---@param priority integer
+---@param func function
+function Explorer:register_renderer(name, priority, func)
+  self.renderer:register_renderer(name, priority, func)
+end
+
 return Explorer

@@ -52,11 +52,43 @@ function Renderer.new(cfg, ctx, win)
     priority = 50,
   })
 
+  self:_sort_renderers()
+
+  return self
+end
+
+--- sort the renderers by priority
+---@private
+function Renderer:_sort_renderers()
   table.sort(self.renderers, function(a, b)
     return a.priority < b.priority
   end)
+end
 
-  return self
+--- remove the renderer by name
+---@param name string
+function Renderer:remove_renderer(name)
+  for idx, renderer in ipairs(self.renderers) do
+    if renderer.name == name then
+      table.remove(self.renderers, idx)
+
+      break
+    end
+  end
+end
+
+--- register a renderer
+---@param name string
+---@param priority integer
+---@param func function
+function Renderer:register_renderer(name, priority, func)
+  self:remove_renderer(name)
+
+  table.insert(self.renderers, {
+    name = name,
+    priority = priority,
+    func = func,
+  })
 end
 
 --- get the current entry at the current position
