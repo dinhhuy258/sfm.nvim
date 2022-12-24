@@ -10,6 +10,12 @@ The `sfm` plugin is also designed to be easily extensible. You can customize the
 
 Please note that the `sfm` plugin is still in development and may not be fully stable. Use at your own risk.
 
+## Demonstration
+
+Here is a short demonstration of the `sfm` plugin in action:
+
+https://user-images.githubusercontent.com/17776979/209444095-12be39db-9b6d-4773-b42f-aa93652154cc.mp4
+
 ## Installation
 
 Install `sfm` on Neovim using your favorite plugin manager. For example, the below example shows how to install `sfm` using [packer.nvim](https://github.com/wbthomason/packer.nvim)
@@ -78,7 +84,7 @@ require("sfm").setup {
 
 ## Mappings
 
-The default mapping is configurated [here](https://github.com/dinhhuy258/sfm.nvim/blob/main/lua/sfm/config.lua). You can override the default mapping by setting it via the view.mappings configuration. It's similar to the way [nvim-tree](https://github.com/nvim-tree/nvim-tree.lua) handles mapping overrides.
+The default mapping is configurated [here](https://github.com/dinhhuy258/sfm.nvim/blob/main/lua/sfm/config.lua). You can override the default mapping by setting it via the `view.mappings` configuration. It's similar to the way [nvim-tree](https://github.com/nvim-tree/nvim-tree.lua) handles mapping overrides.
 
 ## Credits
 
