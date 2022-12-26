@@ -175,11 +175,11 @@ sfm_explorer.register_renderer("custom", 100, size_renderer)
 
 The default entry renderers, in order of rendering priority, are:
 
-indent (priority 10)
-indicator (priority 20)
-icon (priority 30)
-selection (priority 40)
-name (priority 50)
+- indent (priority 10)
+- indicator (priority 20)
+- icon (priority 30)
+- selection (priority 40)
+- name (priority 50)
 
 ## Extensions
 
