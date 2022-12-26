@@ -67,8 +67,7 @@ local default_mappings = {
 }
 
 local default_config = {
-  show_hidden_files = false,
-  devicons_enable = true,
+  show_hidden = false,
   sort_by = nil,
   view = {
     width = 30,

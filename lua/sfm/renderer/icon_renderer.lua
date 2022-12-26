@@ -33,7 +33,7 @@ function M.render_entry(entry, ctx, cfg)
       icon = icons.folder.default
       icon_hl_group = "SFMFolderIcon"
     end
-  elseif not has_devicons or not cfg.opts.devicons_enable then
+  elseif not has_devicons then
     icon = icons.file.default
     icon_hl_group = "SFMDefaultFileIcon"
   else
