@@ -184,7 +184,7 @@ The default entry renderers, in order of rendering priority, are:
 
 The sfm plugin allows users to extend its functionality by installing extensions. Extensions are independent plugins that can add new features or customize the behavior of the sfm plugin.
 
-The extensions must be written under `http://lua/sfm/extensions/` folder. You can find examples of sfm extensions in the [sfm-bookmark](https://github.com/dinhhuy258/sfm-bookmark.nvim) repository.
+The extensions must be written under `lua/sfm/extensions/` folder. You can find examples of sfm extensions in the [sfm-bookmark](https://github.com/dinhhuy258/sfm-bookmark.nvim) repository.
 
 ## Credits
 
