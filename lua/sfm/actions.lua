@@ -5,13 +5,55 @@ local log = require "sfm.utils.log"
 
 ---@class M
 ---@field explorer Explorer
+---@field win Window
+---@field renderer Renderer
 ---@field ctx Context
 ---@field cfg Config
 local M = {}
 
 M.explorer = nil
+M.win = nil
+M.renderer = nil
 M.ctx = nil
 M.cfg = nil
+
+--- open the given directory
+---@private
+---@param e Entry
+function M._open_dir(e)
+  if not e.is_dir then
+    return
+  end
+
+  M.ctx:set_open(e)
+  e:scandir(M.cfg.opts.sort_by)
+end
+
+--- close the given directory
+---@private
+---@param e Entry
+function M._close_dir(e)
+  if not e.is_dir then
+    return
+  end
+
+  M.ctx:remove_open(e)
+end
+
+--- refresh the current entry
+---@private
+---@param e Entry
+local function _refresh(e)
+  -- make sure to rescan entries in refresh method
+  e:clear_entries()
+  M._open_dir(e)
+
+  for _, child in ipairs(e.entries) do
+    if M.ctx:is_open(child) then
+      _refresh(child)
+    end
+  end
+end
 
 --- focus the given path
 ---@param fpath string
@@ -24,7 +66,7 @@ function M.focus_file(fpath)
       for _, entry in ipairs(current.entries) do
         if entry.is_dir and entry.name == dir then
           if not M.ctx:is_open(entry) then
-            M.explorer:open_dir(entry)
+            M._open_dir(entry)
           end
 
           current = entry
@@ -35,19 +77,19 @@ function M.focus_file(fpath)
     end
   end
 
-  M.explorer:render()
+  M.renderer:render()
 
-  local linenr = M.explorer:find_line_number_for_path(fpath)
+  local linenr = M.renderer:find_line_number_for_path(fpath)
   if linenr == 0 then
     return
   end
 
-  M.explorer:move_cursor(linenr, 0)
+  M.win:move_cursor(linenr, 0)
 end
 
 --- edit file or toggle directory
 function M.edit()
-  local entry = M.explorer:get_current_entry()
+  local entry = M.renderer:get_current_entry()
   if not entry.is_dir then
     vim.cmd "wincmd l"
     vim.cmd("keepalt edit " .. entry.path)
@@ -57,22 +99,22 @@ function M.edit()
 
   if M.ctx:is_open(entry) then
     -- close directory
-    M.explorer:close_dir(entry)
+    M._close_dir(entry)
     -- re-render
-    M.explorer:render()
+    M.renderer:render()
 
     return
   end
 
   -- open directory
-  M.explorer:open_dir(entry)
+  M._open_dir(entry)
   -- render the explorer
-  M.explorer:render()
+  M.renderer:render()
 end
 
 --- navigate to the first sibling of current file/directory
 function M.first_sibling()
-  local entry = M.explorer:get_current_entry()
+  local entry = M.renderer:get_current_entry()
   if entry.parent == nil then
     return
   end
@@ -91,7 +133,7 @@ end
 
 --- navigate to the last sibling of current file/directory
 function M.last_sibling()
-  local entry = M.explorer:get_current_entry()
+  local entry = M.renderer:get_current_entry()
   if entry.parent == nil then
     return
   end
@@ -108,7 +150,7 @@ end
 
 --- move cursor to the parent directory
 function M.parent_entry()
-  local entry = M.explorer:get_current_entry()
+  local entry = M.renderer:get_current_entry()
   local parent = entry.parent
   if parent == nil then
     return
@@ -119,12 +161,13 @@ end
 
 --- refresh the explorer
 function M.refresh()
-  M.explorer:refresh()
+  _refresh(M.ctx.root)
+  M.renderer:render()
 end
 
 --- add a file; leaving a trailing `/` will add a directory
 function M.create()
-  local entry = M.explorer:get_current_entry()
+  local entry = M.renderer:get_current_entry()
   if (not entry.is_dir or not M.ctx:is_open(entry)) and not entry.is_root then
     entry = entry.parent
   end
@@ -154,7 +197,7 @@ function M.create()
 
     if ok then
       -- refresh the explorer
-      M.explorer:refresh()
+      M.refresh()
       -- focus file
       M.focus_file(fpath)
 
@@ -167,7 +210,7 @@ end
 
 --- close current opened directory or parent
 function M.close_entry()
-  local entry = M.explorer:get_current_entry()
+  local entry = M.renderer:get_current_entry()
   if not entry.is_dir or not M.ctx:is_open(entry) then
     entry = entry.parent
   end
@@ -179,16 +222,16 @@ function M.close_entry()
   end
 
   -- close directory
-  M.explorer:close_dir(entry)
+  M._close_dir(entry)
   -- re-render
-  M.explorer:render()
+  M.renderer:render()
   -- re-focus entry
   M.focus_file(entry.path)
 end
 
 --- delete a file/directory
 function M.delete()
-  local entry = M.explorer:get_current_entry()
+  local entry = M.renderer:get_current_entry()
   input.confirm("Are you sure you want to delete file " .. entry.name .. "? (y/n)", function()
     -- on yes
     input.clear()
@@ -200,7 +243,7 @@ function M.delete()
     end
 
     -- refresh the explorer
-    M.explorer:refresh()
+    M.refresh()
   end, function()
     -- on no
     input.clear()
@@ -242,7 +285,7 @@ function M.delete_selections()
     M.ctx:clear_selections()
 
     -- refresh the explorer
-    M.explorer:refresh()
+    M.refresh()
   end, function()
     -- on no
     input.clear()
@@ -254,7 +297,7 @@ end
 
 --- rename a current file/directory
 function M.rename()
-  local entry = M.explorer:get_current_entry()
+  local entry = M.renderer:get_current_entry()
   local from_path = entry.path
 
   if entry.is_root then
@@ -279,7 +322,7 @@ function M.rename()
 
     if fs.rename(from_path, to_path) then
       -- refresh the explorer
-      M.explorer:refresh()
+      M.refresh()
       -- focus file
       M.focus_file(to_path)
 
@@ -298,7 +341,7 @@ local function _paste(action_fn)
     return
   end
 
-  local dest_entry = M.explorer:get_current_entry()
+  local dest_entry = M.renderer:get_current_entry()
   if not dest_entry.is_dir or not M.ctx:is_open(dest_entry) then
     dest_entry = dest_entry.parent
   end
@@ -360,7 +403,7 @@ local function _paste(action_fn)
   )
 
   M.ctx:clear_selections()
-  M.explorer:refresh()
+  M.refresh()
 end
 
 --- copy selected files/directories to a current opened entry or it's parent
@@ -375,7 +418,7 @@ end
 
 --- toggle a current file/directory to bookmarks list
 function M.toggle_selection()
-  local entry = M.explorer:get_current_entry()
+  local entry = M.renderer:get_current_entry()
   if entry.is_root then
     return
   end
@@ -386,21 +429,21 @@ function M.toggle_selection()
     M.ctx:set_selection(entry)
   end
 
-  M.explorer:render()
+  M.renderer:render()
 end
 
 --- clear a bookmarks list
 function M.clear_selections()
   M.ctx:clear_selections()
-  M.explorer:render()
+  M.renderer:render()
 end
 
 --- toggle visibility of hidden files/folders
 function M.toggle_hidden_filter()
-  local entry = M.explorer:get_current_entry()
+  local entry = M.renderer:get_current_entry()
 
   M.cfg.opts.show_hidden_files = not M.cfg.opts.show_hidden_files
-  M.explorer:refresh()
+  M.refresh()
 
   -- re-focus the current entry
   M.focus_file(entry.path)
@@ -408,15 +451,38 @@ end
 
 --- close the explorer
 function M.close()
-  M.explorer:close()
+  if M.win:is_open() then
+    M.win:close()
+  end
+end
+
+function M.toggle()
+  if M.win:is_open() then
+    M.win:close()
+
+    return
+  end
+
+  -- get current file path
+  local fpath = vim.api.nvim_buf_get_name(0)
+  -- open explorer window
+  M.win:open()
+  -- refresh and render the explorer tree
+  M:refresh()
+  -- focus the current file
+  M.focus_file(fpath)
 end
 
 --- setup actions
 ---@param explorer Explorer
+---@param win Window
+---@param renderer Renderer
 ---@param ctx Context
 ---@param cfg Config
-function M.setup(explorer, ctx, cfg)
+function M.setup(explorer, win, renderer, ctx, cfg)
   M.explorer = explorer
+  M.win = win
+  M.renderer = renderer
   M.ctx = ctx
   M.cfg = cfg
 end

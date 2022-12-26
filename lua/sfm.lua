@@ -14,7 +14,7 @@ function M.setup(opts)
   M.sfm_explorer = explorer.new(opts)
 
   vim.api.nvim_create_user_command("SFMToggle", function()
-    M.sfm_explorer:toggle()
+    actions.toggle()
   end, {
     bang = true,
     nargs = "*",
