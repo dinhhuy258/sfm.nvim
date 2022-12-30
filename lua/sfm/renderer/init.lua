@@ -121,7 +121,7 @@ function Renderer:_update_rendered_entries()
 
   local function _update_rendered_entry(current_entry)
     for _, e in ipairs(current_entry.entries) do
-      if not e.is_hidden or self.cfg.opts.show_hidden_files then
+      if not e.is_hidden or self.cfg.opts.show_hidden then
         table.insert(self.entries, e)
 
         if self.ctx:is_open(e) then

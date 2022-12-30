@@ -121,7 +121,7 @@ function M.first_sibling()
 
   local first_entry = nil
   for _, e in ipairs(entry.parent.entries) do
-    if not e.is_hidden or M.cfg.opts.show_hidden_files then
+    if not e.is_hidden or M.cfg.opts.show_hidden then
       first_entry = e
 
       break
@@ -140,7 +140,7 @@ function M.last_sibling()
 
   local last_entry = nil
   for _, e in ipairs(entry.parent.entries) do
-    if not e.is_hidden or M.cfg.opts.show_hidden_files then
+    if not e.is_hidden or M.cfg.opts.show_hidden then
       last_entry = e
     end
   end
@@ -442,7 +442,7 @@ end
 function M.toggle_hidden_filter()
   local entry = M.renderer:get_current_entry()
 
-  M.cfg.opts.show_hidden_files = not M.cfg.opts.show_hidden_files
+  M.cfg.opts.show_hidden = not M.cfg.opts.show_hidden
   M.refresh()
 
   -- re-focus the current entry
