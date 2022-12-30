@@ -11,7 +11,7 @@ function M.render_entry(entry, ctx, cfg)
 
   if ctx:is_selected(entry) then
     return {
-      text = icons.selected,
+      text = icons.selection,
       highlight = "SFMSelection",
     }
   end

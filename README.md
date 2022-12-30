@@ -63,7 +63,7 @@ local default_config = {
         folder_open = "",
         file = " ",
       },
-      selected = "",
+      selection = "",
     },
   },
 }
