@@ -35,7 +35,6 @@ use {
 
 ```lua
 local default_config = {
-  show_hidden = false,
   sort_by = nil,
   view = {
     width = 30,

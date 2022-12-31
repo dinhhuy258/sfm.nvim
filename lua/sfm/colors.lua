@@ -32,7 +32,6 @@ local function get_hl_groups()
 
   return {
     SFMRootFolder = { fg = colors.purple },
-    SFMFolderIcon = { fg = colors.blue },
     SFMSelection = { fg = colors.blue },
     SFMSymlink = { gui = "bold", fg = colors.cyan },
     SFMFileIndicator = { fg = "#3b4261" },

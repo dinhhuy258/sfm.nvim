@@ -10,6 +10,7 @@ local path = require "sfm.utils.path"
 ---@field win Window
 ---@field ctx Context
 ---@field renderers table<string, table>
+---@field entry_filters table<string, table>
 ---@field entries Entry[]
 local Renderer = {}
 
@@ -26,6 +27,7 @@ function Renderer.new(cfg, ctx, win)
   self.win = win
   self.entries = {}
   self.renderers = {}
+  self.entry_filters = {}
   table.insert(self.renderers, {
     name = "indent",
     func = indent_renderer.render_entry,
@@ -91,6 +93,30 @@ function Renderer:register_renderer(name, priority, func)
   })
 end
 
+--- remove entry filter by given name
+---@param name string
+function Renderer:remove_entry_filter(name)
+  for idx, filter in ipairs(self.entry_filters) do
+    if filter.name == name then
+      table.remove(self.entry_filters, idx)
+
+      break
+    end
+  end
+end
+
+--- register an entry filter
+---@param name string
+---@param func function
+function Renderer:register_entry_filter(name, func)
+  self:remove_entry_filter(name)
+
+  table.insert(self.entry_filters, {
+    name = name,
+    func = func,
+  })
+end
+
 --- get the current entry at the current position
 ---@return Entry
 function Renderer:get_current_entry()
@@ -115,13 +141,25 @@ function Renderer:find_line_number_for_path(fpath)
   return 0
 end
 
+--- check if the given entry can be renderered
+---@param entry Entry
+function Renderer:should_render_entry(entry)
+  for _, filter in pairs(self.entry_filters) do
+    if not filter(entry) then
+      return false
+    end
+  end
+
+  return true
+end
+
 --- update the rendered entries
 function Renderer:_update_rendered_entries()
   self.entries = {}
 
   local function _update_rendered_entry(current_entry)
     for _, e in ipairs(current_entry.entries) do
-      if not e.is_hidden or self.cfg.opts.show_hidden then
+      if self:should_render_entry(e) then
         table.insert(self.entries, e)
 
         if self.ctx:is_open(e) then

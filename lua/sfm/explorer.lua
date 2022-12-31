@@ -57,4 +57,17 @@ function Explorer:register_renderer(name, priority, func)
   self.renderer:register_renderer(name, priority, func)
 end
 
+--- remove entry filter by given name
+---@param name string
+function Explorer:remove_entry_filter(name)
+  self.renderer:remove_entry_filter(name)
+end
+
+--- register an entry filter
+---@param name string
+---@param func function
+function Explorer:register_entry_filter(name, func)
+  self.renderer:register_entry_filter(name, func)
+end
+
 return Explorer

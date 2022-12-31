@@ -9,7 +9,6 @@ local fs = require "sfm.utils.fs"
 ---@field parent Entry
 ---@field depth integer
 ---@field is_root boolean
----@field is_hidden boolean
 ---@field entries Entry[]
 local Entry = {}
 
@@ -28,7 +27,6 @@ function Entry.new(fpath, parent, is_root)
   self.is_root = is_root
   self.is_open = false
   self.is_selected = false
-  self.is_hidden = path.is_hidden(fpath)
 
   if parent == nil then
     self.depth = 0
