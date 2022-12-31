@@ -462,6 +462,12 @@ function M.toggle()
   M.focus_file(fpath)
 end
 
+--- get the current entry at the current position
+---@return Entry
+function M.get_current_entry()
+  return M.renderer:get_current_entry()
+end
+
 --- setup actions
 ---@param explorer Explorer
 ---@param win Window

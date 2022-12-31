@@ -49,13 +49,13 @@ function M.setup(opts)
   })
 end
 
-function M.load_extention(name)
+function M.load_extention(name, opts)
   local ok, ext = pcall(require, "sfm.extensions." .. name)
   if not ok then
     error(string.format("'%s' extension doesn't exist or isn't installed: %s", name, ext))
   end
 
-  ext.setup(M.sfm_explorer)
+  ext.setup(M.sfm_explorer, opts)
 end
 
 return M
