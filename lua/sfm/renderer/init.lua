@@ -145,7 +145,7 @@ end
 ---@param entry Entry
 function Renderer:should_render_entry(entry)
   for _, filter in pairs(self.entry_filters) do
-    if not filter(entry) then
+    if not filter.func(entry) then
       return false
     end
   end
