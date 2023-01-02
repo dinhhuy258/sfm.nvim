@@ -190,6 +190,10 @@ end
 --- render the given lines to window
 ---@param lines table
 function Window:render(lines)
+  if not self:is_open() then
+    return
+  end
+
   local _lines = {}
   local highlights = {}
 
@@ -203,6 +207,13 @@ function Window:render(lines)
 
   self:_set_lines(_lines)
   self:_add_highlights(highlights)
+end
+
+--- reset the sfm explorer window highlight (used on ColorScheme event)
+function Window:reset_winhl()
+  if self:is_open() then
+    vim.wo[self.winnr].winhl = WIN_OPTIONS.winhl
+  end
 end
 
 return Window

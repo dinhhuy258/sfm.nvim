@@ -49,6 +49,16 @@ function M.setup(opts)
     end,
   })
 
+  -- reset highlights when colorscheme is changed
+  vim.api.nvim_create_autocmd("ColorScheme", {
+    callback = function()
+      colors.setup()
+      sfm_explorer.win:reset_winhl()
+      -- refresh the explorer
+      actions.refresh()
+    end,
+  })
+
   return sfm_explorer
 end
 
