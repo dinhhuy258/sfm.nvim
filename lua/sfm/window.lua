@@ -86,13 +86,13 @@ function Window:open()
   vim.api.nvim_buf_set_name(self.bufnr, "sfm_" .. vim.api.nvim_get_current_tabpage())
 
   for option, value in pairs(WIN_OPTIONS) do
-    vim.api.nvim_win_set_option(self.winnr, option, value)
+    vim.opt_local[option] = value
   end
 
   vim.api.nvim_win_set_width(self.winnr, self.cfg.opts.view.width)
 
   for option, value in pairs(BUFFER_OPTIONS) do
-    vim.api.nvim_buf_set_option(self.bufnr, option, value)
+    vim.bo[self.bufnr][option] = value
   end
 
   local options = {
