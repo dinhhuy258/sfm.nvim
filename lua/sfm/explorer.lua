@@ -73,7 +73,7 @@ end
 --- load extension that is given by the name and options
 ---@param name string
 ---@param opts table
-function Explorer:load_extention(name, opts)
+function Explorer:load_extension(name, opts)
   local ok, ext = pcall(require, "sfm.extensions." .. name)
   if not ok then
     error(string.format("'%s' extension doesn't exist or isn't installed: %s", name, ext))
