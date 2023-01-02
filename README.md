@@ -6,7 +6,7 @@ I created the `sfm` plugin because I wanted to write my own simple and lightweig
 
 The `sfm` plugin is designed to be minimalistic and easy to use, with a clean and intuitive interface. It provides all the essential file management functionality that I need, without any unnecessary bells and whistles. I hope you find it as useful as I do!
 
-The `sfm` plugin is also designed to be easily extensible. You can customize the plugin to suit your needs, or even create extensions for sfm to achieve specific tasks. 
+The `sfm` plugin is also designed to be easily extensible. You can customize the plugin to suit your needs, or even create extensions for sfm to achieve specific tasks.
 
 Please note that the `sfm` plugin is still in development and may not be fully stable. Use at your own risk.
 
@@ -25,7 +25,7 @@ use {
   'dinhhuy258/sfm.nvim',
   config = function()
     require("sfm").setup()
-  end,
+  end
 }
 ```
 
@@ -128,6 +128,7 @@ The sfm plugin allows users to customize the appearance of the explorer tree by 
 The `remove_renderer` function allows users to remove a renderer components from the list of renderers used to render the entry of the explorer tree. This can be useful if a user wants to disable a specific renderer provided by the sfm plugin or by an extension.
 
 ### register_renderer
+
 The `register_renderer` function allows users to register their own renderers for the explorer tree. This can be useful if a user wants to customize the appearance of the tree or add new features to it.
 
 ### Example
@@ -135,9 +136,15 @@ The `register_renderer` function allows users to register their own renderers fo
 Here is an example of how to use the `remove_renderer` and `register_renderer` functions to customize the sfm plugin:
 
 ```lua
-sfm_explorer.remove_renderer("icon")
-sfm_explorer.register_renderer("custom", 100, function(entry)
+local sfm_explorer = require("sfm").setup {}
+sfm_explorer:remove_renderer "name"
+sfm_explorer:register_renderer("name", 50, function(entry)
   local name = entry.name
+  if entry.is_dir then
+    name = name .. " [dir]"
+  else
+    name = name .. " [file]"
+  end
   local name_hl_group = entry.is_dir and "SFMFolderName" or "SFMFileName"
 
   return {
@@ -147,19 +154,14 @@ sfm_explorer.register_renderer("custom", 100, function(entry)
 end)
 ```
 
-Here is an example of an extension for the sfm plugin that adds a custom renderer to display the entry size:
+Here is an example of an extension for the `sfm` plugin that adds a custom renderer to display the entry size:
 
 ```lua
--- Define a custom renderer that displays the entry size
-function size_renderer(entry)
-  local size = entry.size
-  local size_text = ""
-
-  if size > 0 then
-    size_text = string.format("%d bytes", size)
-  elseif entry.is_dir then
-    size_text = "-"
-  end
+-- define a custom renderer that displays the entry size
+local function size_renderer(entry)
+  local stat = vim.loop.fs_stat(entry.path)
+  local size = stat.size
+  local size_text = string.format("[%d bytes]", size)
 
   return {
     text = size_text,
@@ -167,8 +169,8 @@ function size_renderer(entry)
   }
 end
 
--- Register the custom renderer
-sfm_explorer.register_renderer("custom", 100, size_renderer)
+-- register the custom renderer
+sfm_explorer:register_renderer("custom", 100, size_renderer)
 ```
 
 The default entry renderers, in order of rendering priority, are:
@@ -181,9 +183,16 @@ The default entry renderers, in order of rendering priority, are:
 
 ## Extensions
 
-The sfm plugin allows users to extend its functionality by installing extensions. Extensions are independent plugins that can add new features or customize the behavior of the sfm plugin.
+The `sfm` plugin allows users to extend its functionality by installing extensions. Extensions are independent plugins that can add new features or customize the behavior of the `sfm` plugin.
 
-The extensions must be written under `lua/sfm/extensions/` folder. You can find examples of sfm extensions in the [sfm-bookmark](https://github.com/dinhhuy258/sfm-bookmark.nvim) repository.
+The extensions must be written under `lua/sfm/extensions/` folder.
+
+### Available Extensions
+
+Here is a list of available extensions for the `sfm` plugin:
+
+- [sfm-bookmark](https://github.com/dinhhuy258/sfm-bookmark.nvim): Adds bookmarking functionality to the `sfm` plugin
+- [sfm-filter](https://github.com/dinhhuy258/sfm-filter.nvim): Allows users to filter entries in the `sfm` explorer tree
 
 ## Credits
 
