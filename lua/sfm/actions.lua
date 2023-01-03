@@ -265,9 +265,14 @@ function M.delete_selections()
     -- on yes
     input.clear()
 
-    local success_count = 0
-    -- TODO: unify paths
+    local paths = {}
     for fpath, _ in pairs(M.ctx.selections) do
+      table.insert(paths, fpath)
+    end
+    paths = path.unify(paths)
+
+    local success_count = 0
+    for _, fpath in ipairs(paths) do
       if fs.remove(fpath) then
         success_count = success_count + 1
       end
@@ -277,7 +282,7 @@ function M.delete_selections()
       string.format(
         "Deletion process complete. %d files deleted successfully, %d files failed.",
         success_count,
-        table.count(M.ctx.selections) - success_count
+        table.count(paths) - success_count
       )
     )
 

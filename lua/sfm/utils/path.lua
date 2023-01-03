@@ -84,4 +84,46 @@ function M.islink(path)
   return lstat.type == "link"
 end
 
+function M.unify(paths)
+  local function ancestors(path)
+    local result = {}
+    local ancestor = ""
+    for _, p in pairs(M.split(path)) do
+      ancestor = M.join { ancestor, p }
+
+      if ancestor ~= path then
+        table.insert(result, ancestor)
+      end
+    end
+
+    return result
+  end
+
+  local function is_disjoint(set1, set2)
+    local map = {}
+
+    for _, element in ipairs(set1) do
+      map[element] = true
+    end
+
+    for _, element in ipairs(set2) do
+      if table.contains_key(map, element) then
+        return false
+      end
+    end
+
+    return true
+  end
+
+  local result = {}
+
+  for _, path in ipairs(paths) do
+    if is_disjoint(ancestors(path), paths) then
+      table.insert(result, path)
+    end
+  end
+
+  return result
+end
+
 return M
