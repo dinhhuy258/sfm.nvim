@@ -341,13 +341,9 @@ function M.rename()
 end
 
 --- move/copy selected files/directories to a current opened entry or it's parent
-local function _paste(action_fn)
-  if table.is_empty(M.ctx.selections) then
-    log.warn "No files selected. Please select at least one file to proceed."
-
-    return
-  end
-
+---@param paths table
+---@param action_fn function
+local function _paste(paths, action_fn)
   local dest_entry = M.renderer:get_current_entry()
   if not dest_entry.is_dir or not M.ctx:is_open(dest_entry) then
     dest_entry = dest_entry.parent
@@ -356,7 +352,7 @@ local function _paste(action_fn)
   local success_count = 0
   local continue_processing = true
 
-  for fpath, _ in pairs(M.ctx.selections) do
+  for _, fpath in ipairs(paths) do
     local basename = path.basename(fpath)
     local dest_path = path.join { dest_entry.path, basename }
 
@@ -405,22 +401,48 @@ local function _paste(action_fn)
     string.format(
       "Copy/move process complete. %d files copied/moved successfully, %d files failed.",
       success_count,
-      table.count(M.ctx.selections) - success_count
+      table.count(paths) - success_count
     )
   )
+end
+
+--- copy selected files/directories to a current opened entry or it's parent
+function M.copy_selections()
+  if table.is_empty(M.ctx.selections) then
+    log.warn "No files selected. Please select at least one file to proceed."
+
+    return
+  end
+
+  local paths = {}
+  for fpath, _ in pairs(M.ctx.selections) do
+    table.insert(paths, fpath)
+  end
+
+  _paste(paths, fs.copy)
 
   M.ctx:clear_selections()
   M.refresh()
 end
 
---- copy selected files/directories to a current opened entry or it's parent
-function M.copy_selections()
-  _paste(fs.copy)
-end
-
 --- move selected files/directories to a current opened entry or it's parent
 function M.move_selections()
-  _paste(fs.move)
+  if table.is_empty(M.ctx.selections) then
+    log.warn "No files selected. Please select at least one file to proceed."
+
+    return
+  end
+
+  local paths = {}
+  for fpath, _ in pairs(M.ctx.selections) do
+    table.insert(paths, fpath)
+  end
+  paths = path.unify(paths)
+
+  _paste(paths, fs.move)
+
+  M.ctx:clear_selections()
+  M.refresh()
 end
 
 --- toggle a current file/directory to bookmarks list
