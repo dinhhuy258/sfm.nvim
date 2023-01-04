@@ -61,10 +61,12 @@ function M.focus_file(fpath)
   if vim.startswith(fpath, M.ctx.root.path) then
     local dirs = path.split(path.dirname(fpath))
     local current = M.ctx.root
+    local current_path = ""
 
     for _, dir in ipairs(dirs) do
+      current_path = path.join { current_path, dir }
       for _, entry in ipairs(current.entries) do
-        if entry.is_dir and entry.name == dir then
+        if entry.is_dir and entry.path == current_path then
           if not M.ctx:is_open(entry) then
             M._open_dir(entry)
           end
