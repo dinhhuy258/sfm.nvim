@@ -115,7 +115,7 @@ M.sfm_explorer:subscribe(event.ExplorerOpen, function(payload)
 end)
 ```
 
-Available events::
+**Available events:**
 
 - `ExplorerOpen`: Triggered when the explorer window is opened. The params of the event contains the window and buffer numbers: `{winnr = 1, bufnr = 2}`.
 

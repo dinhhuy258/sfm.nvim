@@ -25,8 +25,6 @@ function Entry.new(fpath, parent, is_root)
   self.entries = {}
   self.parent = parent
   self.is_root = is_root
-  self.is_open = false
-  self.is_selected = false
 
   if parent == nil then
     self.depth = 0
