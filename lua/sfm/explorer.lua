@@ -1,5 +1,5 @@
 local config = require "sfm.config"
-local window = require "sfm.window"
+local window = require "sfm.view.window"
 local context = require "sfm.context"
 local renderer = require "sfm.renderer"
 local event_manager = require "sfm.event_manager"
