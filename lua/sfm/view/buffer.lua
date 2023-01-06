@@ -11,10 +11,6 @@ local BUFFER_OPTIONS = {
   buflisted = false,
 }
 
--- local function is_sfm_bufer(bufnr)
---   return vim.fn.bufexists(bufnr) and vim.bo[bufnr].filetype == BUFFER_OPTIONS.filetype
--- end
-
 --- add the highlights
 ---@param bufnr integer
 ---@param highlights table
@@ -42,6 +38,8 @@ local function _set_lines(bufnr, lines)
   vim.api.nvim_buf_set_option(bufnr, "modifiable", false)
 end
 
+--- set buffer option
+---@param bufnr integer
 function M.set_buffer_options(bufnr)
   for option, value in pairs(BUFFER_OPTIONS) do
     vim.bo[bufnr][option] = value
@@ -59,7 +57,7 @@ function M.create_buffer()
   return bufnr
 end
 
---- render the given lines to window
+--- render the given lines to buffer
 ---@param bufnr integer
 ---@param lines table
 function M.render(bufnr, lines)

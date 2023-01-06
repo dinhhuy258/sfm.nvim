@@ -39,6 +39,7 @@ function M.create_window()
   return vim.api.nvim_get_current_win()
 end
 
+--- set window option
 function M.set_window_option()
   for option, value in pairs(WIN_OPTIONS) do
     vim.opt_local[option] = value

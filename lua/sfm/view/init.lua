@@ -22,13 +22,13 @@ function View.new(event_manager)
   return self
 end
 
---- check if the window is open or not
+--- check if the explorer is open or not
 ---@return boolean
 function View:is_open()
   return self.winnr ~= nil and vim.api.nvim_win_is_valid(self.winnr)
 end
 
---- close the window
+--- close the explorer
 function View:close()
   if self:is_open() then
     vim.api.nvim_win_close(self.winnr, 1)
@@ -37,7 +37,7 @@ function View:close()
   self.winnr = nil
 end
 
---- open the window
+--- open the explorer
 function View:open()
   self.winnr = window.create_window()
   self.bufnr = buffer.create_buffer()
@@ -45,8 +45,8 @@ function View:open()
 
   buffer.set_buffer_options(self.bufnr)
   window.set_window_option()
-
   vim.api.nvim_win_set_width(self.winnr, config.opts.view.width)
+
   self.event_manager:dispatch(event.ExplorerOpen, {
     winnr = self.winnr,
     bufnr = self.bufnr,
