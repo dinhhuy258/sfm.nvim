@@ -147,25 +147,19 @@ local function merge_mappings(mappings, user_mappings)
   return vim.fn.extend(default_map, user_map)
 end
 
----@class Config
----@field opts table
-local Config = {}
+local M = {
+  opts = {},
+}
 
---- Config constructor
 ---@param opts table
----@return Config
-function Config.new(opts)
-  local self = setmetatable({}, { __index = Config })
+function M.setup(opts)
+  M.opts = vim.tbl_deep_extend("force", default_config, opts or {})
 
-  self.opts = vim.tbl_deep_extend("force", default_config, opts or {})
-
-  if self.opts.view.mappings.custom_only then
-    self.opts.view.mappings.list = merge_mappings({}, self.opts.view.mappings.list)
+  if M.opts.view.mappings.custom_only then
+    M.opts.view.mappings.list = merge_mappings({}, M.opts.view.mappings.list)
   else
-    self.opts.view.mappings.list = merge_mappings(default_mappings, self.opts.view.mappings.list)
+    M.opts.view.mappings.list = merge_mappings(default_mappings, M.opts.view.mappings.list)
   end
-
-  return self
 end
 
-return Config
+return M

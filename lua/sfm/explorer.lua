@@ -1,5 +1,4 @@
-local config = require "sfm.config"
-local window = require "sfm.view.window"
+local view = require "sfm.view"
 local context = require "sfm.context"
 local renderer = require "sfm.renderer"
 local event_manager = require "sfm.event_manager"
@@ -7,28 +6,25 @@ local entry = require "sfm.entry"
 local actions = require "sfm.actions"
 
 ---@class Explorer
----@field win Window
+---@field view View
 ---@field ctx Context
 ---@field renderer Renderer
----@field cfg Config
 ---@field event_manager EventManager
 local Explorer = {}
 
 --- Explorer constructor
----@param opts table
 ---@return Explorer
-function Explorer.new(opts)
+function Explorer.new()
   local self = setmetatable({}, { __index = Explorer })
 
   local cwd = vim.fn.getcwd()
 
-  self.cfg = config.new(opts)
   self.event_manager = event_manager.new()
-  self.win = window.new(self.cfg, self.event_manager)
+  self.view = view.new(self.event_manager)
   self.ctx = context.new(entry.new(cwd, nil, true))
-  self.renderer = renderer.new(self.cfg, self.ctx, self.win)
+  self.renderer = renderer.new(self.ctx, self.view)
 
-  actions.setup(self, self.win, self.renderer, self.ctx, self.cfg)
+  actions.setup(self, self.view, self.renderer, self.ctx)
 
   -- set the root folder as open
   self.ctx:set_open(self.ctx.root)

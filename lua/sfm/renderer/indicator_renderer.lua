@@ -1,14 +1,15 @@
+local config = require "sfm.config"
+
 local M = {}
 
 --- render indicator for the given entry
 ---@private
 ---@param entry Entry
 ---@param ctx Context
----@param cfg Config
 ---@return table
-function M.render_entry(entry, ctx, cfg)
+function M.render_entry(entry, ctx)
   local is_entry_open = ctx:is_open(entry)
-  local icons = cfg.opts.renderer.icons
+  local icons = config.opts.renderer.icons
   local indicator = (entry.is_dir and is_entry_open and icons.indicator.folder_open)
     or (entry.is_dir and not is_entry_open and icons.indicator.folder_closed)
     or icons.indicator.file

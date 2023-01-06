@@ -2,20 +2,19 @@ local input = require "sfm.utils.input"
 local path = require "sfm.utils.path"
 local fs = require "sfm.utils.fs"
 local log = require "sfm.utils.log"
+local config = require "sfm.config"
 
 ---@class M
 ---@field explorer Explorer
----@field win Window
+---@field view View
 ---@field renderer Renderer
 ---@field ctx Context
----@field cfg Config
 local M = {}
 
 M.explorer = nil
-M.win = nil
+M.view = nil
 M.renderer = nil
 M.ctx = nil
-M.cfg = nil
 
 --- open the given directory
 ---@private
@@ -26,7 +25,7 @@ function M._open_dir(e)
   end
 
   M.ctx:set_open(e)
-  e:scandir(M.cfg.opts.sort_by)
+  e:scandir(config.opts.sort_by)
 end
 
 --- close the given directory
@@ -86,7 +85,7 @@ function M.focus_file(fpath)
     return
   end
 
-  M.win:move_cursor(linenr, 0)
+  M.view:move_cursor(linenr, 0)
 end
 
 --- edit file or toggle directory
@@ -469,14 +468,14 @@ end
 
 --- close the explorer
 function M.close()
-  if M.win:is_open() then
-    M.win:close()
+  if M.view:is_open() then
+    M.view:close()
   end
 end
 
 function M.toggle()
-  if M.win:is_open() then
-    M.win:close()
+  if M.view:is_open() then
+    M.view:close()
 
     return
   end
@@ -484,7 +483,7 @@ function M.toggle()
   -- get current file path
   local fpath = vim.api.nvim_buf_get_name(0)
   -- open explorer window
-  M.win:open()
+  M.view:open()
   -- refresh and render the explorer tree
   M:refresh()
   -- focus the current file
@@ -499,16 +498,14 @@ end
 
 --- setup actions
 ---@param explorer Explorer
----@param win Window
+---@param view View
 ---@param renderer Renderer
 ---@param ctx Context
----@param cfg Config
-function M.setup(explorer, win, renderer, ctx, cfg)
+function M.setup(explorer, view, renderer, ctx)
   M.explorer = explorer
-  M.win = win
+  M.view = view
   M.renderer = renderer
   M.ctx = ctx
-  M.cfg = cfg
 end
 
 return M
