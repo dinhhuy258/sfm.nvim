@@ -4,7 +4,7 @@ local M = {}
 ---@private
 ---@param entry Entry
 ---@return table
-function M.render_entry(entry, _, _)
+function M.render_entry(entry)
   local indent = string.rep("  ", entry.depth - 1)
 
   return {

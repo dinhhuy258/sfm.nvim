@@ -6,8 +6,7 @@ local name_renderer = require "sfm.renderer.name_renderer"
 local path = require "sfm.utils.path"
 
 ---@class Renderer
----@field cfg Config
----@field win Window
+---@field view View
 ---@field ctx Context
 ---@field renderers table<string, table>
 ---@field entry_filters table<string, table>
@@ -15,16 +14,14 @@ local path = require "sfm.utils.path"
 local Renderer = {}
 
 --- Renderer constructor
----@param cfg Config
 ---@param ctx Context
----@param win Window
+---@param view View
 ---@return Renderer
-function Renderer.new(cfg, ctx, win)
+function Renderer.new(ctx, view)
   local self = setmetatable({}, { __index = Renderer })
 
-  self.cfg = cfg
   self.ctx = ctx
-  self.win = win
+  self.view = view
   self.entries = {}
   self.renderers = {}
   self.entry_filters = {}
@@ -201,7 +198,7 @@ function Renderer:_render_entry(entry, linenr)
   local highlights = {}
   local line = ""
   for _, renderer in pairs(self.renderers) do
-    local render_component = renderer.func(entry, self.ctx, self.cfg)
+    local render_component = renderer.func(entry, self.ctx)
     local text = render_component.text
     if text ~= nil then
       if line ~= "" then
@@ -236,7 +233,7 @@ function Renderer:render()
     table.insert(lines, self:_render_entry(e, linenr - 1)) -- 0-indexed
   end
 
-  self.win:render(lines)
+  self.view:render(lines)
 end
 
 return Renderer

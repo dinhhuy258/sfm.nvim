@@ -1,14 +1,15 @@
 local has_devicons, devicons = pcall(require, "nvim-web-devicons")
+local config = require "sfm.config"
+
 local M = {}
 
 --- render icon for the given entry
 ---@private
 ---@param entry Entry
 ---@param ctx Context
----@param cfg Config
 ---@return table
-function M.render_entry(entry, ctx, cfg)
-  local icons = cfg.opts.renderer.icons
+function M.render_entry(entry, ctx)
+  local icons = config.opts.renderer.icons
   local is_entry_open = ctx:is_open(entry)
   local icon = ""
   local icon_hl_group = ""
