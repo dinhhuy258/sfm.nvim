@@ -4,6 +4,7 @@ local renderer = require "sfm.renderer"
 local event_manager = require "sfm.event_manager"
 local entry = require "sfm.entry"
 local actions = require "sfm.actions"
+local api = require "sfm.api"
 
 ---@class Explorer
 ---@field view View
@@ -25,6 +26,7 @@ function Explorer.new()
   self.renderer = renderer.new(self.ctx, self.view)
 
   actions.setup(self, self.view, self.renderer, self.ctx)
+  api.setup(self.view, self.renderer)
 
   -- set the root folder as open
   self.ctx:set_open(self.ctx.root)
