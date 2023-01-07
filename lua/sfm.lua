@@ -57,8 +57,8 @@ function M.setup(opts)
     callback = function()
       colors.setup()
       sfm_explorer.view:reset_winhl()
-      -- refresh the explorer
-      actions.refresh()
+      -- reload the explorer
+      actions.reload()
     end,
   })
 

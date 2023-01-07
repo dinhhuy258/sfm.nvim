@@ -39,17 +39,17 @@ function M._close_dir(e)
   M.ctx:remove_open(e)
 end
 
---- refresh the current entry
+--- reload the current entry
 ---@private
 ---@param e Entry
-local function _refresh(e)
-  -- make sure to rescan entries in refresh method
+local function _reload(e)
+  -- make sure to rescan entries in reload method
   e:clear_entries()
   M._open_dir(e)
 
   for _, child in ipairs(e.entries) do
     if M.ctx:is_open(child) then
-      _refresh(child)
+      _reload(child)
     end
   end
 end
@@ -165,9 +165,9 @@ function M.parent_entry()
   M.focus_file(parent.path)
 end
 
---- refresh the explorer
-function M.refresh()
-  _refresh(M.ctx.root)
+--- reload the explorer
+function M.reload()
+  _reload(M.ctx.root)
   M.renderer:render()
 end
 
@@ -202,8 +202,8 @@ function M.create()
     end
 
     if ok then
-      -- refresh the explorer
-      M.refresh()
+      -- reload the explorer
+      M.reload()
       -- focus file
       M.focus_file(fpath)
 
@@ -248,8 +248,8 @@ function M.delete()
       log.error("Deletion of file " .. entry.name .. " failed due to an error.")
     end
 
-    -- refresh the explorer
-    M.refresh()
+    -- reload the explorer
+    M.reload()
   end, function()
     -- on no
     input.clear()
@@ -295,8 +295,8 @@ function M.delete_selections()
     -- clear selections
     M.ctx:clear_selections()
 
-    -- refresh the explorer
-    M.refresh()
+    -- reload the explorer
+    M.reload()
   end, function()
     -- on no
     input.clear()
@@ -332,8 +332,8 @@ function M.rename()
     end
 
     if fs.rename(from_path, to_path) then
-      -- refresh the explorer
-      M.refresh()
+      -- reload the explorer
+      M.reload()
       -- focus file
       M.focus_file(to_path)
 
@@ -426,7 +426,7 @@ function M.copy_selections()
   _paste(paths, fs.copy)
 
   M.ctx:clear_selections()
-  M.refresh()
+  M.reload()
 end
 
 --- move selected files/directories to a current opened entry or it's parent
@@ -446,7 +446,7 @@ function M.move_selections()
   _paste(paths, fs.move)
 
   M.ctx:clear_selections()
-  M.refresh()
+  M.reload()
 end
 
 --- toggle a current file/directory to bookmarks list
@@ -489,8 +489,8 @@ function M.toggle()
   local fpath = vim.api.nvim_buf_get_name(0)
   -- open explorer window
   M.view:open()
-  -- refresh and render the explorer tree
-  M:refresh()
+  -- reload and render the explorer tree
+  M:reload()
   -- focus the current file
   M.focus_file(fpath)
 end

@@ -21,7 +21,7 @@ local default_mappings = {
   },
   {
     key = "R",
-    action = "refresh",
+    action = "reload",
   },
   {
     key = "n",

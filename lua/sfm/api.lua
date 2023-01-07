@@ -22,8 +22,8 @@ function M.setup(view, renderer)
   M.explorer.is_open = function()
     return view:is_open()
   end
-  M.explorer.refresh = function()
-    return actions.refresh()
+  M.explorer.reload = function()
+    return actions.reload()
   end
 
   M.entry.current = function()
