@@ -92,7 +92,12 @@ end
 function M.edit()
   local entry = M.renderer:get_current_entry()
   if not entry.is_dir then
-    vim.cmd "wincmd l"
+    if config.opts.view.side == "right" then
+      vim.cmd "wincmd h"
+    else
+      vim.cmd "wincmd l"
+    end
+
     vim.cmd("keepalt edit " .. entry.path)
 
     return

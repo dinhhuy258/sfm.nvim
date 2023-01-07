@@ -1,3 +1,5 @@
+local config = require "sfm.config"
+
 local M = {}
 
 local WIN_OPTIONS = {
@@ -34,7 +36,11 @@ local WIN_OPTIONS = {
 ---@return integer
 function M.create_window()
   vim.api.nvim_command "vsp"
-  vim.api.nvim_command "wincmd H"
+  if config.opts.view.side == "right" then
+    vim.api.nvim_command "wincmd L" -- right
+  else
+    vim.api.nvim_command "wincmd H" -- left
+  end
 
   return vim.api.nvim_get_current_win()
 end

@@ -37,6 +37,7 @@ use {
 local default_config = {
   sort_by = nil,
   view = {
+    side = "left", -- side of the tree, can be `left`, `right`
     width = 30,
     mappings = {
       custom_only = false,
