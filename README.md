@@ -119,14 +119,14 @@ end)
 **Available events:**
 
 - `ExplorerOpened`: Triggered when the explorer window is opened. The payload of the event is a table with the following keys:
-  `winnr`: The number of the window where the explorer is opened.
-  `bufnr`: The number of the buffer associated with the explorer window.
+  + `winnr`: The number of the window where the explorer is opened.
+  + `bufnr`: The number of the buffer associated with the explorer window.
 - `FileOpened`: Triggered when a file is opened in the explorer. The payload of the event is a table with the following key:
-  `path`: The path of the file that was opened.
+  + `path`: The path of the file that was opened.
 - `FolderOpened`: Triggered when a folder is opened in the explorer. The payload of the event is a table with the following key:
-  `path`: The path of the folder that was opened.
+  + `path`: The path of the folder that was opened.
 - `FolderClosed`: Triggered when a folder is closed in the explorer. The payload of the event is a table with the following key:
-  `path`: The path of the folder that was closed.
+  + `path`: The path of the folder that was closed.
 
 ## Customizations
 
