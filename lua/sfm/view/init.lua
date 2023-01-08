@@ -75,7 +75,7 @@ function View:open()
     bufnr = bufnr,
   }
 
-  self.event_manager:dispatch(event.ExplorerOpen, {
+  self.event_manager:dispatch(event.ExplorerOpened, {
     winnr = winnr,
     bufnr = bufnr,
   })

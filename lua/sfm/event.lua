@@ -1,5 +1,8 @@
 local Event = {
-  ExplorerOpen = "ExplorerOpen",
+  ExplorerOpened = "ExplorerOpened",
+  FileOpened = "FileOpened",
+  FolderOpened = "FolderOpened",
+  FolderClosed = "FolderClosed",
 }
 
 return Event

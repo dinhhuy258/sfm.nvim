@@ -25,6 +25,9 @@ function M.setup(view, renderer)
   M.explorer.reload = function()
     return actions.reload()
   end
+  M.explorer.refresh = function()
+    return renderer:render()
+  end
 
   M.entry.current = function()
     return renderer:get_current_entry()

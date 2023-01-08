@@ -62,7 +62,7 @@ function M.setup(opts)
     end,
   })
 
-  sfm_explorer:subscribe(event.ExplorerOpen, function(payload)
+  sfm_explorer:subscribe(event.ExplorerOpened, function(payload)
     local bufnr = payload["bufnr"]
     local options = {
       noremap = true,

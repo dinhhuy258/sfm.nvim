@@ -3,11 +3,13 @@ local path = require "sfm.utils.path"
 local fs = require "sfm.utils.fs"
 local log = require "sfm.utils.log"
 local config = require "sfm.config"
+local event = require "sfm.event"
 
 ---@class M
 ---@field explorer Explorer
 ---@field view View
 ---@field renderer Renderer
+---@field event_manager EventManager
 ---@field ctx Context
 local M = {}
 
@@ -100,6 +102,11 @@ function M.edit()
 
     vim.cmd("keepalt edit " .. entry.path)
 
+    -- fire event
+    M.event_manager:dispatch(event.FileOpened, {
+      path = entry.path,
+    })
+
     return
   end
 
@@ -108,6 +115,10 @@ function M.edit()
     M._close_dir(entry)
     -- re-render
     M.renderer:render()
+    -- fire event
+    M.event_manager:dispatch(event.FolderClosed, {
+      path = entry.path,
+    })
 
     return
   end
@@ -116,6 +127,10 @@ function M.edit()
   M._open_dir(entry)
   -- render the explorer
   M.renderer:render()
+  -- fire event
+  M.event_manager:dispatch(event.FolderOpened, {
+    path = entry.path,
+  })
 end
 
 --- navigate to the first sibling of current file/directory
@@ -497,14 +512,12 @@ end
 
 --- setup actions
 ---@param explorer Explorer
----@param view View
----@param renderer Renderer
----@param ctx Context
-function M.setup(explorer, view, renderer, ctx)
+function M.setup(explorer)
   M.explorer = explorer
-  M.view = view
-  M.renderer = renderer
-  M.ctx = ctx
+  M.view = explorer.view
+  M.renderer = explorer.renderer
+  M.event_manager = explorer.event_manager
+  M.ctx = explorer.ctx
 end
 
 return M
