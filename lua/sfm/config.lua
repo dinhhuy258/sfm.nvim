@@ -91,7 +91,7 @@ local default_config = {
         folder_open = "",
         file = " ",
       },
-      selection = "",
+      selection = "",
     },
   },
 }

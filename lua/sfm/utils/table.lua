@@ -26,3 +26,17 @@ function table.count(items)
 
   return count
 end
+
+function table.is_matrix(tbl)
+  if type(tbl) ~= "table" then
+    return false
+  end
+
+  for _, v in pairs(tbl) do
+    if type(v) ~= "table" then
+      return false
+    end
+  end
+
+  return true
+end

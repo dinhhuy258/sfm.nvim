@@ -198,23 +198,29 @@ function Renderer:_render_entry(entry, linenr)
   local highlights = {}
   local line = ""
   for _, renderer in pairs(self.renderers) do
-    local render_component = renderer.func(entry, self.ctx)
-    local text = render_component.text
-    if text ~= nil then
-      if line ~= "" then
-        line = line .. " "
-      end
+    local render_components = renderer.func(entry, self.ctx)
+    if not table.is_matrix(render_components) then
+      render_components = { render_components }
+    end
 
-      line = line .. text
+    for _, render_component in pairs(render_components) do
+      local text = render_component.text
+      if text ~= nil then
+        if line ~= "" then
+          line = line .. " "
+        end
 
-      local highlight = render_component.highlight
-      if highlight ~= nil then
-        table.insert(highlights, {
-          hl_group = highlight,
-          col_start = #line - #text,
-          col_end = #line,
-          line = linenr,
-        })
+        line = line .. text
+
+        local highlight = render_component.highlight
+        if highlight ~= nil then
+          table.insert(highlights, {
+            hl_group = highlight,
+            col_start = #line - #text,
+            col_end = #line,
+            line = linenr,
+          })
+        end
       end
     end
   end
