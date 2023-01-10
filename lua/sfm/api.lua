@@ -9,7 +9,8 @@ local M = {
 --- initialize api
 ---@param view View
 ---@param renderer Renderer
-function M.setup(view, renderer)
+---@param ctx Context
+function M.setup(view, renderer, ctx)
   M.explorer.toggle = function()
     actions.toggle()
   end
@@ -29,6 +30,9 @@ function M.setup(view, renderer)
     return renderer:render()
   end
 
+  M.entry.root = function()
+    return ctx.root
+  end
   M.entry.current = function()
     return renderer:get_current_entry()
   end

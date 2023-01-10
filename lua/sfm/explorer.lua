@@ -26,18 +26,12 @@ function Explorer.new()
   self.renderer = renderer.new(self.ctx, self.view)
 
   actions.setup(self)
-  api.setup(self.view, self.renderer)
+  api.setup(self.view, self.renderer, self.ctx)
 
   -- set the root folder as open
   self.ctx:set_open(self.ctx.root)
 
   return self
-end
-
---- get root entry
----@return Entry
-function Explorer:get_root_entry()
-  return self.ctx.root
 end
 
 --- subscribe event
