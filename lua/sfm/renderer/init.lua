@@ -88,6 +88,8 @@ function Renderer:register_renderer(name, priority, func)
     priority = priority,
     func = func,
   })
+
+  self:_sort_renderers()
 end
 
 --- remove entry filter by given name
