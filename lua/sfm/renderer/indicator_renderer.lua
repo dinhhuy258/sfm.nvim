@@ -16,7 +16,7 @@ function M.render_entry(entry, ctx)
   local indicator_hl_group = entry.is_dir and "SFMFolderIndicator" or "SFMFileIndicator"
 
   return {
-    text = indicator,
+    text = indicator .. " ",
     highlight = indicator_hl_group,
   }
 end

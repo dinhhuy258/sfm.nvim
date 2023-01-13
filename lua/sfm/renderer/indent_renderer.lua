@@ -8,7 +8,7 @@ function M.render_entry(entry)
   local indent = string.rep("  ", entry.depth - 1)
 
   return {
-    text = indent,
+    text = indent .. " ",
     highlight = nil,
   }
 end

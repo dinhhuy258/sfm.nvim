@@ -208,10 +208,6 @@ function Renderer:_render_entry(entry, linenr)
     for _, render_component in pairs(render_components) do
       local text = render_component.text
       if text ~= nil then
-        if line ~= "" then
-          line = line .. " "
-        end
-
         line = line .. text
 
         local highlight = render_component.highlight

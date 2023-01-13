@@ -42,7 +42,7 @@ function M.render_entry(entry, ctx)
   end
 
   return {
-    text = icon,
+    text = icon .. " ",
     highlight = icon_hl_group,
   }
 end
