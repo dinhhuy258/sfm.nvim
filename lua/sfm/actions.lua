@@ -183,6 +183,7 @@ end
 --- reload the explorer
 function M.reload()
   _reload(M.ctx.root)
+  M.event_manager:dispatch(event.ExplorerReloaded, nil)
   M.renderer:render()
 end
 

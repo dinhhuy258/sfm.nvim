@@ -3,6 +3,7 @@ local Event = {
   FileOpened = "FileOpened",
   FolderOpened = "FolderOpened",
   FolderClosed = "FolderClosed",
+  ExplorerReloaded = "ExplorerReloaded",
 }
 
 return Event

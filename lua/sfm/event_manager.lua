@@ -32,7 +32,7 @@ end
 
 --- dispatch event
 ---@param event_name string
----@param payload table
+---@param payload table?
 function EventManager:dispatch(event_name, payload)
   for _, handler in pairs(self:_get_handlers(event_name)) do
     local success, error = pcall(handler, payload)
