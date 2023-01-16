@@ -127,10 +127,11 @@ end)
   + `path`: The path of the folder that was opened.
 - `FolderClosed`: Triggered when a folder is closed in the explorer. The payload of the event is a table with the following key:
   + `path`: The path of the folder that was closed.
+- `ExplorerReloaded`: Triggered when a explorer is reloaded. This event is emitted after the explorer tree has finished reloading, and all the files and folders have been re-read. Listeners can use this event to update or refresh any state or information that is dependent on the explorer tree.
 
 ## Customizations
 
-The sfm plugin allows users to customize the appearance of the explorer tree by providing two customization mechanisms: `remove_renderer` and `register_renderer`.
+The `sfm` plugin provides several customization mechanisms, including `remove_renderer`, `register_renderer`, `remove_entry_filter`, and `register_entry_filter`, that allow users to alter the appearance and behavior of the explorer tree.
 
 ### remove_renderer
 
@@ -139,29 +140,6 @@ The `remove_renderer` function allows users to remove a renderer components from
 ### register_renderer
 
 The `register_renderer` function allows users to register their own renderers for the explorer tree. This can be useful if a user wants to customize the appearance of the tree or add new features to it.
-
-### Example
-
-Here is an example of how to use the `remove_renderer` and `register_renderer` functions to customize the sfm plugin:
-
-```lua
-local sfm_explorer = require("sfm").setup {}
-sfm_explorer:remove_renderer "name"
-sfm_explorer:register_renderer("name", 50, function(entry)
-  local name = entry.name
-  if entry.is_dir then
-    name = name .. " [dir]"
-  else
-    name = name .. " [file]"
-  end
-  local name_hl_group = entry.is_dir and "SFMFolderName" or "SFMFileName"
-
-  return {
-    text = name,
-    highlight = name_hl_group,
-  }
-end)
-```
 
 Here is an example of an extension for the `sfm` plugin that adds a custom renderer to display the entry size:
 
@@ -190,6 +168,29 @@ The default entry renderers, in order of rendering priority, are:
 - selection (priority 40)
 - name (priority 50)
 
+### register_entry_filter
+
+The `register_entry_filter` function allows users to register their own filters for the explorer tree. This can be useful if a user wants to filter out certain entries based on certain criteria. For example, a user can filter out files that are larger than a certain size, or files that have a certain file extension.
+
+### remove_entry_filter
+
+The `remove_entry_filter` function allows users to remove a filter component from the list of filters used to filter the entries of the explorer tree. This can be useful if a user wants to disable a specific filter provided by the sfm plugin or by an extension.
+
+Here is an example of an extension for the `sfm` plugin that adds a custom entry filter to hide the big entry size:
+
+```lua
+local sfm_explorer = require("sfm").setup {}
+sfm_explorer:register_entry_filter("big_files", function(entry)
+  local stat = vim.loop.fs_stat(entry.path)
+  local size = stat.size
+  if size > 1000000 then
+    return false
+  else
+    return true
+  end
+end)
+```
+
 ## Extensions
 
 The `sfm` plugin allows users to extend its functionality by installing extensions. Extensions are independent plugins that can add new features or customize the behavior of the `sfm` plugin.
@@ -202,6 +203,7 @@ Here is a list of available extensions for the `sfm` plugin:
 
 - [sfm-bookmark](https://github.com/dinhhuy258/sfm-bookmark.nvim): Adds bookmarking functionality to the `sfm` plugin
 - [sfm-filter](https://github.com/dinhhuy258/sfm-filter.nvim): Allows users to filter entries in the `sfm` explorer tree
+- [sfm-git](https://github.com/dinhhuy258/sfm-git.nvim): Adds git icon support to the `sfm` plugin's file and folder explorer view, indicating the git status of the file or folder.
 
 ## Credits
 
