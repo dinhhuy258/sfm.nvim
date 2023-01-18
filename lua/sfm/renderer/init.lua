@@ -1,9 +1,8 @@
+local path = require "sfm.utils.path"
 local indent_renderer = require "sfm.renderer.indent_renderer"
 local indicator_renderer = require "sfm.renderer.indicator_renderer"
 local icon_renderer = require "sfm.renderer.icon_renderer"
-local selection_renderer = require "sfm.renderer.selection_renderer"
 local name_renderer = require "sfm.renderer.name_renderer"
-local path = require "sfm.utils.path"
 
 ---@class Renderer
 ---@field view View
@@ -41,14 +40,9 @@ function Renderer.new(ctx, view)
     priority = 30,
   })
   table.insert(self.renderers, {
-    name = "selection",
-    func = selection_renderer.render_entry,
-    priority = 40,
-  })
-  table.insert(self.renderers, {
     name = "name",
     func = name_renderer.render_entry,
-    priority = 50,
+    priority = 40,
   })
 
   self:_sort_renderers()
