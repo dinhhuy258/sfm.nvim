@@ -14,7 +14,7 @@ Please note that the `sfm` plugin is still in development and may not be fully s
 
 Here is a short demonstration of the `sfm` plugin in action:
 
-https://user-images.githubusercontent.com/17776979/209444095-12be39db-9b6d-4773-b42f-aa93652154cc.mp4
+https://user-images.githubusercontent.com/17776979/213235911-f2cfc886-5485-413d-8959-bf404ecc8451.mp4
 
 ## Installation
 
