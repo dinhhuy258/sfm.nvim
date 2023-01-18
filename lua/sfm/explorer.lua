@@ -28,8 +28,6 @@ function Explorer.new()
   actions.setup(self)
   api.setup(self.view, self.renderer, self.ctx)
 
-  -- set the root folder as open
-  self.ctx:set_open(self.ctx.root)
 
   return self
 end

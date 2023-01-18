@@ -36,6 +36,9 @@ function M.setup(view, renderer, ctx)
   M.entry.current = function()
     return renderer:get_current_entry()
   end
+  M.entry.is_open = function(entry)
+    return ctx:is_open(entry)
+  end
 
   M.navigation.focus = function(fpath)
     return actions.focus_file(fpath)

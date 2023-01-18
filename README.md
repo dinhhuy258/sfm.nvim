@@ -43,8 +43,8 @@ local default_config = {
       custom_only = false,
       list = {
         -- user mappings go here
-      },
-    },
+      }
+    }
   },
   renderer = {
     icons = {
@@ -62,10 +62,9 @@ local default_config = {
         folder_closed = "",
         folder_open = "",
         file = " ",
-      },
-      selection = "",
-    },
-  },
+      }
+    }
+  }
 }
 ```
 
@@ -92,7 +91,7 @@ The default mapping is configurated [here](https://github.com/dinhhuy258/sfm.nvi
 To subscribe to an event, use the `subscribe` function provided by `sfm` and specify the event name and the handler function:
 
 ```lua
-M.sfm_explorer:subscribe(event.ExplorerOpened, function(payload)
+sfm_explorer:subscribe(event.ExplorerOpened, function(payload)
   local bufnr = payload["bufnr"]
   local options = {
     noremap = true,
@@ -165,8 +164,7 @@ The default entry renderers, in order of rendering priority, are:
 - indent (priority 10)
 - indicator (priority 20)
 - icon (priority 30)
-- selection (priority 40)
-- name (priority 50)
+- name (priority 40)
 
 ### register_entry_filter
 
@@ -201,6 +199,7 @@ The extensions must be written under `lua/sfm/extensions/` folder.
 
 Here is a list of available extensions for the `sfm` plugin:
 
+- [sfm-fs](https://github.com/dinhhuy258/sfm-fs.nvim): Adds file system functionality (create, move, delete...) to the `sfm` plugin.
 - [sfm-bookmark](https://github.com/dinhhuy258/sfm-bookmark.nvim): Adds bookmarking functionality to the `sfm` plugin
 - [sfm-filter](https://github.com/dinhhuy258/sfm-filter.nvim): Allows users to filter entries in the `sfm` explorer tree
 - [sfm-git](https://github.com/dinhhuy258/sfm-git.nvim): Adds git icon support to the `sfm` plugin's file and folder explorer view, indicating the git status of the file or folder.

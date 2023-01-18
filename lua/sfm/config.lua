@@ -24,41 +24,8 @@ local default_mappings = {
     action = "reload",
   },
   {
-    key = "n",
-    action = "create",
-  },
-  {
-    key = "dd",
-    action = "delete",
-  },
-  {
-    key = "ds",
-    action = "delete_selections",
-  },
-  {
-    key = "p",
-    action = "copy_selections",
-  },
-  {
-    key = "x",
-    action = "move_selections",
-  },
-  {
-    key = "r",
-    action = "rename",
-  },
-
-  {
     key = "q",
     action = "close",
-  },
-  {
-    key = "<SPACE>",
-    action = "toggle_selection",
-  },
-  {
-    key = "<C-SPACE>",
-    action = "clear_selections",
   },
 }
 
@@ -91,7 +58,6 @@ local default_config = {
         folder_open = "",
         file = " ",
       },
-      selection = "",
     },
   },
 }
