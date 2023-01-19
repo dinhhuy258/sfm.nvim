@@ -26,7 +26,7 @@ function Explorer.new()
   self.renderer = renderer.new(self.ctx, self.view)
 
   actions.setup(self)
-  api.setup(self.view, self.renderer, self.ctx)
+  api.setup(self.view, self.renderer, self.event_manager, self.ctx)
 
   return self
 end

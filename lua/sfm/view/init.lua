@@ -52,6 +52,8 @@ function View:close()
 
   local tabnr = vim.api.nvim_get_current_tabpage()
   table.remove_key(self.tab_infos, tabnr)
+
+  self.event_manager:dispatch(event.ExplorerClosed)
 end
 
 --- open the explorer

@@ -3,6 +3,7 @@ local path = require "sfm.utils.path"
 local log = require "sfm.utils.log"
 local actions = require "sfm.actions"
 local entry = require "sfm.entry"
+local event = require "sfm.event"
 
 local M = {
   explorer = {},
@@ -15,8 +16,9 @@ local M = {
 --- initialize api
 ---@param view View
 ---@param renderer Renderer
+---@param event_manager EventManager
 ---@param ctx Context
-function M.setup(view, renderer, ctx)
+function M.setup(view, renderer, event_manager, ctx)
   M.explorer.toggle = function()
     actions.toggle()
   end
@@ -43,7 +45,11 @@ function M.setup(view, renderer, ctx)
     end
 
     ctx:change_root(entry.new(cwd, nil, true))
-    return actions.reload()
+    actions.reload()
+
+    event_manager:dispatch(event.ExplorerRootChanged, {
+      path = cwd,
+    })
   end
 
   M.entry.root = function()
