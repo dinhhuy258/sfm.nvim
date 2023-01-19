@@ -1,3 +1,4 @@
+local debounce = require "sfm.utils.debounce"
 local path = require "sfm.utils.path"
 local actions = require "sfm.actions"
 
@@ -60,6 +61,8 @@ function M.setup(view, renderer, ctx)
   M.path.islink = path.islink
   M.path.unify = path.unify
   M.path.path_separator = path.path_separator
+
+  M.debounce = debounce.debounce
 end
 
 return M
