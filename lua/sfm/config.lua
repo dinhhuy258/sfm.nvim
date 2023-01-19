@@ -63,7 +63,7 @@ local default_config = {
 }
 
 local function merge_mappings(mappings, user_mappings)
-  if user_mappings == nil or type(user_mappings) ~= "table" or table.count(user_mappings) == 0 then
+  if user_mappings == nil or type(user_mappings) ~= "table" or vim.tbl_isempty(user_mappings) then
     return mappings
   end
 
@@ -107,7 +107,7 @@ local function merge_mappings(mappings, user_mappings)
       or map.action == ""
       or map.key == nil
       or map.key == ""
-      or (type(map.key) == "table" and table.count(map.key) == 0)
+      or (type(map.key) == "table" and vim.tbl_isempty(map.key))
     )
   end, user_mappings)
 

@@ -28,7 +28,6 @@ function Explorer.new()
   actions.setup(self)
   api.setup(self.view, self.renderer, self.ctx)
 
-
   return self
 end
 

@@ -14,19 +14,6 @@ function table.contains_key(items, key)
   return items[key] and true or false
 end
 
-function table.is_empty(items)
-  return next(items) == nil
-end
-
-function table.count(items)
-  local count = 0
-  for _ in pairs(items) do
-    count = count + 1
-  end
-
-  return count
-end
-
 function table.is_matrix(tbl)
   if type(tbl) ~= "table" then
     return false

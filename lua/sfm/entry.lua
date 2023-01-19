@@ -38,7 +38,7 @@ end
 --- scan the current directory
 ---@param sort_by function|nil
 function Entry:scandir(sort_by)
-  if not self.is_dir or table.count(self.entries) ~= 0 then
+  if not self.is_dir or not vim.tbl_isempty(self.entries) then
     return
   end
 
