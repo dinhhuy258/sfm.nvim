@@ -82,7 +82,19 @@ require("sfm").setup {
 
 ## Mappings
 
-The default mapping is configurated [here](https://github.com/dinhhuy258/sfm.nvim/blob/main/lua/sfm/config.lua). You can override the default mapping by setting it via the `view.mappings` configuration. It's similar to the way [nvim-tree](https://github.com/nvim-tree/nvim-tree.lua) handles mapping overrides.
+To use the functionalities provided by the `sfm` plugin, you can use the following key bindings:
+
+| Key   | Action        | Description                                                |
+| ----- | ------------- | ---------------------------------------------------------- |
+| cr    | edit          | Open a file or directory                                   |
+| s-tab | close_entry   | Close current opened directory or parent                   |
+| K     | first_sibling | Navigate to the first sibling of current file or directory |
+| J     | last_sibling  | Navigate to the last sibling of current file or directory  |
+| P     | parent_entry  | Move cursor to the parent directory                        |
+| R     | reload        | Reload the explorer                                        |
+| q     | close         | Close the explorer window                                  |
+
+You can customize these key bindings by setting them via the `view.mappings` configuration. It's similar to the way [nvim-tree](https://github.com/nvim-tree/nvim-tree.lua) handles mapping overrides.
 
 ## Events
 
@@ -118,14 +130,14 @@ end)
 **Available events:**
 
 - `ExplorerOpened`: Triggered when the explorer window is opened. The payload of the event is a table with the following keys:
-  + `winnr`: The number of the window where the explorer is opened.
-  + `bufnr`: The number of the buffer associated with the explorer window.
+  - `winnr`: The number of the window where the explorer is opened.
+  - `bufnr`: The number of the buffer associated with the explorer window.
 - `FileOpened`: Triggered when a file is opened in the explorer. The payload of the event is a table with the following key:
-  + `path`: The path of the file that was opened.
+  - `path`: The path of the file that was opened.
 - `FolderOpened`: Triggered when a folder is opened in the explorer. The payload of the event is a table with the following key:
-  + `path`: The path of the folder that was opened.
+  - `path`: The path of the folder that was opened.
 - `FolderClosed`: Triggered when a folder is closed in the explorer. The payload of the event is a table with the following key:
-  + `path`: The path of the folder that was closed.
+  - `path`: The path of the folder that was closed.
 - `ExplorerReloaded`: Triggered when a explorer is reloaded. This event is emitted after the explorer tree has finished reloading, and all the files and folders have been re-read. Listeners can use this event to update or refresh any state or information that is dependent on the explorer tree.
 
 ## Customizations
@@ -188,6 +200,20 @@ sfm_explorer:register_entry_filter("big_files", function(entry)
   end
 end)
 ```
+
+## Highlighting
+
+The `sfm` plugin uses the following highlight values:
+
+- `SFMRootFolder`: This highlight value is used to highlight the root folder in the file explorer. The default color scheme for this highlight value is `purple`.
+- `SFMSymlink`: This highlight value is used to highlight symbolic links in the file explorer. The default color scheme for this highlight value is `cyan`.
+- `SFMFileIndicator` and `SFMFolderIndicator` : These highlight values are used to highlight file and folder indicators in the file explorer. The default color scheme for this highlight value is `fg=#3b4261`.
+- `SFMFolderName` and `SFMFolderIcon` : These highlight values are used to highlight folder names and icons in the file explorer. The default color scheme for this highlight value is `Directory`.
+- `SFMFileName` and `SFMDefaultFileIcon` : These highlight values are used to highlight file names and icons in the file explorer. The default color scheme for this highlight value is `Normal`.
+
+In addition to the above highlight values, the `sfm` plugin also uses the following highlight values:
+
+- `SFMNormal`, `SFMNormalNC`, `SFMEndOfBuffer`, `SFMCursorLine`, `SFMCursorLineNr`, `SFMLineNr`, `SFMWinSeparator`, `SFMStatusLine`, `SFMStatuslineNC`, `SFMSignColumn` these highlight values are used to link to the default Neovim highlight groups.
 
 ## Extensions
 
