@@ -41,4 +41,10 @@ function Context:is_open(entry)
   return table.contains_key(self.open, entry.path)
 end
 
+--- change the explorer tree root
+---@param root Entry
+function Context:change_root(root)
+  self.root = root
+end
+
 return Context

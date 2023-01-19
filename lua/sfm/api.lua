@@ -1,12 +1,15 @@
 local debounce = require "sfm.utils.debounce"
 local path = require "sfm.utils.path"
+local log = require "sfm.utils.log"
 local actions = require "sfm.actions"
+local entry = require "sfm.entry"
 
 local M = {
   explorer = {},
   entry = {},
   navigation = {},
   path = {},
+  log = {},
 }
 
 --- initialize api
@@ -32,6 +35,16 @@ function M.setup(view, renderer, ctx)
   M.explorer.refresh = function()
     return renderer:render()
   end
+  M.explorer.change_root = function(cwd)
+    if path.exists(cwd) or not path.isdir(cwd) then
+      log.warn(cwd .. " is not a valid directory")
+
+      return
+    end
+
+    ctx:change_root(entry.new(cwd, nil, true))
+    return actions.reload()
+  end
 
   M.entry.root = function()
     return ctx.root
@@ -39,8 +52,8 @@ function M.setup(view, renderer, ctx)
   M.entry.current = function()
     return renderer:get_current_entry()
   end
-  M.entry.is_open = function(entry)
-    return ctx:is_open(entry)
+  M.entry.is_open = function(e)
+    return ctx:is_open(e)
   end
 
   M.navigation.focus = function(fpath)
@@ -63,6 +76,10 @@ function M.setup(view, renderer, ctx)
   M.path.path_separator = path.path_separator
 
   M.debounce = debounce.debounce
+
+  M.log.info = log.info
+  M.log.warn = log.warn
+  M.log.error = log.error
 end
 
 return M
