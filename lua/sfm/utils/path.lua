@@ -107,7 +107,7 @@ function M.unify(paths)
     end
 
     for _, element in ipairs(set2) do
-      if table.contains_key(map, element) then
+      if map[element] ~= nil then
         return false
       end
     end

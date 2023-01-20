@@ -4,7 +4,7 @@ local M = {}
 ---@private
 ---@param entry Entry
 ---@return table
-function M.render_entry(entry)
+function M.render_entry_name(entry)
   local name = entry.name
   local name_hl_group = entry.is_dir and "SFMFolderName" or "SFMFileName"
 

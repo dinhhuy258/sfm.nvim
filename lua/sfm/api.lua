@@ -44,7 +44,8 @@ function M.setup(view, renderer, event_manager, ctx)
       return
     end
 
-    ctx:change_root(entry.new(cwd, nil, true))
+    entry.clear_pool()
+    ctx:change_root(entry.get_entry(cwd, nil))
     actions.reload()
 
     event_manager:dispatch(event.ExplorerRootChanged, {
@@ -59,7 +60,8 @@ function M.setup(view, renderer, event_manager, ctx)
     return renderer:get_current_entry()
   end
   M.entry.is_open = function(e)
-    return ctx:is_open(e)
+    -- TODO: It's not neccessary anymore
+    return e.is_open
   end
 
   M.navigation.focus = function(fpath)

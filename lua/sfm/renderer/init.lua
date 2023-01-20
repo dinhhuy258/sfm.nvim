@@ -26,22 +26,22 @@ function Renderer.new(ctx, view)
   self.entry_filters = {}
   table.insert(self.renderers, {
     name = "indent",
-    func = indent_renderer.render_entry,
+    func = indent_renderer.render_entry_indent,
     priority = 10,
   })
   table.insert(self.renderers, {
     name = "indicator",
-    func = indicator_renderer.render_entry,
+    func = indicator_renderer.render_entry_indicator,
     priority = 20,
   })
   table.insert(self.renderers, {
     name = "icon",
-    func = icon_renderer.render_entry,
+    func = icon_renderer.render_entry_icon,
     priority = 30,
   })
   table.insert(self.renderers, {
     name = "name",
-    func = name_renderer.render_entry,
+    func = name_renderer.render_entry_name,
     priority = 40,
   })
 
@@ -155,7 +155,7 @@ function Renderer:_update_rendered_entries()
       if self:should_render_entry(e) then
         table.insert(self.entries, e)
 
-        if self.ctx:is_open(e) then
+        if e.is_open then
           _update_rendered_entry(e)
         end
       end
@@ -194,7 +194,7 @@ function Renderer:_render_entry(entry, linenr)
   local highlights = {}
   local line = ""
   for _, renderer in pairs(self.renderers) do
-    local render_components = renderer.func(entry, self.ctx)
+    local render_components = renderer.func(entry)
     if not table.is_matrix(render_components) then
       render_components = { render_components }
     end
