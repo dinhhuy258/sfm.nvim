@@ -32,6 +32,7 @@ function EntryPool.get_entry(fpath, parent)
   -- create a new entry object if one doesn't exist
   local entry = Entry._new(fpath, parent and EntryPool._entries[parent.path] or nil)
   EntryPool._entries[fpath] = entry
+
   return entry
 end
 

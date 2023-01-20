@@ -59,10 +59,6 @@ function M.setup(view, renderer, event_manager, ctx)
   M.entry.current = function()
     return renderer:get_current_entry()
   end
-  M.entry.is_open = function(e)
-    -- TODO: It's not neccessary anymore
-    return e.is_open
-  end
 
   M.navigation.focus = function(fpath)
     return actions.focus_file(fpath)
