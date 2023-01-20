@@ -22,7 +22,7 @@ function Explorer.new()
 
   self.event_manager = event_manager.new()
   self.view = view.new(self.event_manager)
-  self.ctx = context.new(entry.new(cwd, nil, true))
+  self.ctx = context.new(entry.get_entry(cwd, nil))
   self.renderer = renderer.new(self.ctx, self.view)
 
   actions.setup(self)

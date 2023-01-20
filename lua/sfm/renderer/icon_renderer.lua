@@ -6,11 +6,10 @@ local M = {}
 --- render icon for the given entry
 ---@private
 ---@param entry Entry
----@param ctx Context
 ---@return table
-function M.render_entry(entry, ctx)
+function M.render_entry_icon(entry)
   local icons = config.opts.renderer.icons
-  local is_entry_open = ctx:is_open(entry)
+  local is_entry_open = entry.is_open
   local icon = ""
   local icon_hl_group = ""
   if entry.is_symlink then

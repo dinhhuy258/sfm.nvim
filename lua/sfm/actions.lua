@@ -18,13 +18,15 @@ M.ctx = nil
 --- open the given directory
 ---@private
 ---@param e Entry
-function M._open_dir(e)
+---@param force boolean|nil
+function M._open_dir(e, force)
   if not e.is_dir then
     return
   end
 
-  M.ctx:set_open(e)
-  e:scandir(config.opts.sort_by)
+  force = force and true or false
+
+  e:open(config.opts.sort_by, force)
 end
 
 --- close the given directory
@@ -35,19 +37,17 @@ function M._close_dir(e)
     return
   end
 
-  M.ctx:remove_open(e)
+  e:close()
 end
 
 --- reload the current entry
 ---@private
 ---@param e Entry
 local function _reload(e)
-  -- make sure to rescan entries in reload method
-  e:clear_entries()
-  M._open_dir(e)
+  M._open_dir(e, true)
 
   for _, child in ipairs(e.entries) do
-    if M.ctx:is_open(child) then
+    if child.is_open then
       _reload(child)
     end
   end
@@ -65,7 +65,7 @@ function M.focus_file(fpath)
       current_path = path.join { current_path, dir }
       for _, entry in ipairs(current.entries) do
         if entry.is_dir and entry.path == current_path then
-          if not M.ctx:is_open(entry) then
+          if not entry.is_open then
             M._open_dir(entry)
           end
 
@@ -107,7 +107,7 @@ function M.edit()
     return
   end
 
-  if M.ctx:is_open(entry) then
+  if entry.is_open then
     -- close directory
     M._close_dir(entry)
     -- re-render
@@ -187,7 +187,7 @@ end
 --- close current opened directory or parent
 function M.close_entry()
   local entry = M.renderer:get_current_entry()
-  if not entry.is_dir or not M.ctx:is_open(entry) then
+  if not entry.is_dir or not entry.is_open then
     entry = entry.parent
   end
 

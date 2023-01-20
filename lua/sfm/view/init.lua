@@ -51,7 +51,7 @@ function View:close()
   vim.api.nvim_win_close(tab_info.winnr, true)
 
   local tabnr = vim.api.nvim_get_current_tabpage()
-  table.remove_key(self.tab_infos, tabnr)
+  self.tab_infos[tabnr] = nil
 
   self.event_manager:dispatch(event.ExplorerClosed)
 end
