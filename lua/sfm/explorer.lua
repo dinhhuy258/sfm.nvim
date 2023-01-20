@@ -98,6 +98,18 @@ function Explorer:set_entry_sort_method(entry_sort_method)
   self.entry_sort_method = entry_sort_method
 end
 
+--- set window creator
+---@param window_creator function|nil
+function Explorer:register_window_creator(window_creator)
+  if type(window_creator) ~= "function" then
+    log.error(string.format("Invalid window creator method, expected a function, got %s", type(window_creator)))
+
+    return
+  end
+
+  self.view:set_window_creator(window_creator)
+end
+
 --- load extension that is given by the name and options
 ---@param name string
 ---@param opts table

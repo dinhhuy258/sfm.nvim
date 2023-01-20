@@ -126,7 +126,7 @@ Here is a list of available extensions for the `sfm` plugin:
 
 ## Customizations
 
-The `sfm` plugin provides several customization mechanisms, including `remove_renderer`, `register_renderer`, `remove_entry_filter`, `register_entry_filter`, and `set_entry_sort_method`, that allow users to alter the appearance and behavior of the explorer tree.
+The `sfm` plugin provides several customization mechanisms, including `remove_renderer`, `register_renderer`, `remove_entry_filter`, `register_entry_filter`, `set_entry_sort_method`, and `register_window_creator`, that allow users to alter the appearance and behavior of the explorer tree.
 
 ### remove_renderer
 
@@ -195,6 +195,22 @@ local sfm_explorer = require("sfm").setup {}
 sfm_explorer:set_entry_sort_method(function(entry1, entry2)
   return entry1.name < entry2.name
 end)
+```
+
+### register_window_creator
+
+The `register_window_creator` method allows users to register their own window creation method. This can be useful if the user wants to customize the way the explorer window is created.
+
+To register your own window creation method, you can call the `register_window_creator` method and pass in a function that takes no parameters and returns a window number.
+
+```lua
+local my_window_creator = function()
+  -- code to create your own window
+  return winnr
+end
+
+local sfm_explorer = require("sfm").setup {}
+sfm_explorer:register_window_creator(my_window_creator)
 ```
 
 ## Events

@@ -4,8 +4,9 @@ local event = require "sfm.event"
 local config = require "sfm.config"
 
 ---@class View
----@field tab_infos table
----@field event_manager EventManager
+---@field _tab_infos table
+---@field _event_manager EventManager
+---@field _window_creator function|nil
 local View = {}
 
 --- View constructor
@@ -14,8 +15,9 @@ local View = {}
 function View.new(event_manager)
   local self = setmetatable({}, { __index = View })
 
-  self.event_manager = event_manager
-  self.tab_infos = {}
+  self._event_manager = event_manager
+  self._tab_infos = {}
+  self._window_creator = nil
 
   return self
 end
@@ -24,7 +26,7 @@ end
 function View:_get_current_tab_info()
   local tabnr = vim.api.nvim_get_current_tabpage()
 
-  return self.tab_infos[tabnr]
+  return self._tab_infos[tabnr]
 end
 
 --- check if the explorer is open or not
@@ -51,9 +53,9 @@ function View:close()
   vim.api.nvim_win_close(tab_info.winnr, true)
 
   local tabnr = vim.api.nvim_get_current_tabpage()
-  self.tab_infos[tabnr] = nil
+  self._tab_infos[tabnr] = nil
 
-  self.event_manager:dispatch(event.ExplorerClosed)
+  self._event_manager:dispatch(event.ExplorerClosed)
 end
 
 --- open the explorer
@@ -62,7 +64,7 @@ function View:open()
     return
   end
 
-  local winnr = window.create_window()
+  local winnr = self._window_creator ~= nil and self._window_creator() or window.create_window()
   local bufnr = buffer.create_buffer()
 
   vim.api.nvim_win_set_buf(winnr, bufnr)
@@ -72,12 +74,12 @@ function View:open()
   vim.api.nvim_win_set_width(winnr, config.opts.view.width)
 
   local tabnr = vim.api.nvim_get_current_tabpage()
-  self.tab_infos[tabnr] = {
+  self._tab_infos[tabnr] = {
     winnr = winnr,
     bufnr = bufnr,
   }
 
-  self.event_manager:dispatch(event.ExplorerOpened, {
+  self._event_manager:dispatch(event.ExplorerOpened, {
     winnr = winnr,
     bufnr = bufnr,
   })
@@ -142,6 +144,12 @@ function View:reset_winhl()
 
   local tab_info = self:_get_current_tab_info()
   window.reset_winhl(tab_info.winnr)
+end
+
+--- set window creator
+---@param window_creator function|nil
+function View:set_window_creator(window_creator)
+  self._window_creator = window_creator
 end
 
 return View
