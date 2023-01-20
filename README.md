@@ -95,6 +95,108 @@ To use the functionalities provided by the `sfm` plugin, you can use the followi
 
 You can customize these key bindings by setting them via the `view.mappings` configuration. It's similar to the way [nvim-tree](https://github.com/nvim-tree/nvim-tree.lua) handles mapping overrides.
 
+## Highlighting
+
+The `sfm` plugin uses the following highlight values:
+
+- `SFMRootFolder`: This highlight value is used to highlight the root folder in the file explorer. The default color scheme for this highlight value is `purple`.
+- `SFMSymlink`: This highlight value is used to highlight symbolic links in the file explorer. The default color scheme for this highlight value is `cyan`.
+- `SFMFileIndicator` and `SFMFolderIndicator` : These highlight values are used to highlight file and folder indicators in the file explorer. The default color scheme for this highlight value is `fg=#3b4261`.
+- `SFMFolderName` and `SFMFolderIcon` : These highlight values are used to highlight folder names and icons in the file explorer. The default color scheme for this highlight value is `Directory`.
+- `SFMFileName` and `SFMDefaultFileIcon` : These highlight values are used to highlight file names and icons in the file explorer. The default color scheme for this highlight value is `Normal`.
+
+In addition to the above highlight values, the `sfm` plugin also uses the following highlight values:
+
+- `SFMNormal`, `SFMNormalNC`, `SFMEndOfBuffer`, `SFMCursorLine`, `SFMCursorLineNr`, `SFMLineNr`, `SFMWinSeparator`, `SFMStatusLine`, `SFMStatuslineNC`, `SFMSignColumn` these highlight values are used to link to the default Neovim highlight groups.
+
+## Extensions
+
+The `sfm` plugin allows users to extend its functionality by installing extensions. Extensions are independent plugins that can add new features or customize the behavior of the `sfm` plugin.
+
+The extensions must be written under `lua/sfm/extensions/` folder.
+
+### Available Extensions
+
+Here is a list of available extensions for the `sfm` plugin:
+
+- [sfm-fs](https://github.com/dinhhuy258/sfm-fs.nvim): Adds file system functionality (create, move, delete...) to the `sfm` plugin.
+- [sfm-bookmark](https://github.com/dinhhuy258/sfm-bookmark.nvim): Adds bookmarking functionality to the `sfm` plugin
+- [sfm-filter](https://github.com/dinhhuy258/sfm-filter.nvim): Allows users to filter entries in the `sfm` explorer tree
+- [sfm-git](https://github.com/dinhhuy258/sfm-git.nvim): Adds git icon support to the `sfm` plugin's file and folder explorer view, indicating the git status of the file or folder.
+
+## Customizations
+
+The `sfm` plugin provides several customization mechanisms, including `remove_renderer`, `register_renderer`, `remove_entry_filter`, `register_entry_filter`, and `set_entry_sort_method`, that allow users to alter the appearance and behavior of the explorer tree.
+
+### remove_renderer
+
+The `remove_renderer` function allows users to remove a renderer components from the list of renderers used to render the entry of the explorer tree. This can be useful if a user wants to disable a specific renderer provided by the sfm plugin or by an extension.
+
+### register_renderer
+
+The `register_renderer` function allows users to register their own renderers for the explorer tree. This can be useful if a user wants to customize the appearance of the tree or add new features to it.
+
+Here is an example of an extension for the `sfm` plugin that adds a custom renderer to display the entry size:
+
+```lua
+-- define a custom renderer that displays the entry size
+local function size_renderer(entry)
+  local stat = vim.loop.fs_stat(entry.path)
+  local size = stat.size
+  local size_text = string.format("[%d bytes]", size)
+
+  return {
+    text = size_text,
+    highlight = "SFMSize",
+  }
+end
+
+local sfm_explorer = require("sfm").setup {}
+-- register the custom renderer
+sfm_explorer:register_renderer("custom", 100, size_renderer)
+```
+
+The default entry renderers, in order of rendering priority, are:
+
+- indent (priority 10)
+- indicator (priority 20)
+- icon (priority 30)
+- name (priority 40)
+
+### register_entry_filter
+
+The `register_entry_filter` function allows users to register their own filters for the explorer tree. This can be useful if a user wants to filter out certain entries based on certain criteria. For example, a user can filter out files that are larger than a certain size, or files that have a certain file extension.
+
+### remove_entry_filter
+
+The `remove_entry_filter` function allows users to remove a filter component from the list of filters used to filter the entries of the explorer tree. This can be useful if a user wants to disable a specific filter provided by the sfm plugin or by an extension.
+
+Here is an example of an extension for the `sfm` plugin that adds a custom entry filter to hide the big entry size:
+
+```lua
+local sfm_explorer = require("sfm").setup {}
+sfm_explorer:register_entry_filter("big_files", function(entry)
+  local stat = vim.loop.fs_stat(entry.path)
+  local size = stat.size
+  if size > 1000000 then
+    return false
+  else
+    return true
+  end
+end)
+```
+
+### set_entry_sort_method
+
+This method allows you to customize the sorting of entries in the explorer tree. The function passed as a parameter should take in two entries and return a boolean value indicating whether the first entry should be sorted before the second. For example, you can use the following function to sort entries alphabetically by name:
+
+```lua
+local sfm_explorer = require("sfm").setup {}
+sfm_explorer:set_entry_sort_method(function(entry1, entry2)
+  return entry1.name < entry2.name
+end)
+```
+
 ## Events
 
 `sfm` dispatches events whenever an action is made in the explorer. These events can be subscribed to through handler functions, allowing for even further customization of `sfm`.
@@ -102,6 +204,7 @@ You can customize these key bindings by setting them via the `view.mappings` con
 To subscribe to an event, use the `subscribe` function provided by `sfm` and specify the event name and the handler function:
 
 ```lua
+local sfm_explorer = require("sfm").setup {}
 sfm_explorer:subscribe(event.ExplorerOpened, function(payload)
   local bufnr = payload["bufnr"]
   local options = {
@@ -142,105 +245,67 @@ end)
 - `FolderClosed`: Triggered when a folder is closed in the explorer. The payload of the event is a table with the following key:
   - `path`: The path of the folder that was closed.
 
-## Customizations
+## API
 
-The `sfm` plugin provides several customization mechanisms, including `remove_renderer`, `register_renderer`, `remove_entry_filter`, `register_entry_filter`, and `set_entry_sort_method`, that allow users to alter the appearance and behavior of the explorer tree.
+The `sfm` plugin exposes a number of APIs that can be used to customize the explorer tree and write extensions for the plugin. These functions are located in the `lua/sfm/api.lua` file and can be accessed by requiring it. Below are the available functions and their usage:
 
-### remove_renderer
+### Explorer
 
-The `remove_renderer` function allows users to remove a renderer components from the list of renderers used to render the entry of the explorer tree. This can be useful if a user wants to disable a specific renderer provided by the sfm plugin or by an extension.
+- `toggle()`: Toggles the visibility of the explorer window.
+- `open()`: Opens the explorer window.
+- `close()`: Closes the explorer window.
+- `is_open()`: Returns `true` if the explorer window is currently open, `false` otherwise.
+- `reload()`: Reloads the explorer tree.
+- `refresh()`: Refreshes the current view of the explorer tree.
+- `change_root(cwd: string)`: Changes the root directory of the explorer tree to the specified directory. If the directory is not valid, an error message will be displayed.
 
-### register_renderer
+### Entry
 
-The `register_renderer` function allows users to register their own renderers for the explorer tree. This can be useful if a user wants to customize the appearance of the tree or add new features to it.
+- `root()`: Returns the root entry of the explorer tree.
+- `current()`: Returns the current entry in the explorer tree.
 
-Here is an example of an extension for the `sfm` plugin that adds a custom renderer to display the entry size:
+### Navigation
+
+- `focus(fpath: string)`: Focuses on the specified file or directory in the explorer tree.
+
+### Path
+
+- `clean(p: string)`: Cleans up a file path to make it more standard.
+- `split(p: string)`: Splits a file path into a table of its parts.
+- `join(...)`: Joins a list of parts into a file path.
+- `dirname(p: string)`: Returns the directory name of a file path.
+- `basename(p: string)`: Returns the base name of a file path.
+- `remove_trailing(p: string)`: Removes the trailing path separator from a file path.
+- `has_trailing(p: string)`: Returns `true` if the file path has a trailing path separator, `false` otherwise.
+- `path.add_trailing(path)`: Add trailing separator to the given path
+- `path.exists(path)`: Check if the given path exists
+- `path.isfile(path)`: Check if the given path is a file
+- `path.isdir(path)`: Check if the given path is a directory
+- `path.islink(path)`: Check if the given path is a symbolic link
+- `path.unify(paths)`: Unify ancestor for the given paths
+- `path.path_separator`: Get the system path separator
+
+### Debouncing
+
+- `debounce.debounce(name, delay, fn)`: Create a debounced version of the given function
+
+### Logging
+
+- `log.info(message)`: Log an informational message
+- `log.warn(message)`: Log a warning message
+- `log.error(message)`: Log an error message
+
+Here's an example of how you might use the API provided by the `sfm` plugin in your own extension or configuration file:
 
 ```lua
--- define a custom renderer that displays the entry size
-local function size_renderer(entry)
-  local stat = vim.loop.fs_stat(entry.path)
-  local size = stat.size
-  local size_text = string.format("[%d bytes]", size)
-
-  return {
-    text = size_text,
-    highlight = "SFMSize",
-  }
-end
-
--- register the custom renderer
-sfm_explorer:register_renderer("custom", 100, size_renderer)
-```
-
-The default entry renderers, in order of rendering priority, are:
-
-- indent (priority 10)
-- indicator (priority 20)
-- icon (priority 30)
-- name (priority 40)
-
-### register_entry_filter
-
-The `register_entry_filter` function allows users to register their own filters for the explorer tree. This can be useful if a user wants to filter out certain entries based on certain criteria. For example, a user can filter out files that are larger than a certain size, or files that have a certain file extension.
-
-### remove_entry_filter
-
-The `remove_entry_filter` function allows users to remove a filter component from the list of filters used to filter the entries of the explorer tree. This can be useful if a user wants to disable a specific filter provided by the sfm plugin or by an extension.
-
-Here is an example of an extension for the `sfm` plugin that adds a custom entry filter to hide the big entry size:
-
-```lua
-local sfm_explorer = require("sfm").setup {}
-sfm_explorer:register_entry_filter("big_files", function(entry)
-  local stat = vim.loop.fs_stat(entry.path)
-  local size = stat.size
-  if size > 1000000 then
-    return false
-  else
-    return true
-  end
+local api = require('sfm.api')
+-- use the `path.remove_trailing` function to remove trailing slashes from a file path
+local cleaned_path = api.path.remove_trailing('/path/to/file/')
+-- use the `debounce` function to debounce a function call
+api.debounce("debounce-context", 1000, function()
+  -- your code
 end)
 ```
-
-### set_entry_sort_method
-
-This method allows you to customize the sorting of entries in the explorer tree. The function passed as a parameter should take in two entries and return a boolean value indicating whether the first entry should be sorted before the second. For example, you can use the following function to sort entries alphabetically by name:
-
-```lua
-sfm_explorer:set_entry_sort_method(function(entry1, entry2)
-  return entry1.name < entry2.name
-end)
-```
-
-## Highlighting
-
-The `sfm` plugin uses the following highlight values:
-
-- `SFMRootFolder`: This highlight value is used to highlight the root folder in the file explorer. The default color scheme for this highlight value is `purple`.
-- `SFMSymlink`: This highlight value is used to highlight symbolic links in the file explorer. The default color scheme for this highlight value is `cyan`.
-- `SFMFileIndicator` and `SFMFolderIndicator` : These highlight values are used to highlight file and folder indicators in the file explorer. The default color scheme for this highlight value is `fg=#3b4261`.
-- `SFMFolderName` and `SFMFolderIcon` : These highlight values are used to highlight folder names and icons in the file explorer. The default color scheme for this highlight value is `Directory`.
-- `SFMFileName` and `SFMDefaultFileIcon` : These highlight values are used to highlight file names and icons in the file explorer. The default color scheme for this highlight value is `Normal`.
-
-In addition to the above highlight values, the `sfm` plugin also uses the following highlight values:
-
-- `SFMNormal`, `SFMNormalNC`, `SFMEndOfBuffer`, `SFMCursorLine`, `SFMCursorLineNr`, `SFMLineNr`, `SFMWinSeparator`, `SFMStatusLine`, `SFMStatuslineNC`, `SFMSignColumn` these highlight values are used to link to the default Neovim highlight groups.
-
-## Extensions
-
-The `sfm` plugin allows users to extend its functionality by installing extensions. Extensions are independent plugins that can add new features or customize the behavior of the `sfm` plugin.
-
-The extensions must be written under `lua/sfm/extensions/` folder.
-
-### Available Extensions
-
-Here is a list of available extensions for the `sfm` plugin:
-
-- [sfm-fs](https://github.com/dinhhuy258/sfm-fs.nvim): Adds file system functionality (create, move, delete...) to the `sfm` plugin.
-- [sfm-bookmark](https://github.com/dinhhuy258/sfm-bookmark.nvim): Adds bookmarking functionality to the `sfm` plugin
-- [sfm-filter](https://github.com/dinhhuy258/sfm-filter.nvim): Allows users to filter entries in the `sfm` explorer tree
-- [sfm-git](https://github.com/dinhhuy258/sfm-git.nvim): Adds git icon support to the `sfm` plugin's file and folder explorer view, indicating the git status of the file or folder.
 
 ## Credits
 
