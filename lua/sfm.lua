@@ -24,11 +24,29 @@ function M.setup(opts)
     nargs = "*",
   })
 
+  -- reset highlights when colorscheme is changed
+  vim.api.nvim_create_autocmd("ColorScheme", {
+    callback = function()
+      colors.setup()
+      sfm_explorer.view:reset_winhl()
+      -- reload the explorer
+      actions.reload()
+    end,
+  })
+
   -- prevent new opened file from opening in the same window as sfm explorer
   vim.api.nvim_create_autocmd("BufWipeout", {
     pattern = "sfm_*",
     callback = function()
       sfm_explorer.view:prevent_buffer_override()
+    end,
+  })
+
+  -- change the explorer root when the current working space changes
+  vim.api.nvim_create_autocmd("DirChanged", {
+    callback = function()
+      local cwd = vim.loop.cwd()
+      actions.change_root(cwd)
     end,
   })
 
@@ -49,16 +67,6 @@ function M.setup(opts)
 
         actions.focus_file(fpath)
       end)
-    end,
-  })
-
-  -- reset highlights when colorscheme is changed
-  vim.api.nvim_create_autocmd("ColorScheme", {
-    callback = function()
-      colors.setup()
-      sfm_explorer.view:reset_winhl()
-      -- reload the explorer
-      actions.reload()
     end,
   })
 

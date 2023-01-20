@@ -16,9 +16,8 @@ local M = {
 --- initialize api
 ---@param view View
 ---@param renderer Renderer
----@param event_manager EventManager
 ---@param ctx Context
-function M.setup(view, renderer, event_manager, ctx)
+function M.setup(view, renderer, ctx)
   M.explorer.toggle = function()
     actions.toggle()
   end
@@ -38,19 +37,7 @@ function M.setup(view, renderer, event_manager, ctx)
     return renderer:render()
   end
   M.explorer.change_root = function(cwd)
-    if path.exists(cwd) or not path.isdir(cwd) then
-      log.warn(cwd .. " is not a valid directory")
-
-      return
-    end
-
-    entry.clear_pool()
-    ctx:change_root(entry.get_entry(cwd, nil))
-    actions.reload()
-
-    event_manager:dispatch(event.ExplorerRootChanged, {
-      path = cwd,
-    })
+    actions.change_root(cwd)
   end
 
   M.entry.root = function()

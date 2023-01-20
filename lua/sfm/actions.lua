@@ -1,6 +1,8 @@
+local log = require "sfm.utils.log"
 local path = require "sfm.utils.path"
 local config = require "sfm.config"
 local event = require "sfm.event"
+local sfm_entry = require "sfm.entry"
 
 ---@class M
 ---@field explorer Explorer
@@ -205,6 +207,24 @@ function M.close_entry()
   M.focus_file(entry.path)
 end
 
+--- change the explorer root
+---@param cwd string
+function M.change_root(cwd)
+  if not path.exists(cwd) or not path.isdir(cwd) then
+    log.warn(cwd .. " is not a valid directory")
+
+    return
+  end
+
+  sfm_entry.clear_pool()
+  M.ctx:change_root(sfm_entry.get_entry(cwd, nil))
+  M.reload()
+
+  M.event_manager:dispatch(event.ExplorerRootChanged, {
+    path = cwd,
+  })
+end
+
 --- close the explorer
 function M.close()
   if M.view:is_open() then
@@ -212,6 +232,7 @@ function M.close()
   end
 end
 
+--- toggle the exlorer window
 function M.toggle()
   if M.view:is_open() then
     M.view:close()

@@ -29,7 +29,7 @@ function Explorer.new()
   self.entry_sort_method = nil
 
   actions.setup(self)
-  api.setup(self.view, self.renderer, self.event_manager, self.ctx)
+  api.setup(self.view, self.renderer, self.ctx)
 
   return self
 end
