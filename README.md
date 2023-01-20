@@ -267,49 +267,49 @@ The `sfm` plugin exposes a number of APIs that can be used to customize the expl
 
 ### Explorer
 
-- `toggle()`: Toggles the visibility of the explorer window.
-- `open()`: Opens the explorer window.
-- `close()`: Closes the explorer window.
-- `is_open()`: Returns `true` if the explorer window is currently open, `false` otherwise.
-- `reload()`: Reloads the explorer tree.
-- `refresh()`: Refreshes the current view of the explorer tree.
-- `change_root(cwd: string)`: Changes the root directory of the explorer tree to the specified directory. If the directory is not valid, an error message will be displayed.
+- `api.explorer.toggle()`: Toggles the visibility of the explorer window.
+- `api.explorer.open()`: Opens the explorer window.
+- `api.explorer.close()`: Closes the explorer window.
+- `api.explorer.is_open()`: Returns `true` if the explorer window is currently open, `false` otherwise.
+- `api.explorer.reload()`: Reloads the explorer tree.
+- `api.explorer.refresh()`: Refreshes the current view of the explorer tree.
+- `api.explorer.change_root(cwd: string)`: Changes the root directory of the explorer tree to the specified directory. If the directory is not valid, an error message will be displayed.
 
 ### Entry
 
-- `root()`: Returns the root entry of the explorer tree.
-- `current()`: Returns the current entry in the explorer tree.
+- `api.entry.root()`: Returns the root entry of the explorer tree.
+- `api.entry.current()`: Returns the current entry in the explorer tree.
 
 ### Navigation
 
-- `focus(fpath: string)`: Focuses on the specified file or directory in the explorer tree.
+- `api.navigation.focus(fpath: string)`: Focuses on the specified file or directory in the explorer tree.
 
 ### Path
 
-- `clean(p: string)`: Cleans up a file path to make it more standard.
-- `split(p: string)`: Splits a file path into a table of its parts.
-- `join(...)`: Joins a list of parts into a file path.
-- `dirname(p: string)`: Returns the directory name of a file path.
-- `basename(p: string)`: Returns the base name of a file path.
-- `remove_trailing(p: string)`: Removes the trailing path separator from a file path.
-- `has_trailing(p: string)`: Returns `true` if the file path has a trailing path separator, `false` otherwise.
-- `path.add_trailing(path)`: Add trailing separator to the given path
-- `path.exists(path)`: Check if the given path exists
-- `path.isfile(path)`: Check if the given path is a file
-- `path.isdir(path)`: Check if the given path is a directory
-- `path.islink(path)`: Check if the given path is a symbolic link
-- `path.unify(paths)`: Unify ancestor for the given paths
-- `path.path_separator`: Get the system path separator
+- `api.path.clean(p: string)`: Cleans up a file path to make it more standard.
+- `api.path.split(p: string)`: Splits a file path into a table of its parts.
+- `api.path.join(...)`: Joins a list of parts into a file path.
+- `api.path.dirname(p: string)`: Returns the directory name of a file path.
+- `api.path.basename(p: string)`: Returns the base name of a file path.
+- `api.path.remove_trailing(p: string)`: Removes the trailing path separator from a file path.
+- `api.path.has_trailing(p: string)`: Returns `true` if the file path has a trailing path separator, `false` otherwise.
+- `api.path.add_trailing(path)`: Add trailing separator to the given path
+- `api.path.exists(path)`: Check if the given path exists
+- `api.path.isfile(path)`: Check if the given path is a file
+- `api.path.isdir(path)`: Check if the given path is a directory
+- `api.path.islink(path)`: Check if the given path is a symbolic link
+- `api.path.unify(paths)`: Unify ancestor for the given paths
+- `api.path.path_separator`: Get the system path separator
 
 ### Debouncing
 
-- `debounce.debounce(name, delay, fn)`: Create a debounced version of the given function
+- `api.debounce(name, delay, fn)`: Create a debounced version of the given function
 
 ### Logging
 
-- `log.info(message)`: Log an informational message
-- `log.warn(message)`: Log a warning message
-- `log.error(message)`: Log an error message
+- `api.log.info(message)`: Log an informational message
+- `api.log.warn(message)`: Log a warning message
+- `api.log.error(message)`: Log an error message
 
 Here's an example of how you might use the API provided by the `sfm` plugin in your own extension or configuration file:
 
