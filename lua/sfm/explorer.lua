@@ -1,7 +1,7 @@
 local view = require "sfm.view"
 local context = require "sfm.context"
 local renderer = require "sfm.renderer"
-local event_manager = require "sfm.event_manager"
+local event = require "sfm.event"
 local entry = require "sfm.entry"
 local actions = require "sfm.actions"
 local api = require "sfm.api"
@@ -20,7 +20,7 @@ function Explorer.new()
 
   local cwd = vim.fn.getcwd()
 
-  self.event_manager = event_manager.new()
+  self.event_manager = event.new_event_manager()
   self.view = view.new(self.event_manager)
   self.ctx = context.new(entry.get_entry(cwd, nil))
   self.renderer = renderer.new(self.ctx, self.view)
