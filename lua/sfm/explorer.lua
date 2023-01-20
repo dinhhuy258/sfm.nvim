@@ -1,3 +1,4 @@
+local log = require "sfm.utils.log"
 local view = require "sfm.view"
 local context = require "sfm.context"
 local renderer = require "sfm.renderer"
@@ -11,6 +12,7 @@ local api = require "sfm.api"
 ---@field ctx Context
 ---@field renderer Renderer
 ---@field event_manager EventManager
+---@field entry_sort_method function|nil
 local Explorer = {}
 
 --- Explorer constructor
@@ -24,6 +26,7 @@ function Explorer.new()
   self.view = view.new(self.event_manager)
   self.ctx = context.new(entry.get_entry(cwd, nil))
   self.renderer = renderer.new(self.ctx, self.view)
+  self.entry_sort_method = nil
 
   actions.setup(self)
   api.setup(self.view, self.renderer, self.event_manager, self.ctx)
@@ -35,6 +38,12 @@ end
 ---@param event_name string
 ---@param handler function
 function Explorer:subscribe(event_name, handler)
+  if type(handler) ~= "function" then
+    log.error(string.format("Invalid event handler, expected a function, got %s", type(handler)))
+
+    return
+  end
+
   self.event_manager:subscribe(event_name, handler)
 end
 
@@ -49,6 +58,12 @@ end
 ---@param priority integer
 ---@param func function
 function Explorer:register_renderer(name, priority, func)
+  if type(func) ~= "function" then
+    log.error(string.format("Invalid renderer, expected a function, got %s", type(func)))
+
+    return
+  end
+
   self.renderer:register_renderer(name, priority, func)
 end
 
@@ -62,7 +77,25 @@ end
 ---@param name string
 ---@param func function
 function Explorer:register_entry_filter(name, func)
+  if type(func) ~= "function" then
+    log.error(string.format("Invalid entry filter method, expected a function, got %s", type(func)))
+
+    return
+  end
+
   self.renderer:register_entry_filter(name, func)
+end
+
+--- set custom entry sort method
+---@param entry_sort_method function|nil
+function Explorer:set_entry_sort_method(entry_sort_method)
+  if type(entry_sort_method) ~= "function" then
+    log.error(string.format("Invalid entry sort method, expected a function, got %s", type(entry_sort_method)))
+
+    return
+  end
+
+  self.entry_sort_method = entry_sort_method
 end
 
 --- load extension that is given by the name and options

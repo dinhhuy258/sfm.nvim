@@ -30,7 +30,6 @@ local default_mappings = {
 }
 
 local default_config = {
-  sort_by = nil,
   view = {
     side = "left",
     width = 30,

@@ -35,7 +35,6 @@ use {
 
 ```lua
 local default_config = {
-  sort_by = nil,
   view = {
     side = "left", -- side of the tree, can be `left`, `right`
     width = 30,
@@ -145,7 +144,7 @@ end)
 
 ## Customizations
 
-The `sfm` plugin provides several customization mechanisms, including `remove_renderer`, `register_renderer`, `remove_entry_filter`, and `register_entry_filter`, that allow users to alter the appearance and behavior of the explorer tree.
+The `sfm` plugin provides several customization mechanisms, including `remove_renderer`, `register_renderer`, `remove_entry_filter`, `register_entry_filter`, and `set_entry_sort_method`, that allow users to alter the appearance and behavior of the explorer tree.
 
 ### remove_renderer
 
@@ -201,6 +200,16 @@ sfm_explorer:register_entry_filter("big_files", function(entry)
   else
     return true
   end
+end)
+```
+
+### set_entry_sort_method
+
+This method allows you to customize the sorting of entries in the explorer tree. The function passed as a parameter should take in two entries and return a boolean value indicating whether the first entry should be sorted before the second. For example, you can use the following function to sort entries alphabetically by name:
+
+```lua
+sfm_explorer:set_entry_sort_method(function(entry1, entry2)
+  return entry1.name < entry2.name
 end)
 ```
 

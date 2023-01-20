@@ -26,7 +26,7 @@ function M._open_dir(e, force)
 
   force = force and true or false
 
-  e:open(config.opts.sort_by, force)
+  e:open(M.explorer.entry_sort_method, force)
 end
 
 --- close the given directory
