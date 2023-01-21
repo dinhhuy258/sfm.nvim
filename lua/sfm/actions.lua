@@ -181,6 +181,10 @@ end
 
 --- reload the explorer
 function M.reload()
+  if not M.view:is_open() then
+    return
+  end
+
   _reload(M.ctx.root)
   M.event_manager:dispatch(event.ExplorerReloaded, nil)
   M.renderer:render()
