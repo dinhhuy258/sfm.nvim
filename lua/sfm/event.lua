@@ -47,6 +47,7 @@ local Event = {
   ExplorerOpened = "ExplorerOpened",
   ExplorerClosed = "ExplorerClosed",
   ExplorerReloaded = "ExplorerReloaded",
+  ExplorerRendered = "ExplorerRendered",
   ExplorerRootChanged = "ExplorerRootChanged",
   FileOpened = "FileOpened",
   FolderOpened = "FolderOpened",

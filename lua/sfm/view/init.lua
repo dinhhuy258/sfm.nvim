@@ -134,6 +134,11 @@ function View:render(lines)
 
   local tab_info = self:_get_current_tab_info()
   buffer.render(tab_info.bufnr, lines)
+
+  self._event_manager:dispatch(event.ExplorerRendered, {
+    winnr = tab_info.winnr,
+    bufnr = tab_info.bufnr,
+  })
 end
 
 --- reset the sfm explorer window highlight (used on ColorScheme event)

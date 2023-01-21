@@ -249,9 +249,12 @@ end)
 
 - `ExplorerOpened`: Triggered when the explorer window is opened. The payload of the event is a table with the following keys:
   - `winnr`: The number of the window where the explorer is opened.
-  - `bufnr`: The number of the buffer associated with the explorer window. It does not provide any payload.
+  - `bufnr`: The number of the buffer associated with the explorer window.
 - `ExplorerClosed`: Triggered when the explorer window is closed. It does not provide any payload.
-- `ExplorerReloaded`: Triggered when a explorer is reloaded. This event is emitted after the explorer tree has finished reloading, and all the files and folders have been re-read. Listeners can use this event to update or refresh any state or information that is dependent on the explorer tree.
+- `ExplorerReloaded`: Triggered when a explorer is reloaded. This event is emitted after the explorer tree has finished reloading, and all the files and folders have been re-read. Listeners can use this event to update or refresh any state or information that is dependent on the explorer tree. It does not provide any payload.
+- `ExplorerRendered`: Triggered when a explorer is rendered. This event can be used to perform additional customizations or updates after the explorer has been rendered. The payload of the event is a table with the following keys:
+  - `winnr`: The number of the window explorer.
+  - `bufnr`: The number of the buffer associated with the explorer window. 
 - `ExplorerRootChanged`: This event is fired when the root of the explorer changes. The payload of the event is a table with the following key:
   - `path`: The new root path
 - `FileOpened`: Triggered when a file is opened in the explorer. The payload of the event is a table with the following key:
