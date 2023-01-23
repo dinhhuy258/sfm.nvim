@@ -78,7 +78,7 @@ function M.setup(opts)
 
       for _, key in pairs(keys) do
         vim.keymap.set("n", key, function()
-          require("sfm.actions").run(map.action)
+          actions.run(map.action)
         end, options)
       end
     end
