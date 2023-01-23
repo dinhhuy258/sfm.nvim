@@ -85,7 +85,7 @@ function M.focus_file(fpath)
   M._renderer:render()
 
   local linenr = M._renderer:find_line_number_for_path(fpath)
-  if linenr == 0 then
+  if linenr == nil then
     return
   end
 

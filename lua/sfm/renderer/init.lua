@@ -121,9 +121,9 @@ function Renderer:get_current_entry()
   error "failed to get the current entry"
 end
 
---- find the line of the current path, return 0 if not found
+--- find the line of the current path, return nil if not found
 ---@param fpath string
----@return integer
+---@return integer|nil
 function Renderer:find_line_number_for_path(fpath)
   for index, e in ipairs(self.entries) do
     if fpath == e.path then
@@ -131,7 +131,7 @@ function Renderer:find_line_number_for_path(fpath)
     end
   end
 
-  return 0
+  return nil
 end
 
 --- check if the given entry can be renderered

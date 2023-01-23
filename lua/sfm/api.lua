@@ -2,8 +2,6 @@ local debounce = require "sfm.utils.debounce"
 local path = require "sfm.utils.path"
 local log = require "sfm.utils.log"
 local actions = require "sfm.actions"
-local entry = require "sfm.entry"
-local event = require "sfm.event"
 
 local M = {
   explorer = {},
