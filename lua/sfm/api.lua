@@ -46,6 +46,9 @@ function M.setup(view, renderer, ctx)
   M.entry.current = function()
     return renderer:get_current_entry()
   end
+  M.entry.all = function()
+    return renderer.entries
+  end
 
   M.navigation.focus = function(fpath)
     return actions.focus_file(fpath)

@@ -282,6 +282,7 @@ The `sfm` plugin exposes a number of APIs that can be used to customize the expl
 
 - `api.entry.root()`: Returns the root entry of the explorer tree.
 - `api.entry.current()`: Returns the current entry in the explorer tree.
+- `api.entry.all()`: Returns a table containing all the entries in the explorer tree.
 
 ### Navigation
 
