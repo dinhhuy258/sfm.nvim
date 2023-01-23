@@ -38,6 +38,10 @@ function M.render_entry_icon(entry)
     icon_hl_group = "SFMDefaultFileIcon"
   else
     icon, icon_hl_group = devicons.get_icon(entry.name, nil, { default = true })
+    if icon_hl_group == "DevIconDefault" then
+      icon = icons.file.default
+      icon_hl_group = "SFMDefaultFileIcon"
+    end
   end
 
   return {
