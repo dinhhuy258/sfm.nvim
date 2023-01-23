@@ -115,7 +115,7 @@ local sfm_explorer = require("sfm").setup {
 ```
 
 In this example, when the user presses the `c` key in the explorer, the custom function `function() print("Custom function executed") end` will be executed. Pressing the `x` key will perform the default action `close`.
-Please ensure that the action name you provide is one of the supported actions listed in the above table.
+Please note that if the action for a key is set to `nil` or an empty string, the default key binding for that key will be disabled. Also, ensure that the action provided is a valid function or action name, as listed in the above table.
 
 ## Highlighting
 
