@@ -37,12 +37,12 @@ use {
 local default_config = {
   view = {
     side = "left", -- side of the tree, can be `left`, `right`
-    width = 30,
-    mappings = {
-      custom_only = false,
-      list = {
-        -- user mappings go here
-      }
+    width = 30
+  },
+  mappings = {
+    custom_only = false,
+    list = {
+      -- user mappings go here
     }
   },
   renderer = {
@@ -93,7 +93,29 @@ To use the functionalities provided by the `sfm` plugin, you can use the followi
 | R     | reload        | Reload the explorer                                        |
 | q     | close         | Close the explorer window                                  |
 
-You can customize these key bindings by setting them via the `view.mappings` configuration. It's similar to the way [nvim-tree](https://github.com/nvim-tree/nvim-tree.lua) handles mapping overrides.
+You can customize these key bindings by defining custom functions or action names in the `mappings` configuration option. For example, you can assign a custom function to the `t` key:
+
+```lua
+local sfm_explorer = require("sfm").setup {
+  mappings = {
+    list = {
+      {
+        key = "c",
+        action = function()
+          print("Custom function executed")
+        end,
+      },
+      {
+        key = "x",
+        action = "close",
+      },
+    },
+  },
+}
+```
+
+In this example, when the user presses the `c` key in the explorer, the custom function `function() print("Custom function executed") end` will be executed. Pressing the `x` key will perform the default action `close`.
+Please ensure that the action name you provide is one of the supported actions listed in the above table.
 
 ## Highlighting
 
@@ -254,7 +276,7 @@ end)
 - `ExplorerReloaded`: Triggered when a explorer is reloaded. This event is emitted after the explorer tree has finished reloading, and all the files and folders have been re-read. Listeners can use this event to update or refresh any state or information that is dependent on the explorer tree. It does not provide any payload.
 - `ExplorerRendered`: Triggered when a explorer is rendered. This event can be used to perform additional customizations or updates after the explorer has been rendered. The payload of the event is a table with the following keys:
   - `winnr`: The number of the window explorer.
-  - `bufnr`: The number of the buffer associated with the explorer window. 
+  - `bufnr`: The number of the buffer associated with the explorer window.
 - `ExplorerRootChanged`: This event is fired when the root of the explorer changes. The payload of the event is a table with the following key:
   - `path`: The new root path
 - `FileOpened`: Triggered when a file is opened in the explorer. The payload of the event is a table with the following key:

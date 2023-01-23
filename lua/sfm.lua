@@ -72,30 +72,14 @@ function M.setup(opts)
 
   sfm_explorer:subscribe(event.ExplorerOpened, function(payload)
     local bufnr = payload["bufnr"]
-    local options = {
-      noremap = true,
-      silent = true,
-      expr = false,
-    }
-    for _, map in pairs(config.opts.view.mappings.list) do
-      if type(map.key) == "table" then
-        for _, key in pairs(map.key) do
-          vim.api.nvim_buf_set_keymap(
-            bufnr,
-            "n",
-            key,
-            "<CMD>lua require('sfm.actions')." .. map.action .. "()<CR>",
-            options
-          )
-        end
-      else
-        vim.api.nvim_buf_set_keymap(
-          bufnr,
-          "n",
-          map.key,
-          "<CMD>lua require('sfm.actions')." .. map.action .. "()<CR>",
-          options
-        )
+    local options = { noremap = true, silent = true, nowait = true, buffer = bufnr }
+    for _, map in pairs(config.opts.mappings.list) do
+      local keys = type(map.key) == "table" and map.key or { map.key }
+
+      for _, key in pairs(keys) do
+        vim.keymap.set("n", key, function()
+          require("sfm.actions").run(map.action)
+        end, options)
       end
     end
   end)

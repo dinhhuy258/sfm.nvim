@@ -1,3 +1,5 @@
+local log = require "sfm.utils.log"
+
 local default_mappings = {
   {
     key = "<CR>",
@@ -33,11 +35,11 @@ local default_config = {
   view = {
     side = "left",
     width = 30,
-    mappings = {
-      custom_only = false,
-      list = {
-        -- user mappings go here
-      },
+  },
+  mappings = {
+    custom_only = false,
+    list = {
+      -- user mappings go here
     },
   },
   renderer = {
@@ -121,10 +123,21 @@ local M = {
 function M.setup(opts)
   M.opts = vim.tbl_deep_extend("force", default_config, opts or {})
 
-  if M.opts.view.mappings.custom_only then
-    M.opts.view.mappings.list = merge_mappings({}, M.opts.view.mappings.list)
+  --TODO Remove `view.mappings` configuration (Need to be deleted at the end of Jan)
+  if opts.view ~= nil and opts.view.mappings ~= nil then
+    log.warn "The config option 'views.mappings' is deprecated and will be removed in a future version. Please use 'mappings' instead."
+
+    if M.opts.view.mappings.custom_only then
+      M.opts.mappings.list = merge_mappings({}, M.opts.view.mappings.list)
+    else
+      M.opts.mappings.list = merge_mappings(default_mappings, M.opts.view.mappings.list)
+    end
   else
-    M.opts.view.mappings.list = merge_mappings(default_mappings, M.opts.view.mappings.list)
+    if M.opts.mappings.custom_only then
+      M.opts.mappings.list = merge_mappings({}, M.opts.mappings.list)
+    else
+      M.opts.mappings.list = merge_mappings(default_mappings, M.opts.mappings.list)
+    end
   end
 end
 
