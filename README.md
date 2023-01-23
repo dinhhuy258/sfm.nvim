@@ -308,7 +308,7 @@ The `sfm` plugin exposes a number of APIs that can be used to customize the expl
 
 ### Navigation
 
-- `api.navigation.focus(fpath: string)`: Focuses on the specified file or directory in the explorer tree.
+- `api.navigation.focus(p: string)`: Focuses on the specified file or directory in the explorer tree.
 
 ### Path
 
@@ -319,23 +319,23 @@ The `sfm` plugin exposes a number of APIs that can be used to customize the expl
 - `api.path.basename(p: string)`: Returns the base name of a file path.
 - `api.path.remove_trailing(p: string)`: Removes the trailing path separator from a file path.
 - `api.path.has_trailing(p: string)`: Returns `true` if the file path has a trailing path separator, `false` otherwise.
-- `api.path.add_trailing(path)`: Add trailing separator to the given path
-- `api.path.exists(path)`: Check if the given path exists
-- `api.path.isfile(path)`: Check if the given path is a file
-- `api.path.isdir(path)`: Check if the given path is a directory
-- `api.path.islink(path)`: Check if the given path is a symbolic link
-- `api.path.unify(paths)`: Unify ancestor for the given paths
+- `api.path.add_trailing(p: string)`: Add trailing separator to the given path
+- `api.path.exists(p: string)`: Check if the given path exists
+- `api.path.isfile(p: string)`: Check if the given path is a file
+- `api.path.isdir(p: string)`: Check if the given path is a directory
+- `api.path.islink(p: string)`: Check if the given path is a symbolic link
+- `api.path.unify(paths: table)`: Unify ancestor for the given paths
 - `api.path.path_separator`: Get the system path separator
 
 ### Debouncing
 
-- `api.debounce(name, delay, fn)`: Create a debounced version of the given function
+- `api.debounce(name: string, delay: integer, fn: function)`: Create a debounced version of the given function
 
 ### Logging
 
-- `api.log.info(message)`: Log an informational message
-- `api.log.warn(message)`: Log a warning message
-- `api.log.error(message)`: Log an error message
+- `api.log.info(message: string)`: Log an informational message
+- `api.log.warn(message: string)`: Log a warning message
+- `api.log.error(message: string)`: Log an error message
 
 Here's an example of how you might use the API provided by the `sfm` plugin in your own extension or configuration file:
 
