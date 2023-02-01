@@ -4,7 +4,7 @@ M.path_separator = package.config:sub(1, 1)
 
 function M.clean(path)
   -- remove double path seps
-  path = path:gsub(M.path_separator .. M.path_separator, M.path_separator)
+  path = path:gsub(M.path_separator .. "+", M.path_separator)
 
   -- remove trailing path sep
   path = M.remove_trailing(path)

@@ -61,6 +61,8 @@ end
 --- focus the given path
 ---@param fpath string
 function M.focus_file(fpath)
+  fpath = path.clean(fpath)
+
   if vim.startswith(fpath, M._ctx.root.path) then
     local dirs = path.split(path.dirname(fpath))
     local current = M._ctx.root
