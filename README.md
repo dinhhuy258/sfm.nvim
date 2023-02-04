@@ -148,6 +148,7 @@ Here is a list of available extensions for the `sfm` plugin:
 - [sfm-bookmark](https://github.com/dinhhuy258/sfm-bookmark.nvim): Adds bookmarking functionality to the `sfm` plugin
 - [sfm-filter](https://github.com/dinhhuy258/sfm-filter.nvim): Allows users to filter entries in the `sfm` explorer tree
 - [sfm-git](https://github.com/dinhhuy258/sfm-git.nvim): Adds git icon support to the `sfm` plugin's file and folder explorer view, indicating the git status of the file or folder.
+- [sfm-telescope](https://github.com/dinhhuy258/sfm-telescope.nvim): Allows users to search for entries in the `sfm` explorer tree
 
 ## Customizations
 
