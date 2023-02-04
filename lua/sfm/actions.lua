@@ -205,18 +205,7 @@ end
 function M.edit()
   local entry = M._renderer:get_current_entry()
   if not entry.is_dir then
-    if config.opts.view.side == "right" then
-      vim.cmd "wincmd h"
-    else
-      vim.cmd "wincmd l"
-    end
-
-    vim.cmd("keepalt edit " .. entry.path)
-
-    -- fire event
-    M._event_manager:dispatch(event.FileOpened, {
-      path = entry.path,
-    })
+    open_file(entry.path, "edit")
 
     return
   end
