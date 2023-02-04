@@ -86,6 +86,9 @@ To use the functionalities provided by the `sfm` plugin, you can use the followi
 | Key   | Action        | Description                                                |
 | ----- | ------------- | ---------------------------------------------------------- |
 | cr    | edit          | Open a file or directory                                   |
+| ctr-v | vsplit        | Open a file in a vertical split window                     |
+| ctr-h | split         | Open a file in a horizontal split window                   |
+| ctr-t | tabnew        | Open a file in a new tab                                   |
 | s-tab | close_entry   | Close current opened directory or parent                   |
 | K     | first_sibling | Navigate to the first sibling of current file or directory |
 | J     | last_sibling  | Navigate to the last sibling of current file or directory  |

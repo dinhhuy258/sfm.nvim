@@ -6,6 +6,18 @@ local default_mappings = {
     action = "edit",
   },
   {
+    key = "<C-v>",
+    action = "vsplit",
+  },
+  {
+    key = "<C-h>",
+    action = "split",
+  },
+  {
+    key = "<C-t>",
+    action = "tabnew",
+  },
+  {
     key = "<S-TAB>",
     action = "close_entry",
   },

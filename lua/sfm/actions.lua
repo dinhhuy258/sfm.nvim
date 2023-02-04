@@ -94,6 +94,113 @@ function M.focus_file(fpath)
   M._view:move_cursor(linenr, 0)
 end
 
+--- open window
+---@return integer, boolean
+local function open()
+  -- avoid triggering autocommands when switching windows
+  local eventignore = vim.o.eventignore
+  vim.o.eventignore = "all"
+
+  local current_window = vim.api.nvim_get_current_win()
+
+  -- find a suitable window to open the file in
+  if config.opts.view.side == "right" then
+    vim.cmd "wincmd t"
+  else
+    vim.cmd "wincmd w"
+  end
+
+  local winid = vim.api.nvim_get_current_win()
+  local is_sfm_window = vim.bo.filetype == "sfm"
+  vim.api.nvim_set_current_win(current_window)
+
+  vim.o.eventignore = eventignore
+
+  return winid, is_sfm_window
+end
+
+--- find buffer by the given name
+---@param name string
+---@return integer
+local function find_buffer_by_name(name)
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    local buf_name = vim.api.nvim_buf_get_name(buf)
+    if buf_name == name then
+      return buf
+    end
+  end
+
+  return -1
+end
+
+--- open the given path with the given open_cm
+---@param fpath string
+---@param open_cmd string
+local function open_file(fpath, open_cmd)
+  local result = true
+  local err = nil
+  open_cmd = open_cmd or "edit"
+
+  if open_cmd == "edit" or open_cmd == "e" then
+    local bufnr = find_buffer_by_name(fpath)
+    if bufnr > 0 then
+      -- if the file is already open, switch to it
+      open_cmd = "b"
+    end
+  end
+
+  local winid, is_sfm_window = open()
+  vim.api.nvim_set_current_win(winid)
+  if is_sfm_window then
+    -- sfm must be the only window, restore it's status as a sidebar
+    result, err = pcall(vim.cmd, "vsplit " .. fpath)
+    vim.api.nvim_win_set_width(winid, config.opts.view.width)
+  else
+    result, err = pcall(vim.cmd, open_cmd .. " " .. fpath)
+  end
+
+  if result or err == "Vim(edit):E325: ATTENTION" then
+    vim.api.nvim_buf_set_option(0, "buflisted", true)
+
+    -- fire event
+    M._event_manager:dispatch(event.FileOpened, {
+      path = fpath,
+    })
+  else
+    log.error "Error opening file"
+  end
+end
+
+--- open the file in a horizontal split
+function M.split()
+  local entry = M._renderer:get_current_entry()
+  if entry.is_dir then
+    return
+  end
+
+  open_file(entry.path, "split")
+end
+
+--- open the file in a vertical split
+function M.vsplit()
+  local entry = M._renderer:get_current_entry()
+  if entry.is_dir then
+    return
+  end
+
+  open_file(entry.path, "vsplit")
+end
+
+-- open the file in a new tab
+function M.tabnew()
+  local entry = M._renderer:get_current_entry()
+  if entry.is_dir then
+    return
+  end
+
+  open_file(entry.path, "tabedit")
+end
+
 --- edit file or toggle directory
 function M.edit()
   local entry = M._renderer:get_current_entry()
@@ -292,6 +399,9 @@ function M.setup(explorer)
 
   Actions = {
     edit = M.edit,
+    vsplit = M.vsplit,
+    split = M.split,
+    tabnew = M.tabnew,
     close_entry = M.close_entry,
     last_sibling = M.last_sibling,
     first_sibling = M.first_sibling,
