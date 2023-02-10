@@ -24,14 +24,19 @@ local EntryPool = {
 ---@param parent Entry|nil
 ---@return Entry
 function EntryPool.get_entry(fpath, parent)
+  local entry_key = fpath
+  if path.isdir(fpath) then
+    entry_key = path.add_trailing(fpath)
+  end
+
   -- check if an entry object already exists for the given path
-  if EntryPool._entries[fpath] ~= nil then
-    return EntryPool._entries[fpath]
+  if EntryPool._entries[entry_key] ~= nil then
+    return EntryPool._entries[entry_key]
   end
 
   -- create a new entry object if one doesn't exist
-  local entry = Entry._new(fpath, parent and EntryPool._entries[parent.path] or nil)
-  EntryPool._entries[fpath] = entry
+  local entry = Entry._new(fpath, parent and EntryPool._entries[path.add_trailing(parent.path)] or nil)
+  EntryPool._entries[entry_key] = entry
 
   return entry
 end
