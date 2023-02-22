@@ -101,6 +101,8 @@ end
 --- set window creator
 ---@param window_creator function|nil
 function Explorer:register_window_creator(window_creator)
+  log.warn "The 'register_window_creator' method will be removed in a future release of sfm.nvim. Please update your code to avoid using this method. If you have any questions, please open an issue on the GitHub repository."
+
   if type(window_creator) ~= "function" then
     log.error(string.format("Invalid window creator method, expected a function, got %s", type(window_creator)))
 
