@@ -36,8 +36,19 @@ use {
 ```lua
 local default_config = {
   view = {
-    side = "left", -- side of the tree, can be `left`, `right`
-    width = 30
+    side = "left", -- side of the tree, can be `left`, `right`. this setting will be ignored if view.float.enable is set to true,
+    width = 30 -- this setting will be ignored if view.float.enable is set to true,
+    float = {
+      enable = false,
+      config = {
+        relative = "editor",
+        border = "rounded",
+        width = 30, -- int or function
+        height = 30, -- int or function
+        row = 1, -- int or function
+        col = 1 -- int or function
+      }
+    }
   },
   mappings = {
     custom_only = false,
