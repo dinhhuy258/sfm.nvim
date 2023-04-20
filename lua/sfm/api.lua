@@ -9,13 +9,15 @@ local M = {
   navigation = {},
   path = {},
   log = {},
+  event = {},
 }
 
 --- initialize api
 ---@param view View
 ---@param renderer Renderer
+---@param event_manager EventManager
 ---@param ctx Context
-function M.setup(view, renderer, ctx)
+function M.setup(view, renderer, event_manager, ctx)
   M.explorer.toggle = function()
     actions.toggle()
   end
@@ -72,6 +74,10 @@ function M.setup(view, renderer, ctx)
   M.log.info = log.info
   M.log.warn = log.warn
   M.log.error = log.error
+
+  M.event.dispatch = function(event_name, payload)
+    event_manager:dispatch(event_name, payload)
+  end
 end
 
 return M

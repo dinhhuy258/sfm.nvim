@@ -336,6 +336,10 @@ The `sfm` plugin exposes a number of APIs that can be used to customize the expl
 - `api.log.warn(message: string)`: Log a warning message
 - `api.log.error(message: string)`: Log an error message
 
+### Events
+
+- `api.event.dispatch(event_name: string, payload: table?)`: Dispatches an event with the given name and payload to all registered event handlers.
+
 Here's an example of how you might use the API provided by the `sfm` plugin in your own extension or configuration file:
 
 ```lua
