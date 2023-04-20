@@ -149,7 +149,6 @@ local function open_file(fpath, open_cmd)
     end
   end
 
-  -- close the float window
   if config.opts.view.float.enable then
     result, err = pcall(vim.cmd, open_cmd .. " " .. fpath)
   else
