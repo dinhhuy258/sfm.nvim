@@ -1,12 +1,12 @@
 local buffer = require "sfm.view.buffer"
 local window = require "sfm.view.window"
+local float = require "sfm.view.float"
 local event = require "sfm.event"
 local config = require "sfm.config"
 
 ---@class View
 ---@field _tab_infos table
 ---@field _event_manager EventManager
----@field _window_creator function|nil
 local View = {}
 
 --- View constructor
@@ -17,7 +17,6 @@ function View.new(event_manager)
 
   self._event_manager = event_manager
   self._tab_infos = {}
-  self._window_creator = nil
 
   return self
 end
@@ -64,7 +63,7 @@ function View:open()
     return
   end
 
-  local winnr = self._window_creator ~= nil and self._window_creator() or window.create_window()
+  local winnr = config.opts.view.float.enable and float.create_window() or window.create_window()
   local bufnr = buffer.create_buffer()
 
   vim.api.nvim_win_set_buf(winnr, bufnr)
@@ -149,12 +148,6 @@ function View:reset_winhl()
 
   local tab_info = self:_get_current_tab_info()
   window.reset_winhl(tab_info.winnr)
-end
-
---- set window creator
----@param window_creator function|nil
-function View:set_window_creator(window_creator)
-  self._window_creator = window_creator
 end
 
 return View

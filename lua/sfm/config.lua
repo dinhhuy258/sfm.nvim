@@ -45,6 +45,17 @@ local default_config = {
   view = {
     side = "left",
     width = 30,
+    float = {
+      enable = false,
+      config = {
+        relative = "editor",
+        border = "rounded",
+        width = 30,
+        height = 30,
+        row = 1,
+        col = 1,
+      },
+    },
   },
   mappings = {
     custom_only = false,

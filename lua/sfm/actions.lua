@@ -149,14 +149,18 @@ local function open_file(fpath, open_cmd)
     end
   end
 
-  local winid, is_sfm_window = open()
-  vim.api.nvim_set_current_win(winid)
-  if is_sfm_window then
-    -- sfm must be the only window, restore it's status as a sidebar
-    result, err = pcall(vim.cmd, "vsplit " .. fpath)
-    vim.api.nvim_win_set_width(winid, config.opts.view.width)
-  else
+  if config.opts.view.float.enable then
     result, err = pcall(vim.cmd, open_cmd .. " " .. fpath)
+  else
+    local winid, is_sfm_window = open()
+    vim.api.nvim_set_current_win(winid)
+    if is_sfm_window then
+      -- sfm must be the only window, restore it's status as a sidebar
+      result, err = pcall(vim.cmd, "vsplit " .. fpath)
+      vim.api.nvim_win_set_width(winid, config.opts.view.width)
+    else
+      result, err = pcall(vim.cmd, open_cmd .. " " .. fpath)
+    end
   end
 
   if result or err == "Vim(edit):E325: ATTENTION" then
