@@ -16,6 +16,22 @@ Here is a short demonstration of the `sfm` plugin in action:
 
 https://user-images.githubusercontent.com/17776979/213235911-f2cfc886-5485-413d-8959-bf404ecc8451.mp4
 
+## Extensions
+
+The `sfm` plugin allows users to extend its functionality by installing extensions. Extensions are independent plugins that can add new features or customize the behavior of the `sfm` plugin.
+
+The extensions must be written under `lua/sfm/extensions/` folder.
+
+### Available Extensions
+
+Here is a list of available extensions for the `sfm` plugin:
+
+- [sfm-fs](https://github.com/dinhhuy258/sfm-fs.nvim): Adds file system functionality (create, move, delete...) to the `sfm` plugin.
+- [sfm-bookmark](https://github.com/dinhhuy258/sfm-bookmark.nvim): Adds bookmarking functionality to the `sfm` plugin
+- [sfm-filter](https://github.com/dinhhuy258/sfm-filter.nvim): Allows users to filter entries in the `sfm` explorer tree
+- [sfm-git](https://github.com/dinhhuy258/sfm-git.nvim): Adds git icon support to the `sfm` plugin's file and folder explorer view, indicating the git status of the file or folder.
+- [sfm-telescope](https://github.com/dinhhuy258/sfm-telescope.nvim): Allows users to search for entries in the `sfm` explorer tree
+
 ## Installation
 
 Install `sfm` on Neovim using your favorite plugin manager. For example, the below example shows how to install `sfm` using [packer.nvim](https://github.com/wbthomason/packer.nvim)
@@ -144,22 +160,6 @@ The `sfm` plugin uses the following highlight values:
 In addition to the above highlight values, the `sfm` plugin also uses the following highlight values:
 
 - `SFMNormal`, `SFMNormalNC`, `SFMEndOfBuffer`, `SFMCursorLine`, `SFMCursorLineNr`, `SFMLineNr`, `SFMWinSeparator`, `SFMStatusLine`, `SFMStatuslineNC`, `SFMSignColumn` these highlight values are used to link to the default Neovim highlight groups.
-
-## Extensions
-
-The `sfm` plugin allows users to extend its functionality by installing extensions. Extensions are independent plugins that can add new features or customize the behavior of the `sfm` plugin.
-
-The extensions must be written under `lua/sfm/extensions/` folder.
-
-### Available Extensions
-
-Here is a list of available extensions for the `sfm` plugin:
-
-- [sfm-fs](https://github.com/dinhhuy258/sfm-fs.nvim): Adds file system functionality (create, move, delete...) to the `sfm` plugin.
-- [sfm-bookmark](https://github.com/dinhhuy258/sfm-bookmark.nvim): Adds bookmarking functionality to the `sfm` plugin
-- [sfm-filter](https://github.com/dinhhuy258/sfm-filter.nvim): Allows users to filter entries in the `sfm` explorer tree
-- [sfm-git](https://github.com/dinhhuy258/sfm-git.nvim): Adds git icon support to the `sfm` plugin's file and folder explorer view, indicating the git status of the file or folder.
-- [sfm-telescope](https://github.com/dinhhuy258/sfm-telescope.nvim): Allows users to search for entries in the `sfm` explorer tree
 
 ## Customizations
 
