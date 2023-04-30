@@ -70,7 +70,9 @@ function View:open()
 
   buffer.set_buffer_options(bufnr)
   window.set_window_option()
-  vim.api.nvim_win_set_width(winnr, config.opts.view.width)
+  if not config.opts.view.float.enable then
+    vim.api.nvim_win_set_width(winnr, config.opts.view.width)
+  end
 
   local tabnr = vim.api.nvim_get_current_tabpage()
   self._tab_infos[tabnr] = {
