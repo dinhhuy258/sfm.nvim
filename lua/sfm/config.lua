@@ -32,7 +32,7 @@ local default_mappings = {
     action = "parent_entry",
   },
   {
-    key = "-",
+    key = "]",
     action = "change_root_to_parent",
   },
   {
