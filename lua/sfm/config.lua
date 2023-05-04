@@ -32,6 +32,14 @@ local default_mappings = {
     action = "parent_entry",
   },
   {
+    key = "<C-]>",
+    action = "change_root_to_parent",
+  },
+  {
+    key = "]",
+    action = "change_root_to_entry",
+  },
+  {
     key = "R",
     action = "reload",
   },

@@ -110,18 +110,20 @@ require("sfm").setup {
 
 To use the functionalities provided by the `sfm` plugin, you can use the following key bindings:
 
-| Key   | Action        | Description                                                |
-| ----- | ------------- | ---------------------------------------------------------- |
-| cr    | edit          | Open a file or directory                                   |
-| ctr-v | vsplit        | Open a file in a vertical split window                     |
-| ctr-h | split         | Open a file in a horizontal split window                   |
-| ctr-t | tabnew        | Open a file in a new tab                                   |
-| s-tab | close_entry   | Close current opened directory or parent                   |
-| K     | first_sibling | Navigate to the first sibling of current file or directory |
-| J     | last_sibling  | Navigate to the last sibling of current file or directory  |
-| P     | parent_entry  | Move cursor to the parent directory                        |
-| R     | reload        | Reload the explorer                                        |
-| q     | close         | Close the explorer window                                  |
+| Key   | Action                | Description                                                                                                |
+| ----- | --------------------- | ---------------------------------------------------------------------------------------------------------- |
+| cr    | edit                  | Open a file or directory                                                                                   |
+| ctr-v | vsplit                | Open a file in a vertical split window                                                                     |
+| ctr-h | split                 | Open a file in a horizontal split window                                                                   |
+| ctr-t | tabnew                | Open a file in a new tab                                                                                   |
+| s-tab | close_entry           | Close current opened directory or parent                                                                   |
+| K     | first_sibling         | Navigate to the first sibling of current file or directory                                                 |
+| J     | last_sibling          | Navigate to the last sibling of current file or directory                                                  |
+| P     | parent_entry          | Move cursor to the parent directory                                                                        |
+| ctr-] | change_root_to_parent | Change the root directory to the parent directory of the current entry                                     |
+| ]     | change_root_to_entry  | Change the root directory to the current folder entry or to the parent directory of the current file entry |
+| R     | reload                | Reload the explorer                                                                                        |
+| q     | close                 | Close the explorer window                                                                                  |
 
 You can customize these key bindings by defining custom functions or action names in the `mappings` configuration option. For example, you can assign a custom function to the `t` key:
 
