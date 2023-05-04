@@ -284,6 +284,29 @@ function M.parent_entry()
   M.focus_file(parent.path)
 end
 
+--- change the root directory to the parent directory of the current entry
+function M.change_root_to_parent()
+  local entry = M._renderer:get_current_entry()
+  local new_root_path = path.dirname(path.remove_trailing(entry.path))
+
+  M.change_root(new_root_path)
+end
+
+--- change the root directory to the current folder entry or to the parent directory of the current file entry
+function M.change_root_to_node()
+  local entry = M._renderer:get_current_entry()
+  if entry.is_dir then
+    M.change_root(entry.path)
+  else
+    local parent = entry.parent
+    if parent == nil then
+      return
+    end
+
+    M.change_root(parent.path)
+  end
+end
+
 --- reload the explorer
 function M.reload()
   if not M._view:is_open() then
@@ -399,6 +422,8 @@ function M.setup(explorer)
     last_sibling = M.last_sibling,
     first_sibling = M.first_sibling,
     parent_entry = M.parent_entry,
+    change_root_to_parent = M.change_root_to_parent,
+    change_root_to_node = M.change_root_to_node,
     reload = M.reload,
     close = M.close,
   }
