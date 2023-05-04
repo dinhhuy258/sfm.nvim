@@ -120,8 +120,8 @@ To use the functionalities provided by the `sfm` plugin, you can use the followi
 | K     | first_sibling         | Navigate to the first sibling of current file or directory                                                 |
 | J     | last_sibling          | Navigate to the last sibling of current file or directory                                                  |
 | P     | parent_entry          | Move cursor to the parent directory                                                                        |
-| ]     | change_root_to_parent | Change the root directory to the parent directory of the current entry                                     |
-| ctr-] | change_root_to_entry  | Change the root directory to the current folder entry or to the parent directory of the current file entry |
+| ctr-] | change_root_to_parent | Change the root directory to the parent directory of the current entry                                     |
+| ]     | change_root_to_entry  | Change the root directory to the current folder entry or to the parent directory of the current file entry |
 | R     | reload                | Reload the explorer                                                                                        |
 | q     | close                 | Close the explorer window                                                                                  |
 

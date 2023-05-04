@@ -32,11 +32,11 @@ local default_mappings = {
     action = "parent_entry",
   },
   {
-    key = "]",
+    key = "<C-]>",
     action = "change_root_to_parent",
   },
   {
-    key = "<C-]>",
+    key = "]",
     action = "change_root_to_entry",
   },
   {
