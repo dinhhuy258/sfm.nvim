@@ -293,7 +293,7 @@ function M.change_root_to_parent()
 end
 
 --- change the root directory to the current folder entry or to the parent directory of the current file entry
-function M.change_root_to_node()
+function M.change_root_to_entry()
   local entry = M._renderer:get_current_entry()
   if entry.is_dir then
     M.change_root(entry.path)
@@ -423,7 +423,7 @@ function M.setup(explorer)
     first_sibling = M.first_sibling,
     parent_entry = M.parent_entry,
     change_root_to_parent = M.change_root_to_parent,
-    change_root_to_node = M.change_root_to_node,
+    change_root_to_entry = M.change_root_to_entry,
     reload = M.reload,
     close = M.close,
   }

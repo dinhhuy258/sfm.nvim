@@ -37,7 +37,7 @@ local default_mappings = {
   },
   {
     key = "<C-]>",
-    action = "change_root_to_node",
+    action = "change_root_to_entry",
   },
   {
     key = "R",
