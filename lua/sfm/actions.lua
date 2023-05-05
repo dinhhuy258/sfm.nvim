@@ -286,8 +286,8 @@ end
 
 --- change the root directory to the parent directory of the current entry
 function M.change_root_to_parent()
-  local entry = M._renderer:get_current_entry()
-  local new_root_path = path.dirname(path.remove_trailing(entry.path))
+  local root_path = M._ctx.root.path
+  local new_root_path = path.dirname(path.remove_trailing(root_path))
 
   M.change_root(new_root_path)
 end
