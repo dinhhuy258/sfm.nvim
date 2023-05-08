@@ -63,12 +63,12 @@ function View:open()
     return
   end
 
-  local winnr = config.opts.view.float.enable and float.create_window() or window.create_window()
   local bufnr = buffer.create_buffer()
+  buffer.set_buffer_options(bufnr)
 
+  local winnr = config.opts.view.float.enable and float.create_window() or window.create_window()
   vim.api.nvim_win_set_buf(winnr, bufnr)
 
-  buffer.set_buffer_options(bufnr)
   window.set_window_option()
   if not config.opts.view.float.enable then
     vim.api.nvim_win_set_width(winnr, config.opts.view.width)
