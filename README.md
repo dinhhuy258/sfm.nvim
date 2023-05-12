@@ -4,9 +4,7 @@ The simple directory tree viewer for Neovim written in Lua.
 
 I created the `sfm` plugin because I wanted to write my own simple and lightweight file management options for NeoVim. I wanted a plugin that would allow me to easily browse and open files in my project without being weighed down by unnecessary features or complexity.
 
-The `sfm` plugin is designed to be minimalistic and easy to use, with a clean and intuitive interface. It provides all the essential file management functionality that I need, without any unnecessary bells and whistles. I hope you find it as useful as I do!
-
-The `sfm` plugin is also designed to be easily extensible. You can customize the plugin to suit your needs, or even create extensions for sfm to achieve specific tasks.
+The `sfm` plugin is designed to be easily extensible. You can customize the plugin to suit your needs, or even create extensions for sfm to achieve specific tasks.
 
 Please note that the `sfm` plugin is still in development and may not be fully stable. Use at your own risk.
 
