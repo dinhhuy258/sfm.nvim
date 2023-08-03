@@ -35,6 +35,7 @@ local function get_hl_groups()
     SFMSymlink = { gui = "bold", fg = colors.cyan },
     SFMFileIndicator = { fg = "#3b4261" },
     SFMFolderIndicator = { fg = "#3b4261" },
+    SFMSelection = { fg = colors.blue },
   }
 end
 

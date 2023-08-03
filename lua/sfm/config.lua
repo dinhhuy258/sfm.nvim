@@ -47,6 +47,42 @@ local default_mappings = {
     key = "q",
     action = "close",
   },
+  {
+    key = "n",
+    action = "create",
+  },
+  {
+    key = "dd",
+    action = "delete",
+  },
+  {
+    key = "ds",
+    action = "delete_selections",
+  },
+  {
+    key = "c",
+    action = "copy",
+  },
+  {
+    key = "p",
+    action = "copy_selections",
+  },
+  {
+    key = "x",
+    action = "move_selections",
+  },
+  {
+    key = "r",
+    action = "move",
+  },
+  {
+    key = "<SPACE>",
+    action = "toggle_selection",
+  },
+  {
+    key = "<C-SPACE>",
+    action = "clear_selections",
+  },
 }
 
 local default_config = {
@@ -64,6 +100,7 @@ local default_config = {
         col = 1,
       },
     },
+    render_selection_in_sign = false,
   },
   mappings = {
     custom_only = false,
@@ -88,6 +125,7 @@ local default_config = {
         folder_open = "",
         file = " ",
       },
+      selection = "",
     },
   },
 }

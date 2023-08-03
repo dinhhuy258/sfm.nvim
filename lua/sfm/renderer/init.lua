@@ -2,7 +2,9 @@ local path = require "sfm.utils.path"
 local indent_renderer = require "sfm.renderer.indent_renderer"
 local indicator_renderer = require "sfm.renderer.indicator_renderer"
 local icon_renderer = require "sfm.renderer.icon_renderer"
+local selection_renderer = require "sfm.renderer.selection_renderer"
 local name_renderer = require "sfm.renderer.name_renderer"
+local config = require "sfm.config"
 
 ---@class Renderer
 ---@field view View
@@ -39,10 +41,17 @@ function Renderer.new(ctx, view)
     func = icon_renderer.render_entry_icon,
     priority = 30,
   })
+  if not config.opts.view.render_selection_in_sign then
+    table.insert(self.renderers, {
+      name = "selection",
+      func = selection_renderer.render_selection,
+      priority = 40,
+    })
+  end
   table.insert(self.renderers, {
     name = "name",
     func = name_renderer.render_entry_name,
-    priority = 40,
+    priority = 50,
   })
 
   self:_sort_renderers()
@@ -194,7 +203,7 @@ function Renderer:_render_entry(entry, linenr)
   local highlights = {}
   local line = ""
   for _, renderer in pairs(self.renderers) do
-    local render_components = renderer.func(entry)
+    local render_components = renderer.func(entry, self.ctx)
     if not table.is_matrix(render_components) then
       render_components = { render_components }
     end

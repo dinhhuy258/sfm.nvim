@@ -4,6 +4,7 @@ local colors = require "sfm.colors"
 local actions = require "sfm.actions"
 local debounce = require "sfm.utils.debounce"
 local event = require "sfm.event"
+local selection_renderer = require "sfm.renderer.selection_renderer"
 require "sfm.utils.table"
 
 local M = {}
@@ -80,9 +81,30 @@ function M.setup(opts)
         vim.keymap.set("n", key, function()
           actions.run(map.action)
         end, options)
+
+        if map.action == "toggle_selection" then
+          vim.keymap.set("x", key, function()
+            actions.run(map.action)
+          end, options)
+        end
       end
     end
   end)
+
+  sfm_explorer:subscribe(event.ExplorerRootChanged, function()
+    -- clear selections
+    sfm_explorer.ctx:clear_selections()
+  end)
+
+  if config.opts.view.render_selection_in_sign then
+    selection_renderer.init_sign()
+
+    sfm_explorer:subscribe(event.ExplorerRendered, function(payload)
+      local bufnr = payload["bufnr"]
+
+      selection_renderer.render_selection_in_sign(bufnr)
+    end)
+  end
 
   return sfm_explorer
 end
