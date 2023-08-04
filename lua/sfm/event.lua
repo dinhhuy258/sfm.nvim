@@ -52,6 +52,10 @@ local Event = {
   FileOpened = "FileOpened",
   FolderOpened = "FolderOpened",
   FolderClosed = "FolderClosed",
+  EntryCreated = "EntryCreated",
+  EntryDeleted = "EntryDeleted",
+  EntryRenamed = "EntryRenamed",
+  EntryWillRename = "EntryWillRename",
 }
 
 Event.new_event_manager = EventManager._new
