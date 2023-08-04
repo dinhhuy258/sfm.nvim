@@ -22,7 +22,7 @@ function M.render_selection_in_sign(bufnr)
 
   local entries = api.entry.all()
   for lnum, entry in ipairs(entries) do
-    if api.entry.is_selected(entry.path) then
+    if api.context.is_selected(entry.path) then
       vim.fn.sign_place(M._sign_id, M._sign_group, M._sign_name, bufname, {
         lnum = lnum,
         priority = 1,
@@ -34,7 +34,7 @@ end
 --- render selection for the given entry
 ---@return table
 function M.render_selection(entry)
-  if api.entry.is_selected(entry.path) then
+  if api.context.is_selected(entry.path) then
     return {
       text = config.opts.renderer.icons.selection .. " ",
       highlight = "SFMSelection",

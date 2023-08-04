@@ -3,14 +3,14 @@ local default_mappings = {
     key = "<CR>",
     action = "edit",
   },
-  {
-    key = "<C-v>",
-    action = "vsplit",
-  },
-  {
-    key = "<C-h>",
-    action = "split",
-  },
+  -- {
+  --   key = "<C-v>",
+  --   action = "vsplit",
+  -- },
+  -- {
+  --   key = "<C-h>",
+  --   action = "split",
+  -- },
   {
     key = "<C-t>",
     action = "tabnew",

@@ -63,7 +63,8 @@ local default_config = {
         row = 1, -- int or function
         col = 1 -- int or function
       }
-    }
+    },
+    render_selection_in_sign = false
   },
   mappings = {
     custom_only = false,
@@ -87,7 +88,8 @@ local default_config = {
         folder_closed = "",
         folder_open = "",
         file = " ",
-      }
+      },
+      selection = "",
     }
   }
 }
@@ -109,20 +111,29 @@ require("sfm").setup {
 
 To use the functionalities provided by the `sfm` plugin, you can use the following key bindings:
 
-| Key   | Action                | Description                                                                                                |
-| ----- | --------------------- | ---------------------------------------------------------------------------------------------------------- |
-| cr    | edit                  | Open a file or directory                                                                                   |
-| ctr-v | vsplit                | Open a file in a vertical split window                                                                     |
-| ctr-h | split                 | Open a file in a horizontal split window                                                                   |
-| ctr-t | tabnew                | Open a file in a new tab                                                                                   |
-| s-tab | close_entry           | Close current opened directory or parent                                                                   |
-| K     | first_sibling         | Navigate to the first sibling of current file or directory                                                 |
-| J     | last_sibling          | Navigate to the last sibling of current file or directory                                                  |
-| P     | parent_entry          | Move cursor to the parent directory                                                                        |
-| ctr-] | change_root_to_parent | Change the root directory to the parent directory of the current root                                      |
-| ]     | change_root_to_entry  | Change the root directory to the current folder entry or to the parent directory of the current file entry |
-| R     | reload                | Reload the explorer                                                                                        |
-| q     | close                 | Close the explorer window                                                                                  |
+| Key     | Action                | Description                                                                                                |
+| ------- | --------------------- | ---------------------------------------------------------------------------------------------------------- |
+| cr      | edit                  | Open a file or directory                                                                                   |
+| ctr-v   | vsplit                | Open a file in a vertical split window                                                                     |
+| ctr-h   | split                 | Open a file in a horizontal split window                                                                   |
+| ctr-t   | tabnew                | Open a file in a new tab                                                                                   |
+| s-tab   | close_entry           | Close current opened directory or parent                                                                   |
+| K       | first_sibling         | Navigate to the first sibling of current file or directory                                                 |
+| J       | last_sibling          | Navigate to the last sibling of current file or directory                                                  |
+| P       | parent_entry          | Move cursor to the parent directory                                                                        |
+| ctr-]   | change_root_to_parent | Change the root directory to the parent directory of the current root                                      |
+| ]       | change_root_to_entry  | Change the root directory to the current folder entry or to the parent directory of the current file entry |
+| R       | reload                | Reload the explorer                                                                                        |
+| q       | close                 | Close the explorer window                                                                                  |
+| n       | create                | Create a new file/directory in the current folder                                                          |
+| c       | copy                  | Copy the current file or directory to a destination path specified by the user                             |
+| p       | copy_selections       | Copy all selected files or directories to the current folder                                               |
+| r       | move                  | Move/rename the current file or directory                                                                  |
+| x       | move_selections       | Move all selected files or directories to the current folder                                               |
+| dd      | delete                | Delete the current file or directory                                                                       |
+| ds      | delete_selections     | Delete all selected files or directories                                                                   |
+| space   | toggle_selection      | Toggle the selection of the current file or directory                                                      |
+| c-space | clear_selections      | Clear all selections                                                                                       |
 
 You can customize these key bindings by defining custom functions or action names in the `mappings` configuration option. For example, you can assign a custom function to the `t` key:
 
@@ -285,6 +296,16 @@ end)
   - `path`: The path of the folder that was opened.
 - `FolderClosed`: Triggered when a folder is closed in the explorer. The payload of the event is a table with the following key:
   - `path`: The path of the folder that was closed.
+- `EntryCreated`: Dispatched when a new file/directory is created. The payload of the event is a table with the following keys:
+  - `path`: The entry path of the deleted entry
+- `EntryDeleted`: Dispatched when a new file/directory is created. The payload of the event is a table with the following keys:
+  - `path`: The entry path of the newly created entry
+- `EntryWillRename`: Dispatched when a file/directory will be renamed. The payload of the event is a table with the following keys:
+  - `from_path`: The old path
+  - `to_path`: The new path
+- `EntryRenamed`: Dispatched when a file/directory is renamed. The payload of the event is a table with the following keys:
+  - `from_path`: The old path
+  - `to_path`: The new path
 
 ## API
 
@@ -336,6 +357,14 @@ The `sfm` plugin exposes a number of APIs that can be used to customize the expl
 - `api.log.info(message: string)`: Log an informational message
 - `api.log.warn(message: string)`: Log a warning message
 - `api.log.error(message: string)`: Log an error message
+
+### Context
+
+- `api.context.is_selected(path: string)`: Check if the given path is selected
+- `api.context.set_selection(path: string)`: Bookmark the given path
+- `api.context.remove_selection(path: string)`: Unbookmark the given path
+- `api.context.clear_selections()`: Clear all bookmarks
+- `api.context.get_selections()`: Get all bookmarks
 
 ### Events
 

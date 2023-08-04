@@ -6,6 +6,7 @@ local actions = require "sfm.actions"
 local M = {
   explorer = {},
   entry = {},
+  context = {},
   navigation = {},
   path = {},
   log = {},
@@ -49,19 +50,20 @@ function M.setup(view, renderer, event_manager, ctx)
   M.entry.all = function()
     return renderer.entries
   end
-  M.entry.is_selected = function(entry_path)
+
+  M.context.is_selected = function(entry_path)
     return ctx:is_selected(entry_path)
   end
-  M.entry.set_selection = function(entry_path)
+  M.context.set_selection = function(entry_path)
     return ctx:set_selection(entry_path)
   end
-  M.entry.remove_selection = function(entry_path)
+  M.context.remove_selection = function(entry_path)
     return ctx:remove_selection(entry_path)
   end
-  M.entry.clear_selections = function()
+  M.context.clear_selections = function()
     return ctx:clear_selections()
   end
-  M.entry.get_selections = function()
+  M.context.get_selections = function()
     return ctx:get_selections()
   end
 
