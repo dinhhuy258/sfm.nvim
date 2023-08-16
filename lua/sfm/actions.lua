@@ -428,6 +428,7 @@ function M.create()
 
     if path.exists(fpath) then
       log.warn(fpath .. " already exists")
+      M.focus_file(fpath)
 
       return
     end
