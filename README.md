@@ -133,6 +133,8 @@ To use the functionalities provided by the `sfm` plugin, you can use the followi
 | ds      | delete_selections     | Delete all selected files or directories                                                                   |
 | space   | toggle_selection      | Toggle the selection of the current file or directory                                                      |
 | c-space | clear_selections      | Clear all selections                                                                                       |
+|         | trash                 | Trash the current file or directory                                                                        |
+|         | trash_selections      | Trash all selected files or directories                                                                    |
 
 You can customize these key bindings by defining custom functions or action names in the `mappings` configuration option. For example, you can assign a custom function to the `t` key:
 
@@ -296,9 +298,9 @@ end)
 - `FolderClosed`: Triggered when a folder is closed in the explorer. The payload of the event is a table with the following key:
   - `path`: The path of the folder that was closed.
 - `EntryCreated`: Dispatched when a new file/directory is created. The payload of the event is a table with the following keys:
-  - `path`: The entry path of the deleted entry
-- `EntryDeleted`: Dispatched when a new file/directory is created. The payload of the event is a table with the following keys:
   - `path`: The entry path of the newly created entry
+- `EntryDeleted`: Dispatched when a new file/directory is created. The payload of the event is a table with the following keys:
+  - `path`: The entry path of the deleted/trashed entry
 - `EntryWillRename`: Dispatched when a file/directory will be renamed. The payload of the event is a table with the following keys:
   - `from_path`: The old path
   - `to_path`: The new path
