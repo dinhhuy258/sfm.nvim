@@ -195,4 +195,34 @@ function M.mv(source_path, dest_path)
   return vim.loop.fs_rename(source_path, dest_path)
 end
 
+--- trash source_path using trash_cmd
+---@param source_path string
+---@param trash_cmd table
+function M.trash(source_path, trash_cmd)
+  if not path.exists(source_path) then
+    return false
+  end
+
+  local exec_cmd = {}
+
+  if trash_cmd then
+    if vim.fn.executable(trash_cmd[1]) == 1 then
+      exec_cmd = trash_cmd
+    end
+  else
+    if vim.fn.executable('gio') == 1 then
+      exec_cmd = { 'gio', 'trash' }
+    elseif vim.fn.executable('trash') == 1 then
+      exec_cmd = { 'trash' }
+    else
+      return false
+    end
+  end
+
+  -- FIXME: make this non-blocking
+  table.insert(exec_cmd, source_path)
+  vim.fn.system(exec_cmd)
+  return true
+end
+
 return M

@@ -384,35 +384,6 @@ function M.toggle()
   M.focus_file(fpath)
 end
 
---- delete a file/directory
-function M.delete()
-  local entry = M._renderer:get_current_entry()
-  input.confirm("Are you sure you want to delete file " .. entry.name .. "? (y/n)", function()
-    -- on yes
-    input.clear()
-
-    if fs.rm(entry.path) then
-      log.info(entry.path .. " has been deleted")
-    else
-      log.error("Deletion of file " .. entry.name .. " failed due to an error.")
-    end
-
-    -- dispatch an event
-    M._event_manager:dispatch(event.EntryDeleted, {
-      path = entry.path,
-    })
-
-    -- reload the explorer
-    M.reload()
-  end, function()
-    -- on no
-    input.clear()
-  end, function()
-    -- on cancel
-    input.clear()
-  end)
-end
-
 --- add a file; leaving a trailing `/` will add a directory
 function M.create()
   local entry = M._renderer:get_current_entry()
@@ -459,6 +430,35 @@ function M.create()
   end)
 end
 
+--- delete a file/directory
+function M.delete()
+  local entry = M._renderer:get_current_entry()
+  input.confirm("Are you sure you want to delete file " .. entry.name .. "? (y/n)", function()
+    -- on yes
+    input.clear()
+
+    if fs.rm(entry.path) then
+      log.info(entry.path .. " has been deleted")
+    else
+      log.error("Deletion of file " .. entry.name .. " failed due to an error.")
+    end
+
+    -- dispatch an event
+    M._event_manager:dispatch(event.EntryDeleted, {
+      path = entry.path,
+    })
+
+    -- reload the explorer
+    M.reload()
+  end, function()
+    -- on no
+    input.clear()
+  end, function()
+    -- on cancel
+    input.clear()
+  end)
+end
+
 --- delete selected files/directories
 function M.delete_selections()
   local selections = M._ctx:get_selections()
@@ -492,6 +492,87 @@ function M.delete_selections()
     log.info(
       string.format(
         "Deletion process complete. %d files deleted successfully, %d files failed.",
+        success_count,
+        vim.tbl_count(paths) - success_count
+      )
+    )
+
+    -- clear selections
+    M._ctx:clear_selections()
+
+    -- reload the explorer
+    M.reload()
+  end, function()
+    -- on no
+    input.clear()
+  end, function()
+    -- on cancel
+    input.clear()
+  end)
+end
+
+--- trash a file/directory
+function M.trash()
+  local entry = M._renderer:get_current_entry()
+  input.confirm("Are you sure you want to trash file " .. entry.name .. "? (y/n)", function()
+    -- on yes
+    input.clear()
+
+    if fs.trash(entry.path, config.opts.misc.trash_cmd) then
+      log.info(entry.path .. " has been trashed")
+    else
+      log.error("Trashing of file " .. entry.name .. " failed due to an error.")
+    end
+
+    -- dispatch an event
+    M._event_manager:dispatch(event.EntryDeleted, {
+      path = entry.path,
+    })
+
+    -- reload the explorer
+    M.reload()
+  end, function()
+    -- on no
+    input.clear()
+  end, function()
+    -- on cancel
+    input.clear()
+  end)
+end
+
+--- trash selected files/directories
+function M.trash_selections()
+  local selections = M._ctx:get_selections()
+  if vim.tbl_isempty(selections) then
+    log.warn "No files selected. Please select at least one file to proceed."
+
+    return
+  end
+
+  input.confirm("Are you sure you want to trash the selected files/directories? (y/n)", function()
+    -- on yes
+    input.clear()
+
+    local paths = {}
+    for fpath, _ in pairs(selections) do
+      table.insert(paths, fpath)
+    end
+    paths = path.unify(paths)
+
+    local success_count = 0
+    for _, fpath in ipairs(paths) do
+      if fs.trash(fpath, config.opts.misc.trash_cmd) then
+        success_count = success_count + 1
+        -- dispatch an event
+        M._event_manager:dispatch(event.EntryDeleted, {
+          path = fpath,
+        })
+      end
+    end
+
+    log.info(
+      string.format(
+        "Trashing process complete. %d files trashed successfully, %d files failed.",
         success_count,
         vim.tbl_count(paths) - success_count
       )
@@ -818,6 +899,8 @@ function M.setup(explorer)
     create = M.create,
     delete = M.delete,
     delete_selections = M.delete_selections,
+    trash = M.trash,
+    trash_selections = M.trash_selections,
     copy = M.copy,
     copy_selections = M.copy_selections,
     move = M.move,

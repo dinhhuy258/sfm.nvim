@@ -128,6 +128,9 @@ local default_config = {
       selection = "",
     },
   },
+  misc = {
+    trash_cmd = nil
+  }
 }
 
 local function merge_mappings(mappings, user_mappings)
