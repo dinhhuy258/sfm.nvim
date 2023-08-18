@@ -220,6 +220,7 @@ function M.trash(source_path, trash_cmd)
   end
 
   -- FIXME: make this non-blocking
+  table.insert(exec_cmd, source_path)
   vim.fn.system(exec_cmd)
   return true
 end
