@@ -90,6 +90,9 @@ local default_config = {
       },
       selection = "",
     }
+  },
+  misc = {
+    trash_cmd = nil
   }
 }
 ```
