@@ -151,6 +151,8 @@ local function open_file(fpath, open_cmd)
     end
   end
 
+  fpath = vim.fn.fnameescape(fpath)
+
   if config.opts.view.float.enable then
     result, err = pcall(vim.cmd, open_cmd .. " " .. fpath)
   else
