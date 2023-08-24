@@ -225,4 +225,36 @@ function M.trash(source_path, trash_cmd)
   return true
 end
 
+--- system_open source_path using trash_cmd
+---@param source_path string
+---@param system_open_cmd table
+function M.system_open(source_path, system_open_cmd)
+  if not path.exists(source_path) then
+    return false
+  end
+
+  local exec_cmd = {}
+
+  if system_open_cmd then
+    if vim.fn.executable(system_open_cmd[1]) == 1 then
+      exec_cmd = system_open_cmd
+    else
+      return false
+    end
+  else
+    if vim.fn.executable('xdg-open') == 1 then
+      exec_cmd = { 'xdg-open' }
+    elseif vim.fn.executable('open') == 1 then
+      exec_cmd = { 'open' }
+    else
+      return false
+    end
+  end
+
+  -- FIXME: make this non-blocking
+  table.insert(exec_cmd, source_path)
+  vim.fn.system(exec_cmd)
+  return true
+end
+
 return M

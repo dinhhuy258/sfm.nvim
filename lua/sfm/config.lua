@@ -129,7 +129,8 @@ local default_config = {
     },
   },
   misc = {
-    trash_cmd = nil
+    trash_cmd = nil,
+    system_open_cmd = nil
   }
 }
 
