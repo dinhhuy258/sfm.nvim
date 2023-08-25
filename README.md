@@ -93,6 +93,7 @@ local default_config = {
   },
   misc = {
     trash_cmd = nil
+    system_open_cmd = nil
   }
 }
 ```
@@ -138,6 +139,8 @@ To use the functionalities provided by the `sfm` plugin, you can use the followi
 | c-space | clear_selections      | Clear all selections                                                                                       |
 |         | trash                 | Trash the current file or directory                                                                        |
 |         | trash_selections      | Trash all selected files or directories                                                                    |
+|         | system_open           | Open the selected file or directory using system default program                                           |
+|         | system_open_selections| Open all selected files or directories using system default program                                        |
 
 You can customize these key bindings by defining custom functions or action names in the `mappings` configuration option. For example, you can assign a custom function to the `t` key:
 

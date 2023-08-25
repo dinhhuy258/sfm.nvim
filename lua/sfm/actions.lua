@@ -594,6 +594,48 @@ function M.trash_selections()
   end)
 end
 
+--- open a file/directory using default system program
+function M.system_open()
+  local entry = M._renderer:get_current_entry()
+
+  if fs.system_open(entry.path, config.opts.misc.system_open_cmd) then
+    log.info(entry.path .. " has been opened using a system default program")
+  else
+    log.error("Opening of file " .. entry.name .. "using system default program failed due to an error.")
+  end
+end
+
+--- open selected files/directories using default system program
+function M.system_open_selections()
+  local selections = M._ctx:get_selections()
+  if vim.tbl_isempty(selections) then
+    log.warn "No files selected. Please select at least one file to proceed."
+
+    return
+  end
+
+  local paths = {}
+  for fpath, _ in pairs(selections) do
+    table.insert(paths, fpath)
+  end
+  paths = path.unify(paths)
+
+  local success_count = 0
+  for _, fpath in ipairs(paths) do
+    if fs.system_open(fpath, config.opts.misc.system_open_cmd) then
+      success_count = success_count + 1
+    end
+  end
+
+  log.info(
+    string.format(
+      "System opening process complete. %d files opened successfully, %d files failed.",
+      success_count,
+      vim.tbl_count(paths) - success_count
+    )
+  )
+end
+
 --- move/copy selected files/directories to a current opened entry or it's parent
 ---@param from_paths table
 ---@param to_dir string
@@ -903,6 +945,8 @@ function M.setup(explorer)
     delete_selections = M.delete_selections,
     trash = M.trash,
     trash_selections = M.trash_selections,
+    system_open = M.system_open,
+    system_open_selections = M.system_open_selections,
     copy = M.copy,
     copy_selections = M.copy_selections,
     move = M.move,
