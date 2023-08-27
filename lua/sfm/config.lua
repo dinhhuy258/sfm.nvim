@@ -100,7 +100,7 @@ local default_config = {
         col = 1,
       },
     },
-    render_selection_in_sign = false,
+    selection_render_method = "icon",
   },
   mappings = {
     custom_only = false,
