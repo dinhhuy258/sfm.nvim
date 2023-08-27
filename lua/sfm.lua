@@ -96,7 +96,7 @@ function M.setup(opts)
     sfm_explorer.ctx:clear_selections()
   end)
 
-  if config.opts.view.render_selection_in_sign then
+  if config.opts.view.selection_render_method == "sign" then
     selection_renderer.init_sign()
 
     sfm_explorer:subscribe(event.ExplorerRendered, function(payload)

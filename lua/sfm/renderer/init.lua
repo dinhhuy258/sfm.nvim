@@ -41,7 +41,7 @@ function Renderer.new(ctx, view)
     func = icon_renderer.render_entry_icon,
     priority = 30,
   })
-  if not config.opts.view.render_selection_in_sign then
+  if config.opts.view.selection_render_method == "icon" then
     table.insert(self.renderers, {
       name = "selection",
       func = selection_renderer.render_selection,

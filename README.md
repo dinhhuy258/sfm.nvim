@@ -63,7 +63,7 @@ local default_config = {
         col = 1 -- int or function
       }
     },
-    render_selection_in_sign = false
+    selection_render_method = "icon" -- render method of selected entries, can be `icon`, `sign`, `highlight`.
   },
   mappings = {
     custom_only = false,
