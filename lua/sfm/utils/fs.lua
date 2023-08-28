@@ -203,25 +203,33 @@ function M.trash(source_path, trash_cmd)
     return false
   end
 
-  local exec_cmd = {}
-
   if trash_cmd then
     if vim.fn.executable(trash_cmd[1]) == 1 then
-      exec_cmd = trash_cmd
+      trash_cmd = trash_cmd
+    else
+      return false
     end
   else
-    if vim.fn.executable('gio') == 1 then
-      exec_cmd = { 'gio', 'trash' }
-    elseif vim.fn.executable('trash') == 1 then
-      exec_cmd = { 'trash' }
+    if vim.fn.has("linux") == 1 then
+      if vim.fn.executable("gio") == 1 then
+        trash_cmd = { "gio", "trash" }
+      elseif vim.fn.executable("trash") == 1 then
+        trash_cmd = { "trash" }
+      end
+    elseif vim.fn.has("macunix") == 1 then
+      if vim.fn.executable("trash") == 1 then
+        trash_cmd = { "trash" }
+      end
+    -- elseif vim.fn.has("win64") == 1 or vim.fn.has("win32") == 1 then
+    --   if vim.fn.executable("") == 1 then exec_cmd = { "" } end
     else
       return false
     end
   end
 
   -- FIXME: make this non-blocking
-  table.insert(exec_cmd, source_path)
-  vim.fn.system(exec_cmd)
+  table.insert(trash_cmd, source_path)
+  vim.fn.system(trash_cmd)
   return true
 end
 
@@ -233,27 +241,33 @@ function M.system_open(source_path, system_open_cmd)
     return false
   end
 
-  local exec_cmd = {}
-
   if system_open_cmd then
     if vim.fn.executable(system_open_cmd[1]) == 1 then
-      exec_cmd = system_open_cmd
+      system_open_cmd = system_open_cmd
     else
       return false
     end
   else
-    if vim.fn.executable('xdg-open') == 1 then
-      exec_cmd = { 'xdg-open' }
-    elseif vim.fn.executable('open') == 1 then
-      exec_cmd = { 'open' }
+    if vim.fn.has("linux") == 1 then
+      if vim.fn.executable('xdg-open') == 1 then
+        system_open_cmd = { "xdg-open" }
+      end
+    elseif vim.fn.has("macunix") == 1 then
+      if vim.fn.executable('open') == 1 then
+        system_open_cmd = { "open" }
+      end
+    elseif vim.fn.has("win64") == 1 or vim.fn.has("win32") == 1 then
+      if vim.fn.executable('start') == 1 then
+        system_open_cmd = { "start" }
+      end
     else
       return false
     end
   end
 
   -- FIXME: make this non-blocking
-  table.insert(exec_cmd, source_path)
-  vim.fn.system(exec_cmd)
+  table.insert(system_open_cmd, source_path)
+  vim.fn.system(system_open_cmd)
   return true
 end
 
