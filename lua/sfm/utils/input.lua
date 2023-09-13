@@ -1,3 +1,5 @@
+local log = require "sfm.utils.log"
+
 local M = {}
 
 function M.prompt(msg, default, completion, on_confirm)
@@ -7,7 +9,7 @@ function M.prompt(msg, default, completion, on_confirm)
 end
 
 function M.confirm(msg, on_yes, on_no, on_cancel)
-  vim.notify(msg)
+  log.info(msg)
   local choice = vim.fn.nr2char(vim.fn.getchar())
   if choice:match "^y" or choice:match "^Y" then
     on_yes()
