@@ -434,8 +434,19 @@ function M.create()
   end)
 end
 
---- delete a file/directory
+--- delete open file/s directory/ies
 function M.delete()
+  local selections = M._ctx:get_selections()
+  local count = vim.tbl_count(selections)
+  if count > 1 then
+    M.delete_selections()
+  else
+    M.delete_single()
+  end
+end
+
+--- delete a single file/directory
+function M.delete_single()
   local entry = M._renderer:get_current_entry()
   input.confirm("Are you sure you want to delete file " .. entry.name .. "? (y/n)", function()
     -- on yes
@@ -515,8 +526,19 @@ function M.delete_selections()
   end)
 end
 
---- trash a file/directory
+--- trash open file/s directory/ies
 function M.trash()
+  local selections = M._ctx:get_selections()
+  local count = vim.tbl_count(selections)
+  if count > 1 then
+    M.trash_selections()
+  else
+    M.trash_single()
+  end
+end
+
+--- trash a single file/directory
+function M.trash_single()
   local entry = M._renderer:get_current_entry()
   input.confirm("Are you sure you want to trash file " .. entry.name .. "? (y/n)", function()
     -- on yes
@@ -596,8 +618,19 @@ function M.trash_selections()
   end)
 end
 
---- open a file/directory using default system program
+--- system open file/s directory/ies
 function M.system_open()
+  local selections = M._ctx:get_selections()
+  local count = vim.tbl_count(selections)
+  if count > 1 then
+    M.system_open_selections()
+  else
+    M.system_open_single()
+  end
+end
+
+--- open a single file/directory using default system program
+function M.system_open_single()
   local entry = M._renderer:get_current_entry()
 
   if fs.system_open(entry.path, config.opts.misc.system_open_cmd) then
@@ -712,8 +745,19 @@ local function _paste(from_paths, to_dir, action_fn, before_action_fn, on_action
   )
 end
 
---- move/rename a current file/directory
+--- move file/s directory/ies
 function M.move()
+  local selections = M._ctx:get_selections()
+  local count = vim.tbl_count(selections)
+  if count > 1 then
+    M.move_selections()
+  else
+    M.move_single()
+  end
+end
+
+--- move/rename a single current file/directory
+function M.move_single()
   local entry = M._renderer:get_current_entry()
   local from_path = entry.path
 
@@ -756,8 +800,19 @@ function M.move()
   end)
 end
 
---- copy file/directory
+--- copy file/s directory/ies
 function M.copy()
+  local selections = M._ctx:get_selections()
+  local count = vim.tbl_count(selections)
+  if count > 1 then
+    M.copy_selections()
+  else
+    M.copy_single()
+  end
+end
+
+--- copy a single file/directory
+function M.copy_single()
   local entry = M._renderer:get_current_entry()
   local from_path = entry.path
 
@@ -944,14 +999,19 @@ function M.setup(explorer)
     close = M.close,
     create = M.create,
     delete = M.delete,
+    delete_single = M.delete_single,
     delete_selections = M.delete_selections,
     trash = M.trash,
+    trash_single = M.trash_single,
     trash_selections = M.trash_selections,
     system_open = M.system_open,
+    system_open_single = M.system_open_single,
     system_open_selections = M.system_open_selections,
     copy = M.copy,
+    copy_single = M.copy_single,
     copy_selections = M.copy_selections,
     move = M.move,
+    move_single = M.move_single,
     move_selections = M.move_selections,
     toggle_selection = M.toggle_selection,
     clear_selections = M.clear_selections,

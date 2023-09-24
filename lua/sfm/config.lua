@@ -52,28 +52,16 @@ local default_mappings = {
     action = "create",
   },
   {
-    key = "dd",
+    key = "d",
     action = "delete",
-  },
-  {
-    key = "ds",
-    action = "delete_selections",
   },
   {
     key = "c",
     action = "copy",
   },
   {
-    key = "p",
-    action = "copy_selections",
-  },
-  {
-    key = "x",
-    action = "move_selections",
-  },
-  {
     key = "r",
-    action = "move",
+    action = "move_selections",
   },
   {
     key = "<SPACE>",
