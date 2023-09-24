@@ -439,7 +439,7 @@ function M.delete()
   local selections = M._ctx:get_selections()
   local count = vim.tbl_count(selections)
   if count > 1 then
-    M.delete_selections()
+    M._delete_selections()
   else
     M.delete_single()
   end
@@ -475,7 +475,7 @@ function M.delete_single()
 end
 
 --- delete selected files/directories
-function M.delete_selections()
+function M._delete_selections()
   local selections = M._ctx:get_selections()
   if vim.tbl_isempty(selections) then
     log.warn "No files selected. Please select at least one file to proceed."
@@ -531,7 +531,7 @@ function M.trash()
   local selections = M._ctx:get_selections()
   local count = vim.tbl_count(selections)
   if count > 1 then
-    M.trash_selections()
+    M._trash_selections()
   else
     M.trash_single()
   end
@@ -567,7 +567,7 @@ function M.trash_single()
 end
 
 --- trash selected files/directories
-function M.trash_selections()
+function M._trash_selections()
   local selections = M._ctx:get_selections()
   if vim.tbl_isempty(selections) then
     log.warn "No files selected. Please select at least one file to proceed."
@@ -623,7 +623,7 @@ function M.system_open()
   local selections = M._ctx:get_selections()
   local count = vim.tbl_count(selections)
   if count > 1 then
-    M.system_open_selections()
+    M._system_open_selections()
   else
     M.system_open_single()
   end
@@ -641,7 +641,7 @@ function M.system_open_single()
 end
 
 --- open selected files/directories using default system program
-function M.system_open_selections()
+function M._system_open_selections()
   local selections = M._ctx:get_selections()
   if vim.tbl_isempty(selections) then
     log.warn "No files selected. Please select at least one file to proceed."
@@ -750,7 +750,7 @@ function M.move()
   local selections = M._ctx:get_selections()
   local count = vim.tbl_count(selections)
   if count > 1 then
-    M.move_selections()
+    M._move_selections()
   else
     M.move_single()
   end
@@ -805,7 +805,7 @@ function M.copy()
   local selections = M._ctx:get_selections()
   local count = vim.tbl_count(selections)
   if count > 1 then
-    M.copy_selections()
+    M._copy_selections()
   else
     M.copy_single()
   end
@@ -850,7 +850,7 @@ function M.copy_single()
 end
 
 --- copy selected files/directories to a current opened entry or it's parent
-function M.copy_selections()
+function M._copy_selections()
   local selections = M._ctx:get_selections()
   if vim.tbl_isempty(selections) then
     log.warn "No files selected. Please select at least one file to proceed."
@@ -880,7 +880,7 @@ function M.copy_selections()
 end
 
 --- move selected files/directories to a current opened entry or it's parent
-function M.move_selections()
+function M._move_selections()
   local selections = M._ctx:get_selections()
   if vim.tbl_isempty(selections) then
     log.warn "No files selected. Please select at least one file to proceed."
@@ -975,6 +975,12 @@ function M.run(action)
   defined_action()
 end
 
+function M.deprecated(message)
+  return function()
+    log.warn(message)
+  end
+end
+
 --- setup actions
 ---@param explorer Explorer
 function M.setup(explorer)
@@ -999,22 +1005,17 @@ function M.setup(explorer)
     close = M.close,
     create = M.create,
     delete = M.delete,
-    delete_single = M.delete_single,
-    delete_selections = M.delete_selections,
     trash = M.trash,
-    trash_single = M.trash_single,
-    trash_selections = M.trash_selections,
     system_open = M.system_open,
-    system_open_single = M.system_open_single,
-    system_open_selections = M.system_open_selections,
     copy = M.copy,
-    copy_single = M.copy_single,
-    copy_selections = M.copy_selections,
     move = M.move,
-    move_single = M.move_single,
-    move_selections = M.move_selections,
     toggle_selection = M.toggle_selection,
     clear_selections = M.clear_selections,
+    delete_selections = M.deprecated(string.format("Deprecated action %s, use %s", "delete_selections", "delete")),
+    trash_selections = M.deprecated(string.format("Deprecated action %s, use %s", "trash_selections", "trash")),
+    system_open_selections = M.deprecated(string.format("Deprecated action %s, use %s", "system_open_selections", "system_open")),
+    copy_selections = M.deprecated(string.format("Deprecated action %s, use %s", "copy_selections", "copy")),
+    move_selections = M.deprecated(string.format("Deprecated action %s, use %s", "move_selections", "move")),
   }
 end
 
