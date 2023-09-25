@@ -436,9 +436,7 @@ end
 
 --- delete open file/s directory/ies
 function M.delete()
-  local selections = M._ctx:get_selections()
-  local count = vim.tbl_count(selections)
-  if count > 1 then
+  if vim.tbl_count(M._ctx:get_selections()) > 0 then
     M._delete_selections()
   else
     M._delete_current()
@@ -528,9 +526,7 @@ end
 
 --- trash open file/s directory/ies
 function M.trash()
-  local selections = M._ctx:get_selections()
-  local count = vim.tbl_count(selections)
-  if count > 1 then
+  if vim.tbl_count(M._ctx:get_selections()) > 0 then
     M._trash_selections()
   else
     M._trash_current()
@@ -620,9 +616,7 @@ end
 
 --- system open file/s directory/ies
 function M.system_open()
-  local selections = M._ctx:get_selections()
-  local count = vim.tbl_count(selections)
-  if count > 1 then
+  if vim.tbl_count(M._ctx:get_selections()) > 0 then
     M._system_open_selections()
   else
     M._system_open_current()
@@ -747,9 +741,7 @@ end
 
 --- move file/s directory/ies
 function M.move()
-  local selections = M._ctx:get_selections()
-  local count = vim.tbl_count(selections)
-  if count > 1 then
+  if vim.tbl_count(M._ctx:get_selections()) > 0 then
     M._move_selections()
   else
     M._move_current()
@@ -838,9 +830,7 @@ end
 
 --- copy file/s directory/ies
 function M.copy()
-  local selections = M._ctx:get_selections()
-  local count = vim.tbl_count(selections)
-  if count > 1 then
+  if vim.tbl_count(M._ctx:get_selections()) > 0 then
     M._copy_selections()
   else
     M._copy_current()
