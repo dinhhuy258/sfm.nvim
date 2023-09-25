@@ -441,12 +441,12 @@ function M.delete()
   if count > 1 then
     M._delete_selections()
   else
-    M.delete_single()
+    M._delete_current()
   end
 end
 
 --- delete a single file/directory
-function M.delete_single()
+function M._delete_current()
   local entry = M._renderer:get_current_entry()
   input.confirm("Are you sure you want to delete file " .. entry.name .. "? (y/n)", function()
     -- on yes
@@ -533,12 +533,12 @@ function M.trash()
   if count > 1 then
     M._trash_selections()
   else
-    M.trash_single()
+    M._trash_current()
   end
 end
 
 --- trash a single file/directory
-function M.trash_single()
+function M._trash_current()
   local entry = M._renderer:get_current_entry()
   input.confirm("Are you sure you want to trash file " .. entry.name .. "? (y/n)", function()
     -- on yes
@@ -625,12 +625,12 @@ function M.system_open()
   if count > 1 then
     M._system_open_selections()
   else
-    M.system_open_single()
+    M._system_open_current()
   end
 end
 
 --- open a single file/directory using default system program
-function M.system_open_single()
+function M._system_open_current()
   local entry = M._renderer:get_current_entry()
 
   if fs.system_open(entry.path, config.opts.misc.system_open_cmd) then
@@ -752,12 +752,12 @@ function M.move()
   if count > 1 then
     M._move_selections()
   else
-    M.move_single()
+    M._move_current()
   end
 end
 
 --- move/rename a single current file/directory
-function M.move_single()
+function M._move_current()
   local entry = M._renderer:get_current_entry()
   local from_path = entry.path
 
@@ -800,6 +800,42 @@ function M.move_single()
   end)
 end
 
+--- move selected files/directories to a current opened entry or it's parent
+function M._move_selections()
+  local selections = M._ctx:get_selections()
+  if vim.tbl_isempty(selections) then
+    log.warn "No files selected. Please select at least one file to proceed."
+
+    return
+  end
+
+  local paths = {}
+  for fpath, _ in pairs(selections) do
+    table.insert(paths, fpath)
+  end
+  paths = path.unify(paths)
+
+  local dest_entry = M._renderer:get_current_entry()
+  if not dest_entry.is_dir or not dest_entry.is_open then
+    dest_entry = dest_entry.parent
+  end
+
+  _paste(paths, dest_entry.path, fs.mv, function(from_path, to_path)
+    M._event_manager:dispatch(event.EntryWillRename, {
+      from_path = from_path,
+      to_path = to_path,
+    })
+  end, function(from_path, to_path)
+    M._event_manager:dispatch(event.EntryRenamed, {
+      from_path = from_path,
+      to_path = to_path,
+    })
+  end)
+
+  M._ctx:clear_selections()
+  M.reload()
+end
+
 --- copy file/s directory/ies
 function M.copy()
   local selections = M._ctx:get_selections()
@@ -807,12 +843,12 @@ function M.copy()
   if count > 1 then
     M._copy_selections()
   else
-    M.copy_single()
+    M._copy_current()
   end
 end
 
 --- copy a single file/directory
-function M.copy_single()
+function M._copy_current()
   local entry = M._renderer:get_current_entry()
   local from_path = entry.path
 
@@ -872,42 +908,6 @@ function M._copy_selections()
     -- dispatch an event
     M._event_manager:dispatch(event.EntryCreated, {
       path = to_path,
-    })
-  end)
-
-  M._ctx:clear_selections()
-  M.reload()
-end
-
---- move selected files/directories to a current opened entry or it's parent
-function M._move_selections()
-  local selections = M._ctx:get_selections()
-  if vim.tbl_isempty(selections) then
-    log.warn "No files selected. Please select at least one file to proceed."
-
-    return
-  end
-
-  local paths = {}
-  for fpath, _ in pairs(selections) do
-    table.insert(paths, fpath)
-  end
-  paths = path.unify(paths)
-
-  local dest_entry = M._renderer:get_current_entry()
-  if not dest_entry.is_dir or not dest_entry.is_open then
-    dest_entry = dest_entry.parent
-  end
-
-  _paste(paths, dest_entry.path, fs.mv, function(from_path, to_path)
-    M._event_manager:dispatch(event.EntryWillRename, {
-      from_path = from_path,
-      to_path = to_path,
-    })
-  end, function(from_path, to_path)
-    M._event_manager:dispatch(event.EntryRenamed, {
-      from_path = from_path,
-      to_path = to_path,
     })
   end)
 
