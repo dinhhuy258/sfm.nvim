@@ -1,4 +1,5 @@
 local path = require "sfm.utils.path"
+local job = require "sfm.utils.job"
 
 local M = {}
 
@@ -227,10 +228,9 @@ function M.trash(source_path, trash_cmd)
     end
   end
 
-  -- FIXME: make this non-blocking
   table.insert(trash_cmd, source_path)
-  vim.fn.system(trash_cmd)
-  return true
+
+  return job.execute_cmd(trash_cmd, 1000) == 0
 end
 
 --- system_open source_path using trash_cmd
@@ -265,10 +265,8 @@ function M.system_open(source_path, system_open_cmd)
     end
   end
 
-  -- FIXME: make this non-blocking
   table.insert(system_open_cmd, source_path)
-  vim.fn.system(system_open_cmd)
-  return true
+  return job.execute_cmd(system_open_cmd, 1000) == 0
 end
 
 return M
