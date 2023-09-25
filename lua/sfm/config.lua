@@ -60,8 +60,8 @@ local default_mappings = {
     action = "copy",
   },
   {
-    key = "r",
-    action = "move_selections",
+    key = "x",
+    action = "move",
   },
   {
     key = "<SPACE>",
