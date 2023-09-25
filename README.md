@@ -129,18 +129,22 @@ To use the functionalities provided by the `sfm` plugin, you can use the followi
 | R       | reload                | Reload the explorer                                                                                        |
 | q       | close                 | Close the explorer window                                                                                  |
 | n       | create                | Create a new file/directory in the current folder                                                          |
-| c       | copy                  | Copy the current file or directory to a destination path specified by the user                             |
-| p       | copy_selections       | Copy all selected files or directories to the current folder                                               |
-| r       | move                  | Move/rename the current file or directory                                                                  |
-| x       | move_selections       | Move all selected files or directories to the current folder                                               |
-| dd      | delete                | Delete the current file or directory                                                                       |
-| ds      | delete_selections     | Delete all selected files or directories                                                                   |
+| c       | copy                  | Copy current/selected file/s directory/ies                                                                 |
+| r       | move                  | Move/Rename current/selected file/s directory/ies                                                          |
+| d       | delete                | Delete current/selected file/s directory/ies                                                               |
 | space   | toggle_selection      | Toggle the selection of the current file or directory                                                      |
 | c-space | clear_selections      | Clear all selections                                                                                       |
-|         | trash                 | Trash the current file or directory                                                                        |
-|         | trash_selections      | Trash all selected files or directories                                                                    |
-|         | system_open           | Open the selected file or directory using system default program                                           |
-|         | system_open_selections| Open all selected files or directories using system default program                                        |
+|         | trash                 | Trash current/selected file/s directory/ies                                                                |
+|         | system_open           | Open current/selected file/s directory/ies using system default program                                    |
+
+Below is a list of deprecated actions that should not be used anymore and might be removed anytime:
+| Action                |
+| --------------------- |
+| copy_selections       |
+| move_selections       |
+| delete_selections     |
+| trash_selections      |
+| system_open_selections|
 
 You can customize these key bindings by defining custom functions or action names in the `mappings` configuration option. For example, you can assign a custom function to the `t` key:
 

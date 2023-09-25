@@ -434,8 +434,17 @@ function M.create()
   end)
 end
 
---- delete a file/directory
+--- delete open file/s directory/ies
 function M.delete()
+  if vim.tbl_count(M._ctx:get_selections()) > 0 then
+    M._delete_selections()
+  else
+    M._delete_current()
+  end
+end
+
+--- delete a single file/directory
+function M._delete_current()
   local entry = M._renderer:get_current_entry()
   input.confirm("Are you sure you want to delete file " .. entry.name .. "? (y/n)", function()
     -- on yes
@@ -464,7 +473,7 @@ function M.delete()
 end
 
 --- delete selected files/directories
-function M.delete_selections()
+function M._delete_selections()
   local selections = M._ctx:get_selections()
   if vim.tbl_isempty(selections) then
     log.warn "No files selected. Please select at least one file to proceed."
@@ -515,8 +524,17 @@ function M.delete_selections()
   end)
 end
 
---- trash a file/directory
+--- trash open file/s directory/ies
 function M.trash()
+  if vim.tbl_count(M._ctx:get_selections()) > 0 then
+    M._trash_selections()
+  else
+    M._trash_current()
+  end
+end
+
+--- trash a single file/directory
+function M._trash_current()
   local entry = M._renderer:get_current_entry()
   input.confirm("Are you sure you want to trash file " .. entry.name .. "? (y/n)", function()
     -- on yes
@@ -545,7 +563,7 @@ function M.trash()
 end
 
 --- trash selected files/directories
-function M.trash_selections()
+function M._trash_selections()
   local selections = M._ctx:get_selections()
   if vim.tbl_isempty(selections) then
     log.warn "No files selected. Please select at least one file to proceed."
@@ -596,8 +614,17 @@ function M.trash_selections()
   end)
 end
 
---- open a file/directory using default system program
+--- system open file/s directory/ies
 function M.system_open()
+  if vim.tbl_count(M._ctx:get_selections()) > 0 then
+    M._system_open_selections()
+  else
+    M._system_open_current()
+  end
+end
+
+--- open a single file/directory using default system program
+function M._system_open_current()
   local entry = M._renderer:get_current_entry()
 
   if fs.system_open(entry.path, config.opts.misc.system_open_cmd) then
@@ -608,7 +635,7 @@ function M.system_open()
 end
 
 --- open selected files/directories using default system program
-function M.system_open_selections()
+function M._system_open_selections()
   local selections = M._ctx:get_selections()
   if vim.tbl_isempty(selections) then
     log.warn "No files selected. Please select at least one file to proceed."
@@ -712,8 +739,17 @@ local function _paste(from_paths, to_dir, action_fn, before_action_fn, on_action
   )
 end
 
---- move/rename a current file/directory
+--- move file/s directory/ies
 function M.move()
+  if vim.tbl_count(M._ctx:get_selections()) > 0 then
+    M._move_selections()
+  else
+    M._move_current()
+  end
+end
+
+--- move/rename a single current file/directory
+function M._move_current()
   local entry = M._renderer:get_current_entry()
   local from_path = entry.path
 
@@ -756,8 +792,53 @@ function M.move()
   end)
 end
 
---- copy file/directory
+--- move selected files/directories to a current opened entry or it's parent
+function M._move_selections()
+  local selections = M._ctx:get_selections()
+  if vim.tbl_isempty(selections) then
+    log.warn "No files selected. Please select at least one file to proceed."
+
+    return
+  end
+
+  local paths = {}
+  for fpath, _ in pairs(selections) do
+    table.insert(paths, fpath)
+  end
+  paths = path.unify(paths)
+
+  local dest_entry = M._renderer:get_current_entry()
+  if not dest_entry.is_dir or not dest_entry.is_open then
+    dest_entry = dest_entry.parent
+  end
+
+  _paste(paths, dest_entry.path, fs.mv, function(from_path, to_path)
+    M._event_manager:dispatch(event.EntryWillRename, {
+      from_path = from_path,
+      to_path = to_path,
+    })
+  end, function(from_path, to_path)
+    M._event_manager:dispatch(event.EntryRenamed, {
+      from_path = from_path,
+      to_path = to_path,
+    })
+  end)
+
+  M._ctx:clear_selections()
+  M.reload()
+end
+
+--- copy file/s directory/ies
 function M.copy()
+  if vim.tbl_count(M._ctx:get_selections()) > 0 then
+    M._copy_selections()
+  else
+    M._copy_current()
+  end
+end
+
+--- copy a single file/directory
+function M._copy_current()
   local entry = M._renderer:get_current_entry()
   local from_path = entry.path
 
@@ -795,7 +876,7 @@ function M.copy()
 end
 
 --- copy selected files/directories to a current opened entry or it's parent
-function M.copy_selections()
+function M._copy_selections()
   local selections = M._ctx:get_selections()
   if vim.tbl_isempty(selections) then
     log.warn "No files selected. Please select at least one file to proceed."
@@ -817,42 +898,6 @@ function M.copy_selections()
     -- dispatch an event
     M._event_manager:dispatch(event.EntryCreated, {
       path = to_path,
-    })
-  end)
-
-  M._ctx:clear_selections()
-  M.reload()
-end
-
---- move selected files/directories to a current opened entry or it's parent
-function M.move_selections()
-  local selections = M._ctx:get_selections()
-  if vim.tbl_isempty(selections) then
-    log.warn "No files selected. Please select at least one file to proceed."
-
-    return
-  end
-
-  local paths = {}
-  for fpath, _ in pairs(selections) do
-    table.insert(paths, fpath)
-  end
-  paths = path.unify(paths)
-
-  local dest_entry = M._renderer:get_current_entry()
-  if not dest_entry.is_dir or not dest_entry.is_open then
-    dest_entry = dest_entry.parent
-  end
-
-  _paste(paths, dest_entry.path, fs.mv, function(from_path, to_path)
-    M._event_manager:dispatch(event.EntryWillRename, {
-      from_path = from_path,
-      to_path = to_path,
-    })
-  end, function(from_path, to_path)
-    M._event_manager:dispatch(event.EntryRenamed, {
-      from_path = from_path,
-      to_path = to_path,
     })
   end)
 
@@ -920,6 +965,12 @@ function M.run(action)
   defined_action()
 end
 
+function M.deprecated(message)
+  return function()
+    log.warn(message)
+  end
+end
+
 --- setup actions
 ---@param explorer Explorer
 function M.setup(explorer)
@@ -944,17 +995,17 @@ function M.setup(explorer)
     close = M.close,
     create = M.create,
     delete = M.delete,
-    delete_selections = M.delete_selections,
     trash = M.trash,
-    trash_selections = M.trash_selections,
     system_open = M.system_open,
-    system_open_selections = M.system_open_selections,
     copy = M.copy,
-    copy_selections = M.copy_selections,
     move = M.move,
-    move_selections = M.move_selections,
     toggle_selection = M.toggle_selection,
     clear_selections = M.clear_selections,
+    delete_selections = M.deprecated(string.format("Deprecated action %s, use %s", "delete_selections", "delete")),
+    trash_selections = M.deprecated(string.format("Deprecated action %s, use %s", "trash_selections", "trash")),
+    system_open_selections = M.deprecated(string.format("Deprecated action %s, use %s", "system_open_selections", "system_open")),
+    copy_selections = M.deprecated(string.format("Deprecated action %s, use %s", "copy_selections", "copy")),
+    move_selections = M.deprecated(string.format("Deprecated action %s, use %s", "move_selections", "move")),
   }
 end
 
