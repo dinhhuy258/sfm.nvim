@@ -159,8 +159,9 @@ end
 function Renderer:_update_rendered_entries()
   self.entries = {}
 
+  ---@param current_entry Entry
   local function _update_rendered_entry(current_entry)
-    for _, e in ipairs(current_entry.entries) do
+    for _, e in ipairs(current_entry:get_children()) do
       if self:should_render_entry(e) then
         table.insert(self.entries, e)
 

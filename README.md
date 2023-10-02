@@ -91,6 +91,11 @@ local default_config = {
       selection = "",
     }
   },
+  file_nesting = {
+    enabled = false,
+    expand = false,
+    patterns = {},
+  }
   misc = {
     trash_cmd = nil
     system_open_cmd = nil
@@ -105,6 +110,29 @@ require("sfm").setup {
 --- your customization configuration
 }
 ```
+
+## File nesting
+
+The `sfm` now supports nesting related files based on their names. There are several settings to control this behavior:
+
+```lua
+require("sfm").setup({
+  file_nesting = {
+    enabled = true, -- controls whether file nesting is enabled
+    expand = true, -- controls whether nested files are expanded by default
+    patterns = {
+      { "*.cs", { "$(capture).*.cs" } },
+      { "*.ts", { "$(capture).js", "$(capture).d.ts.map", "$(capture).*.ts", "$(capture)_*.js", "$(capture)_*.ts" } },
+      { "go.mod", { "go.sum" } },
+    }, -- controls how files get nested
+  }
+})
+```
+
+The default mapping to expand/collapse nested files is `a`.
+
+The idea of how to parse the file nesting pattern is highly inspired by VS Code. That why you can use the patterns that configure from VS Code.
+However, Currently I just only support `$(capture)` substitute as I find it not unnecessary to support `basename`, `dirname`, `extname`.
 
 ## Commands
 
@@ -130,21 +158,23 @@ To use the functionalities provided by the `sfm` plugin, you can use the followi
 | q       | close                 | Close the explorer window                                                                                  |
 | n       | create                | Create a new file/directory in the current folder                                                          |
 | c       | copy                  | Copy current/selected file/s directory/ies                                                                 |
-| r       | move                  | Move/Rename current/selected file/s directory/ies                                                          |
+| x       | move                  | Move/Rename current/selected file/s directory/ies                                                          |
 | d       | delete                | Delete current/selected file/s directory/ies                                                               |
+| a       | toggle_entry          | Expand or collapse a entry with children, which may be a directory or a nested file.                       |
 | space   | toggle_selection      | Toggle the selection of the current file or directory                                                      |
 | c-space | clear_selections      | Clear all selections                                                                                       |
 |         | trash                 | Trash current/selected file/s directory/ies                                                                |
 |         | system_open           | Open current/selected file/s directory/ies using system default program                                    |
 
 Below is a list of deprecated actions that should not be used anymore and might be removed anytime:
-| Action                |
-| --------------------- |
-| copy_selections       |
-| move_selections       |
-| delete_selections     |
-| trash_selections      |
-| system_open_selections|
+
+| Action                 |
+| ---------------------- |
+| copy_selections        |
+| move_selections        |
+| delete_selections      |
+| trash_selections       |
+| system_open_selections |
 
 You can customize these key bindings by defining custom functions or action names in the `mappings` configuration option. For example, you can assign a custom function to the `t` key:
 

@@ -1,3 +1,5 @@
+local file_nesting_trie = require "sfm.utils.file_nesting_trie"
+
 local default_mappings = {
   {
     key = "<CR>",
@@ -18,6 +20,10 @@ local default_mappings = {
   {
     key = "<S-TAB>",
     action = "close_entry",
+  },
+  {
+    key = "a",
+    action = "toggle_entry",
   },
   {
     key = "J",
@@ -116,10 +122,15 @@ local default_config = {
       selection = "",
     },
   },
+  file_nesting = {
+    enabled = false,
+    expand = false,
+    patterns = {},
+  },
   misc = {
     trash_cmd = nil,
-    system_open_cmd = nil
-  }
+    system_open_cmd = nil,
+  },
 }
 
 local function merge_mappings(mappings, user_mappings)
@@ -176,6 +187,7 @@ end
 
 local M = {
   opts = {},
+  file_nesting_trie = nil,
 }
 
 ---@param opts table
@@ -186,6 +198,10 @@ function M.setup(opts)
     M.opts.mappings.list = merge_mappings({}, M.opts.mappings.list)
   else
     M.opts.mappings.list = merge_mappings(default_mappings, M.opts.mappings.list)
+  end
+
+  if M.opts.file_nesting.enabled then
+    M.file_nesting_trie = file_nesting_trie.FileNestingTrie.new(M.opts.file_nesting.patterns)
   end
 end
 

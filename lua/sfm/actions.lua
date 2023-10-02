@@ -27,7 +27,7 @@ local Actions = {}
 ---@param e Entry
 ---@param force boolean|nil
 function M._open_dir(e, force)
-  if not e.is_dir then
+  if not e:has_children() then
     return
   end
 
@@ -40,7 +40,7 @@ end
 ---@private
 ---@param e Entry
 function M._close_dir(e)
-  if not e.is_dir then
+  if not e:has_children() then
     return
   end
 
@@ -339,6 +339,26 @@ function M.close_entry()
 
   -- close directory
   M._close_dir(entry)
+  -- re-render
+  M._renderer:render()
+  -- re-focus entry
+  M.focus_file(entry.path)
+end
+
+--- toggle current directory or nesting parent
+function M.toggle_entry()
+  local entry = M._renderer:get_current_entry()
+  if not entry:has_children() then
+    return
+  end
+
+  if entry.is_open then
+    -- close directory
+    M._close_dir(entry)
+  else
+    M._open_dir(entry, false)
+  end
+
   -- re-render
   M._renderer:render()
   -- re-focus entry
@@ -986,6 +1006,7 @@ function M.setup(explorer)
     split = M.split,
     tabnew = M.tabnew,
     close_entry = M.close_entry,
+    toggle_entry = M.toggle_entry,
     last_sibling = M.last_sibling,
     first_sibling = M.first_sibling,
     parent_entry = M.parent_entry,
@@ -1003,7 +1024,9 @@ function M.setup(explorer)
     clear_selections = M.clear_selections,
     delete_selections = M.deprecated(string.format("Deprecated action %s, use %s", "delete_selections", "delete")),
     trash_selections = M.deprecated(string.format("Deprecated action %s, use %s", "trash_selections", "trash")),
-    system_open_selections = M.deprecated(string.format("Deprecated action %s, use %s", "system_open_selections", "system_open")),
+    system_open_selections = M.deprecated(
+      string.format("Deprecated action %s, use %s", "system_open_selections", "system_open")
+    ),
     copy_selections = M.deprecated(string.format("Deprecated action %s, use %s", "copy_selections", "copy")),
     move_selections = M.deprecated(string.format("Deprecated action %s, use %s", "move_selections", "move")),
   }
