@@ -327,8 +327,17 @@ end
 --- close current opened directory or parent
 function M.close_entry()
   local entry = M._renderer:get_current_entry()
-  if not entry.is_dir or not entry.is_open then
-    entry = entry.parent
+  if not entry:has_children() or not entry.is_open then
+    if entry.nested_parent ~= nil then
+      entry = entry.nested_parent
+    else
+      entry = entry.parent
+    end
+  end
+
+  -- check nil for avoiding warning
+  if entry == nil then
+    return
   end
 
   if entry.is_root then

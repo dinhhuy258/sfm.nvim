@@ -70,7 +70,7 @@ function Entry._new(fpath, parent)
   self.is_open = self.is_root and true or false
   self.nested_parent = nil
   self.nested_children = {}
-  if config.opts.file_nesting.enabled and not self.is_dir then
+  if config.opts.file_nesting.expand and not self.is_dir then
     self.is_open = true
   end
 

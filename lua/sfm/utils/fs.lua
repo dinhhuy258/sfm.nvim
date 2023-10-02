@@ -211,14 +211,14 @@ function M.trash(source_path, trash_cmd)
       return false
     end
   else
-    if vim.fn.has("linux") == 1 then
-      if vim.fn.executable("gio") == 1 then
+    if vim.fn.has "linux" == 1 then
+      if vim.fn.executable "gio" == 1 then
         trash_cmd = { "gio", "trash" }
-      elseif vim.fn.executable("trash") == 1 then
+      elseif vim.fn.executable "trash" == 1 then
         trash_cmd = { "trash" }
       end
-    elseif vim.fn.has("macunix") == 1 then
-      if vim.fn.executable("trash") == 1 then
+    elseif vim.fn.has "macunix" == 1 then
+      if vim.fn.executable "trash" == 1 then
         trash_cmd = { "trash" }
       end
     -- elseif vim.fn.has("win64") == 1 or vim.fn.has("win32") == 1 then
@@ -248,16 +248,16 @@ function M.system_open(source_path, system_open_cmd)
       return false
     end
   else
-    if vim.fn.has("linux") == 1 then
-      if vim.fn.executable('xdg-open') == 1 then
+    if vim.fn.has "linux" == 1 then
+      if vim.fn.executable "xdg-open" == 1 then
         system_open_cmd = { "xdg-open" }
       end
-    elseif vim.fn.has("macunix") == 1 then
-      if vim.fn.executable('open') == 1 then
+    elseif vim.fn.has "macunix" == 1 then
+      if vim.fn.executable "open" == 1 then
         system_open_cmd = { "open" }
       end
-    elseif vim.fn.has("win64") == 1 or vim.fn.has("win32") == 1 then
-      if vim.fn.executable('start') == 1 then
+    elseif vim.fn.has "win64" == 1 or vim.fn.has "win32" == 1 then
+      if vim.fn.executable "start" == 1 then
         system_open_cmd = { "start" }
       end
     else
