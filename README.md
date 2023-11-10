@@ -49,7 +49,7 @@ use {
 local default_config = {
   view = {
     side = "left", -- side of the tree, can be `left`, `right`. this setting will be ignored if view.float.enable is set to true,
-    width = 30 -- this setting will be ignored if view.float.enable is set to true,
+    width = 30, -- this setting will be ignored if view.float.enable is set to true,
     float = {
       enable = false,
       config = {
@@ -93,10 +93,10 @@ local default_config = {
     enabled = false,
     expand = false,
     patterns = {},
-  }
+  },
   misc = {
-    trash_cmd = nil
-    system_open_cmd = nil
+    trash_cmd = nil,
+    system_open_cmd = nil,
   }
 }
 ```
