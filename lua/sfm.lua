@@ -57,8 +57,8 @@ function M.setup(opts)
         return
       end
 
+      local bufnr = vim.api.nvim_get_current_buf()
       debounce.debounce("BufEnter:focus_file", 15, function()
-        local bufnr = vim.api.nvim_get_current_buf()
         if not vim.api.nvim_buf_is_valid(bufnr) or not sfm_explorer.view:is_open() then
           return
         end
