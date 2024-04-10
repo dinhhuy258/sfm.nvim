@@ -27,7 +27,7 @@ Here is a list of available extensions for the `sfm` plugin:
 - [sfm-git](https://github.com/dinhhuy258/sfm-git.nvim): Adds git icon support to the `sfm` plugin's file and folder explorer view, indicating the git status of the file or folder.
 - [sfm-telescope](https://github.com/dinhhuy258/sfm-telescope.nvim): Allows users to search for entries in the `sfm` explorer tree.
 - [sfm-paste](https://github.com/dinhhuy258/sfm-paste.nvim): Provides a convenient way to paste text or images into new files within the sfm file explorer.
-
+- [sfm-focus](https://github.com/julihermes/sfm-focus.nvim): Adds the command `SFMFocus`. This command change current focus to explorer and open it if closed.
 ## Installation
 
 Install `sfm` on Neovim using your favorite plugin manager. For example, the below example shows how to install `sfm` using [packer.nvim](https://github.com/wbthomason/packer.nvim)
