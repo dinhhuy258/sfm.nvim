@@ -188,6 +188,17 @@ function M.split()
     return
   end
 
+  -- Use window picker if available and enabled
+  if package.loaded["window-picker"] then
+    local window_id = require("window-picker").pick_window()
+    if window_id then
+      vim.api.nvim_set_current_win(window_id)
+      open_file(entry.path, "split")
+
+      return
+    end
+  end
+
   open_file(entry.path, "split")
 end
 
@@ -196,6 +207,17 @@ function M.vsplit()
   local entry = M._renderer:get_current_entry()
   if entry.is_dir then
     return
+  end
+
+  -- Use window picker if available and enabled
+  if package.loaded["window-picker"] then
+    local window_id = require("window-picker").pick_window()
+    if window_id then
+      vim.api.nvim_set_current_win(window_id)
+      open_file(entry.path, "vsplit")
+
+      return
+    end
   end
 
   open_file(entry.path, "vsplit")
