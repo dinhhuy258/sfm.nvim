@@ -28,6 +28,7 @@ Here is a list of available extensions for the `sfm` plugin:
 - [sfm-telescope](https://github.com/dinhhuy258/sfm-telescope.nvim): Allows users to search for entries in the `sfm` explorer tree.
 - [sfm-paste](https://github.com/dinhhuy258/sfm-paste.nvim): Provides a convenient way to paste text or images into new files within the sfm file explorer.
 - [sfm-focus](https://github.com/julihermes/sfm-focus.nvim): Adds the command `SFMFocus`. This command change current focus to explorer and open it if closed.
+
 ## Installation
 
 Install `sfm` on Neovim using your favorite plugin manager. For example, the below example shows how to install `sfm` using [packer.nvim](https://github.com/wbthomason/packer.nvim)
@@ -197,6 +198,17 @@ local sfm_explorer = require("sfm").setup {
 
 In this example, when the user presses the `c` key in the explorer, the custom function `function() print("Custom function executed") end` will be executed. Pressing the `x` key will perform the default action `close`.
 Please note that if the action for a key is set to `nil` or an empty string, the default key binding for that key will be disabled. Also, ensure that the action provided is a valid function or action name, as listed in the above table.
+
+## Window Picker Integration
+
+`sfm` integrates with the [window-picker](https://github.com/s1n7ax/nvim-window-picker) plugin if it's installed. This allows you to choose which window to open files in when using the `split` and `vsplit` actions.
+
+### How it works
+
+1. When you use the `split` or `vsplit` action, `sfm` checks if `window-picker` is installed
+2. If available, it triggers the `window-picker` UI to let you select a target window
+3. The file is then opened in your chosen window
+4. If window-picker is not installed, it falls back to the default behavior
 
 ## Highlighting
 
