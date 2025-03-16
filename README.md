@@ -165,16 +165,6 @@ To use the functionalities provided by the `sfm` plugin, you can use the followi
 |         | trash                 | Trash current/selected file/s directory/ies                                                                |
 |         | system_open           | Open current/selected file/s directory/ies using system default program                                    |
 
-Below is a list of deprecated actions that should not be used anymore and might be removed anytime:
-
-| Action                 |
-| ---------------------- |
-| copy_selections        |
-| move_selections        |
-| delete_selections      |
-| trash_selections       |
-| system_open_selections |
-
 You can customize these key bindings by defining custom functions or action names in the `mappings` configuration option. For example, you can assign a custom function to the `t` key:
 
 ```lua

@@ -1016,12 +1016,6 @@ function M.run(action)
   defined_action()
 end
 
-function M.deprecated(message)
-  return function()
-    log.warn(message)
-  end
-end
-
 --- setup actions
 ---@param explorer Explorer
 function M.setup(explorer)
@@ -1053,13 +1047,6 @@ function M.setup(explorer)
     move = M.move,
     toggle_selection = M.toggle_selection,
     clear_selections = M.clear_selections,
-    delete_selections = M.deprecated(string.format("Deprecated action %s, use %s", "delete_selections", "delete")),
-    trash_selections = M.deprecated(string.format("Deprecated action %s, use %s", "trash_selections", "trash")),
-    system_open_selections = M.deprecated(
-      string.format("Deprecated action %s, use %s", "system_open_selections", "system_open")
-    ),
-    copy_selections = M.deprecated(string.format("Deprecated action %s, use %s", "copy_selections", "copy")),
-    move_selections = M.deprecated(string.format("Deprecated action %s, use %s", "move_selections", "move")),
   }
 end
 
