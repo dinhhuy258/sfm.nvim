@@ -155,7 +155,7 @@ local function open_file(fpath, open_cmd)
 
   fpath = vim.fn.fnameescape(fpath)
 
-  if config.opts.view.float.enable then
+  if config.opts.view.float.enable or (open_cmd ~= "edit" and open_cmd ~= "e") then
     result, err = pcall(vim.cmd, open_cmd .. " " .. fpath)
   else
     local winid, is_sfm_window = open()
