@@ -254,7 +254,7 @@ end
 local sfm_explorer = require("sfm").setup {}
 -- register the custom renderer
 sfm_explorer:register_renderer("custom", 100, size_renderer)
-````
+```
 
 The default entry renderers, in order of rendering priority, are:
 
